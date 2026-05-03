@@ -80,7 +80,7 @@ def build_populated_sections(
 ) -> list[dict]:
     visible = [
         r for r in resources
-        if not r.get("superseded_by") and not r.get("hidden")
+        if not r.get("superseded_by") and not r.get("hidden") and not r.get("quarantined_at")
     ]
     by_section: dict[str, list[dict]] = defaultdict(list)
     for r in visible:
@@ -99,6 +99,30 @@ def build_populated_sections(
     return populated
 
 
+def visible_worth_following(worth_following: list[dict]) -> list[dict]:
+    return [w for w in worth_following if not w.get("quarantined_at")]
+
+
+def _check_top_7_not_quarantined(top_7_slugs: list[str], resources_by_id: dict) -> None:
+    """Hard-fail render if any top_7 slug points at a quarantined resource.
+
+    A top-7 entry going dead is editorially significant: the maintainer must
+    drop it from `top_7:` or unquarantine, not silently ship a shorter marquee.
+    """
+    quarantined = [
+        (slug, resources_by_id[slug].get("quarantine_reason") or "unknown")
+        for slug in top_7_slugs
+        if resources_by_id[slug].get("quarantined_at")
+    ]
+    if quarantined:
+        details = ", ".join(f"{slug} ({reason})" for slug, reason in quarantined)
+        raise ValueError(
+            f"top_7 references quarantined resource(s): {details}. "
+            "Drop the slug from `top_7:` in resources.yaml, or unquarantine "
+            "(remove `quarantined_at`) if the URL has recovered."
+        )
+
+
 def render() -> str:
     data = yaml.safe_load(RESOURCES_PATH.read_text())
 
@@ -106,10 +130,12 @@ def render() -> str:
     resources_by_id = {r["id"]: r for r in resources}
 
     populated_sections = build_populated_sections(data["sections"], resources)
+    _check_top_7_not_quarantined(data["top_7"], resources_by_id)
     top_7_lines = [
         render_top_7_line(resources_by_id[slug])
         for slug in data["top_7"]
     ]
+    visible_wf = visible_worth_following(data["worth_following"])
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)),
@@ -127,7 +153,7 @@ def render() -> str:
         _render("top_7.md", top_7_lines=top_7_lines),
         _render("sections.md.j2", populated_sections=populated_sections),
         "---",
-        _render("worth_following.md", worth_following=data["worth_following"]),
+        _render("worth_following.md", worth_following=visible_wf),
     ]
     return "\n\n".join(p for p in parts if p) + "\n"
 

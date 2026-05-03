@@ -74,8 +74,13 @@ resources:
     archived: false                     # upstream is dead but historically important
     paywall: false                      # verifier won't false-positive on auth gates
     superseded_by: null                 # optional id of replacement
+    first_dead_at: null                 # date of first consecutive dead check; cleared on any non-dead outcome
+    quarantined_at: null                # set by verifier when (today - first_dead_at) >= 21 days; renderer skips entry
+    quarantine_reason: null             # status_code or error string captured at quarantine time
     notes: null                         # private, never rendered
 ```
+
+The three fields `first_dead_at`, `quarantined_at`, and `quarantine_reason` are written by the verifier (see `docs/specs/auto-quarantine-dead-links.md`). They also apply to `worth_following:` entries, which the verifier matches by `url`.
 
 **Multi-link bullets** (e.g., the two awesome-mcp-servers registries, Promptfoo OS+SaaS): one resource per URL, share a `cluster` id. Renderer combines clustered resources into a single bullet.
 

@@ -29,9 +29,9 @@ jobs:
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
 
       - run: uv sync --frozen
 
@@ -58,6 +58,28 @@ jobs:
           dead_count = counts["dead"]
           migrated_count = counts["migrated"]
 
+          newly_quarantined = report.get("newly_quarantined") or []
+          recovered = report.get("recovered") or []
+          accumulating = report.get("accumulating_dead") or []
+
+          quarantined_count = len(newly_quarantined)
+          recovered_count = len(recovered)
+          accumulating_count = len(accumulating)
+
+          # Auto-merge gate: routine PRs only.
+          # - No recoveries (humans should eyeball revivals).
+          # - No top-7 quarantines (editorially significant).
+          # - Quarantines this run capped at 5 (catches mass false-positives
+          #   from a domain-wide outage during the verify window).
+          # Migration listings do NOT block auto-merge — they don't modify YAML.
+          QUARANTINE_CAP = 5
+          has_top_7_quarantine = any(q.get("top_7") for q in newly_quarantined)
+          auto_merge_ok = (
+              recovered_count == 0
+              and not has_top_7_quarantine
+              and quarantined_count <= QUARANTINE_CAP
+          )
+
           def row(r):
               code = r.get("status_code") or r.get("error", "?")
               final = r.get("final_url") or ""
@@ -66,45 +88,85 @@ jobs:
                   line += f" → `{final}`"
               return line
 
+          def quarantine_row(q):
+              flag = " 🚩 **top-7**" if q.get("top_7") else ""
+              kind = q.get("kind", "resource")
+              kind_tag = f" _({kind})_" if kind != "resource" else ""
+              return f"- `{q['url']}` — {q['quarantine_reason']}{kind_tag}{flag} (first dead {q.get('first_dead_at') or 'today'})"
+
+          def recovered_row(r):
+              kind = r.get("kind", "resource")
+              kind_tag = f" _({kind})_" if kind != "resource" else ""
+              return f"- `{r['url']}`{kind_tag}"
+
+          def accumulating_row(a):
+              return f"- `{a['url']}` — first dead {a.get('first_dead_at') or '?'}"
+
           ok_rows = "\n".join(row(r) for r in report["ok"]) or "_none_"
           dead_rows = "\n".join(row(r) for r in report["dead"]) or "_none_"
           migrated_rows = "\n".join(row(r) for r in report["migrated"]) or "_none_"
 
-          body = f"""## Verified ✓ ({ok_count})
+          sections = []
 
-          <details>
-          <summary>Expand</summary>
+          if newly_quarantined:
+              q_rows = "\n".join(quarantine_row(q) for q in newly_quarantined)
+              sections.append(f"## Quarantined ({quarantined_count})\n\n{q_rows}")
 
-          {ok_rows}
+          if recovered:
+              r_rows = "\n".join(recovered_row(r) for r in recovered)
+              sections.append(f"## Recovered ({recovered_count})\n\n{r_rows}")
 
-          </details>
+          if accumulating:
+              a_rows = "\n".join(accumulating_row(a) for a in accumulating)
+              sections.append(f"## Dead — accumulating ({accumulating_count})\n\n{a_rows}")
 
-          ## Dead ({dead_count})
+          sections.append(f"## Verified ✓ ({ok_count})\n\n<details>\n<summary>Expand</summary>\n\n{ok_rows}\n\n</details>")
+          sections.append(f"## Dead ({dead_count})\n\n{dead_rows}")
+          sections.append(f"## Migrated ({migrated_count})\n\n{migrated_rows}")
 
-          {dead_rows}
+          if not auto_merge_ok:
+              reasons = []
+              if recovered_count > 0:
+                  reasons.append(f"{recovered_count} recovery (recoveries always require review)")
+              if has_top_7_quarantine:
+                  reasons.append("top-7 quarantine (editorially significant)")
+              if quarantined_count > QUARANTINE_CAP:
+                  reasons.append(f"{quarantined_count} quarantines exceed cap of {QUARANTINE_CAP}")
+              prefix = (
+                  "> **Auto-merge skipped:** "
+                  + "; ".join(reasons)
+                  + ".\n"
+              )
+          else:
+              prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
 
-          ## Migrated ({migrated_count})
-
-          {migrated_rows}
-          """
-
-          body = textwrap.dedent(body).strip()
+          body = prefix + "\n" + "\n\n".join(sections)
 
           env_file = os.environ["GITHUB_ENV"]
           with open(env_file, "a") as f:
               f.write(f"VERIFY_OK={ok_count}\n")
               f.write(f"VERIFY_DEAD={dead_count}\n")
               f.write(f"VERIFY_MIGRATED={migrated_count}\n")
-              # Write multi-line env var using EOF delimiter
+              f.write(f"VERIFY_QUARANTINED={quarantined_count}\n")
+              f.write(f"VERIFY_RECOVERED={recovered_count}\n")
+              f.write(f"AUTO_MERGE_OK={'true' if auto_merge_ok else 'false'}\n")
               f.write("PR_BODY<<__EOF__\n")
               f.write(body + "\n")
               f.write("__EOF__\n")
           EOF
 
-      - uses: peter-evans/create-pull-request@v7
+      - id: cpr
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: bot/verify-${{ env.YEAR_WEEK }}
-          title: "Weekly verification — ${{ env.VERIFY_OK }} ok / ${{ env.VERIFY_DEAD }} dead / ${{ env.VERIFY_MIGRATED }} migrated"
+          title: "Weekly verification — ${{ env.VERIFY_OK }} ok / ${{ env.VERIFY_QUARANTINED }} quarantined / ${{ env.VERIFY_RECOVERED }} recovered / ${{ env.VERIFY_DEAD }} dead / ${{ env.VERIFY_MIGRATED }} migrated"
           body: ${{ env.PR_BODY }}
           commit-message: "chore(verify): weekly link verification ${{ env.YEAR_WEEK }}"
-          labels: automated,link-health
+          labels: ${{ env.AUTO_MERGE_OK == 'true' && 'automated,link-health' || 'automated,link-health,auto-merge-skipped' }}
+
+      - name: Enable auto-merge on routine PR
+        if: env.AUTO_MERGE_OK == 'true' && steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash

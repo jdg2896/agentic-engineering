@@ -10,7 +10,7 @@ jobs:
   render-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -26,7 +26,7 @@ jobs:
             echo "::notice::No render-relevant files changed — skipping render check."
           fi
 
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
         if: steps.changes.outputs.changed == 'true'
 
       - run: uv sync --frozen
