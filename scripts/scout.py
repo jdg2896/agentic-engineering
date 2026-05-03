@@ -278,7 +278,7 @@ def main() -> None:
     # sources.yaml — bump last_checked_at on every processed source
     today = date.today()
     for source in enabled:
-        source["last_checked_at"] = today
+        source["last_checked_at"] = date(today.year, today.month, today.day)
     with open(SOURCES_PATH, "w") as f:
         ryaml.dump(sources_data, f)
     print(f"Updated {SOURCES_PATH} (last_checked_at → {today})")
