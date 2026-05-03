@@ -37,10 +37,4 @@ jobs:
 
       - name: Fail if rendered output is out of sync
         if: steps.changes.outputs.changed == 'true'
-        run: |
-          if [ -f agentic-engineering.md ]; then
-            git diff --exit-code agentic-engineering.md
-          fi
-          if [ -f README.md ]; then
-            git diff --exit-code README.md
-          fi
+        run: git diff --exit-code README.md
