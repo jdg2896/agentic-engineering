@@ -1,7 +1,7 @@
 # Source of truth for the agentic-engineering resource guide.
 # Edit this file and run `uv run python scripts/render.py` to update agentic-engineering.md.
 #
-# Schema: see SPEC.md §3.1.
+# Schema: see docs/specs/SPEC.md §3.1.
 # T1 scope: sections 1 (foundations) + 2 (tools-mcp) populated.
 # Resources for sections 3-14 are migrated in T2; the two `hidden: true`
 # entries below exist only so the top-7 list can resolve their slugs in T1.
