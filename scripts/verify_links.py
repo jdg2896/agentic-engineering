@@ -151,7 +151,7 @@ def apply_updates(yaml_data: object, results: list[dict], today: date) -> None:
             continue
         outcome = by_id[res_id]["outcome"]
         if outcome in ("ok", "paywall_skipped"):
-            resource["verified_at"] = today.isoformat()
+            resource["verified_at"] = date(today.year, today.month, today.day)
 
 
 def print_summary(report: dict) -> None:
@@ -180,7 +180,12 @@ def main() -> None:
     yaml = YAML()
     yaml.preserve_quotes = True
     yaml.default_flow_style = False
+    yaml.width = 4096
     yaml.indent(mapping=2, sequence=4, offset=2)
+    yaml.representer.add_representer(
+        type(None),
+        lambda dumper, data: dumper.represent_scalar("tag:yaml.org,2002:null", "null"),
+    )
 
     with open(RESOURCES_PATH) as f:
         data = yaml.load(f)
