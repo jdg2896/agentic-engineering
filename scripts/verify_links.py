@@ -23,6 +23,7 @@ TIMEOUT = 15
 MAX_REDIRECTS = 5
 MAX_WORKERS = 10
 SOFT_404_SNIFF_BYTES = 32_768
+QUARANTINE_GRACE_DAYS = 21
 
 _REPO = os.environ.get("GITHUB_REPOSITORY", "jdg2896/agentic-engineering")
 USER_AGENT = f"agentic-engineering-bot (+https://github.com/{_REPO})"
@@ -217,19 +218,156 @@ def build_report(results: list[dict]) -> dict:
     }
 
 
-def apply_updates(yaml_data: object, results: list[dict], today: date) -> None:
-    """Mutate ruamel.yaml CommentedMap resources in-place for ok/paywall_skipped outcomes.
+def _parse_yaml_date(value) -> date | None:
+    """ruamel preserves YAML dates as datetime.date; tolerate ISO strings too."""
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str):
+        return date.fromisoformat(value)
+    return None
 
-    Only `resources:` entries carry `verified_at`; `worth_following:` is left untouched.
+
+def _dead_reason(result: dict) -> str:
+    error = result.get("error")
+    if error:
+        return error
+    code = result.get("status_code")
+    return str(code) if code is not None else "unknown"
+
+
+def compute_state_changes(yaml_data, results: list[dict], today: date) -> list[dict]:
+    """Plan per-entry state transitions. Pure: does not mutate yaml_data.
+
+    Returns a list of change dicts (one per result that matched a YAML entry):
+      {
+        "entry": <ruamel CommentedMap>,
+        "kind": "resource"|"worth_following",
+        "id": str,
+        "url": str,
+        "top_7": bool,
+        "set": {field: value, ...},
+        "clear": [field, ...],
+        "transition": "verified"|"first_dead"|"quarantine"|"recovery"|"migrated_clear"|"no_change",
+        "reason": str | None,
+        "first_dead_at": str | None,
+      }
     """
-    by_id = {r["id"]: r for r in results}
-    for resource in yaml_data["resources"]:
-        res_id = resource["id"]
-        if res_id not in by_id:
+    resources_by_id = {r["id"]: r for r in (yaml_data.get("resources") or [])}
+    wf_by_url = {w["url"]: w for w in (yaml_data.get("worth_following") or [])}
+    top_7_set = set(yaml_data.get("top_7") or [])
+
+    changes: list[dict] = []
+    for result in results:
+        kind = result.get("kind", "resource")
+        rid = result["id"]
+        if kind == "resource":
+            entry = resources_by_id.get(rid)
+        else:
+            entry = wf_by_url.get(result["url"])
+        if entry is None:
             continue
-        outcome = by_id[res_id]["outcome"]
+
+        outcome = result["outcome"]
+        q_at = _parse_yaml_date(entry.get("quarantined_at"))
+        fd_at = _parse_yaml_date(entry.get("first_dead_at"))
+
+        set_fields: dict = {}
+        clear_fields: list[str] = []
+        transition = "no_change"
+        reason: str | None = None
+
         if outcome in ("ok", "paywall_skipped"):
-            resource["verified_at"] = date(today.year, today.month, today.day)
+            set_fields["verified_at"] = today
+            if fd_at is not None:
+                clear_fields.append("first_dead_at")
+            if q_at is not None:
+                clear_fields.extend(["quarantined_at", "quarantine_reason"])
+                transition = "recovery"
+            else:
+                transition = "verified"
+        elif outcome == "migrated":
+            if fd_at is not None:
+                clear_fields.append("first_dead_at")
+                transition = "migrated_clear"
+        elif outcome == "dead":
+            if q_at is not None:
+                pass  # already quarantined: no-op, don't restart the clock
+            elif fd_at is None:
+                set_fields["first_dead_at"] = today
+                transition = "first_dead"
+            elif (today - fd_at).days >= QUARANTINE_GRACE_DAYS:
+                reason = _dead_reason(result)
+                set_fields["quarantined_at"] = today
+                set_fields["quarantine_reason"] = reason
+                transition = "quarantine"
+
+        changes.append({
+            "entry": entry,
+            "kind": kind,
+            "id": rid,
+            "url": result["url"],
+            "top_7": rid in top_7_set,
+            "set": set_fields,
+            "clear": clear_fields,
+            "transition": transition,
+            "reason": reason,
+            "first_dead_at": fd_at.isoformat() if fd_at else None,
+        })
+
+    return changes
+
+
+def apply_state_changes(changes: list[dict]) -> None:
+    """Commit planned mutations to the YAML entries."""
+    for ch in changes:
+        entry = ch["entry"]
+        for field, value in ch["set"].items():
+            entry[field] = value
+        for field in ch["clear"]:
+            if field in entry:
+                del entry[field]
+
+
+def report_transitions(changes: list[dict]) -> dict:
+    """Summarize quarantine/recovery events for verification_report.json."""
+    newly_quarantined: list[dict] = []
+    recovered: list[dict] = []
+    accumulating_dead: list[dict] = []
+    for ch in changes:
+        t = ch["transition"]
+        if t == "quarantine":
+            newly_quarantined.append({
+                "id": ch["id"],
+                "kind": ch["kind"],
+                "url": ch["url"],
+                "quarantine_reason": ch["reason"],
+                "top_7": ch["top_7"],
+                "first_dead_at": ch["first_dead_at"],
+            })
+        elif t == "recovery":
+            recovered.append({
+                "id": ch["id"],
+                "kind": ch["kind"],
+                "url": ch["url"],
+            })
+        elif t == "first_dead" or (t == "no_change" and ch["first_dead_at"]):
+            # Accumulating: dead but not yet at threshold. Useful for PR body.
+            accumulating_dead.append({
+                "id": ch["id"],
+                "kind": ch["kind"],
+                "url": ch["url"],
+                "first_dead_at": ch["first_dead_at"] or (
+                    ch["set"].get("first_dead_at").isoformat()
+                    if isinstance(ch["set"].get("first_dead_at"), date) else None
+                ),
+            })
+    return {
+        "newly_quarantined": newly_quarantined,
+        "recovered": recovered,
+        "accumulating_dead": accumulating_dead,
+    }
 
 
 def print_summary(report: dict) -> None:
@@ -238,11 +376,28 @@ def print_summary(report: dict) -> None:
         f"Results: {counts['ok']} ok / {counts['dead']} dead / "
         f"{counts['migrated']} migrated / {counts['paywall_skipped']} paywall_skipped"
     )
+    nq = report.get("newly_quarantined") or []
+    rec = report.get("recovered") or []
+    acc = report.get("accumulating_dead") or []
+    if nq or rec or acc:
+        print(
+            f"State: {len(nq)} newly_quarantined / {len(rec)} recovered / "
+            f"{len(acc)} accumulating_dead"
+        )
     if report["dead"]:
         print("\nDead:")
         for r in report["dead"]:
             code = r["status_code"] or r["error"]
             print(f"  [{code}] {r['url']}")
+    if nq:
+        print("\nNewly quarantined:")
+        for r in nq:
+            flag = " 🚩 top-7" if r["top_7"] else ""
+            print(f"  [{r['quarantine_reason']}]{flag} {r['url']}")
+    if rec:
+        print("\nRecovered:")
+        for r in rec:
+            print(f"  {r['url']}")
     if report["migrated"]:
         print("\nMigrated:")
         for r in report["migrated"]:
@@ -273,7 +428,11 @@ def main() -> None:
     print(f"Verifying {total} targets (resources + worth_following)...")
 
     results = run_verification(targets, args.limit)
+    today = date.today()
+    changes = compute_state_changes(data, results, today)
+
     report = build_report(results)
+    report.update(report_transitions(changes))
 
     print_summary(report)
 
@@ -281,7 +440,7 @@ def main() -> None:
     print(f"Report written to {REPORT_PATH}")
 
     if not args.dry_run:
-        apply_updates(data, results, date.today())
+        apply_state_changes(changes)
         with open(RESOURCES_PATH, "w") as f:
             yaml.dump(data, f)
         print(f"Updated {RESOURCES_PATH}")
