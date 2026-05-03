@@ -1,0 +1,141 @@
+name: Scout resources
+
+on:
+  schedule:
+    - cron: '0 13 * * 4'   # Thursdays 13:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  check-pause:
+    runs-on: ubuntu-latest
+    outputs:
+      paused: ${{ steps.check.outputs.paused }}
+    steps:
+      - id: check
+        run: |
+          if [ "${{ vars.MAINTENANCE_PAUSED }}" = "true" ]; then
+            echo "paused=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Maintenance paused — skipping scout."
+          else
+            echo "paused=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  scout:
+    needs: check-pause
+    if: needs.check-pause.outputs.paused != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - run: uv sync --frozen
+
+      - name: Run scout
+        run: uv run python scripts/scout.py
+
+      - name: Compute metadata and append candidates
+        id: meta
+        run: |
+          uv run python3 - <<'EOF'
+          import os
+          from datetime import datetime, date
+          from pathlib import Path
+
+          import yaml as pyyaml
+          from ruamel.yaml import YAML
+
+          year_week = datetime.utcnow().strftime("%Y-W%V")
+
+          candidates_path = Path("candidates.yaml")
+          if candidates_path.exists():
+              raw = pyyaml.safe_load(candidates_path.read_text())
+              candidates = (raw or {}).get("candidates") or []
+          else:
+              candidates = []
+
+          n = len(candidates)
+
+          if n > 0:
+              branch = f"bot/scout-{year_week}"
+              title = f"Scout — {n} candidate{'s' if n != 1 else ''}"
+
+              # Append candidates to resources.yaml
+              ryaml = YAML()
+              ryaml.preserve_quotes = True
+              ryaml.default_flow_style = False
+
+              with open("resources.yaml") as f:
+                  res_data = ryaml.load(f)
+
+              today = date.today().isoformat()
+              for c in candidates:
+                  res_data["resources"].append({
+                      "id": c["slug"],
+                      "section": c["section"],
+                      "url": c["url"],
+                      "title": c["title"],
+                      "author": c["author"],
+                      "type": c["type"],
+                      "license": c.get("license"),
+                      "blurb": c["blurb"],
+                      "cluster": None,
+                      "tags": c.get("tags", []),
+                      "added_at": today,
+                      "verified_at": None,
+                      "archived": False,
+                      "paywall": False,
+                      "superseded_by": None,
+                      "notes": None,
+                  })
+
+              with open("resources.yaml", "w") as f:
+                  ryaml.dump(res_data, f)
+
+              rows = []
+              for c in candidates:
+                  rows.append(
+                      f"- [ ] **[{c['title']}]({c['url']})** — `{c['section']}` · `{c['type']}`\n"
+                      f"      Source: `{c['source_id']}` | Proposed slug: `{c['slug']}`\n"
+                      f"      Blurb: _{c['blurb']}_\n"
+                      f"      Rationale: _{c['rationale']}_"
+                  )
+
+              body = f"## Candidates ({n})\n\n" + "\n\n".join(rows)
+              has_candidates = "true"
+          else:
+              branch = f"bot/scout-bookkeeping-{year_week}"
+              title = f"Scout bookkeeping — {year_week} (no candidates)"
+              body = "_No new candidates this week. last\\_checked\\_at bumped and seen.yaml updated._"
+              has_candidates = "false"
+
+          env_file = os.environ["GITHUB_ENV"]
+          with open(env_file, "a") as f:
+              f.write(f"YEAR_WEEK={year_week}\n")
+              f.write(f"SCOUT_N={n}\n")
+              f.write(f"SCOUT_BRANCH={branch}\n")
+              f.write(f"SCOUT_TITLE={title}\n")
+              f.write(f"SCOUT_HAS_CANDIDATES={has_candidates}\n")
+              f.write("SCOUT_PR_BODY<<__EOF__\n")
+              f.write(body + "\n")
+              f.write("__EOF__\n")
+          EOF
+
+      - name: Re-render guide
+        if: env.SCOUT_HAS_CANDIDATES == 'true'
+        run: uv run python scripts/render.py
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: ${{ env.SCOUT_BRANCH }}
+          title: ${{ env.SCOUT_TITLE }}
+          body: ${{ env.SCOUT_PR_BODY }}
+          commit-message: "chore(scout): weekly resource scout ${{ env.YEAR_WEEK }}"
+          labels: automated,scout
