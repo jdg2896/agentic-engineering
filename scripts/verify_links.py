@@ -84,6 +84,10 @@ def check_url(resource: dict) -> dict:
         result["outcome"] = "paywall_skipped"
         return result
 
+    if status_code in (401, 403):
+        result["outcome"] = "ok"
+        return result
+
     if status_code is None or status_code >= 400:
         result["outcome"] = "dead"
         return result
@@ -176,6 +180,7 @@ def main() -> None:
     yaml = YAML()
     yaml.preserve_quotes = True
     yaml.default_flow_style = False
+    yaml.indent(mapping=2, sequence=4, offset=2)
 
     with open(RESOURCES_PATH) as f:
         data = yaml.load(f)
