@@ -120,6 +120,29 @@ top_7:
   - openai-practical-guide
   - applied-llms-year
 
+worth_following:
+  - name: Anthropic Engineering
+    url: https://www.anthropic.com/engineering
+    blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
+  - name: Cognition blog
+    url: https://cognition.ai/blog
+    blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
+  - name: Simon Willison
+    url: https://simonwillison.net/
+    blurb: The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
+  - name: Embrace The Red
+    url: https://embracethered.com/blog/
+    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
+  - name: Cloudflare AI agents tag
+    url: https://blog.cloudflare.com/tag/ai-agents/
+    blurb: Agent-runtime and infra posts from Cloudflare's edge platform.
+  - name: LangChain blog
+    url: https://blog.langchain.com/
+    blurb: Framework updates, multi-agent patterns, and ecosystem news.
+  - name: Hamel's blog
+    url: https://hamel.dev/
+    blurb: Applied LLM engineering and evals from a practitioner perspective.
+
 resources:
   # ----------------------------------------------------------------------
   # Section 1: foundations
