@@ -4,13 +4,14 @@ Project-level guidance for Claude Code and AI agents working in this repo.
 
 ## Before making any changes
 
-Always sync with main before starting work:
+Always sync with main and create a branch before starting work:
 
 ```
 git checkout main && git pull origin main
+git checkout -b <type>/<short-description>
 ```
 
-This avoids working on stale code or creating branches off the wrong base.
+Direct pushes to `main` are blocked by the branch ruleset — all changes must go through a PR. Working on a branch from the start avoids a forced detour later.
 
 ## Commit messages
 
