@@ -1,0 +1,10 @@
+{% for section in populated_sections %}
+## {{ section.order }}. {{ section.title }}
+
+{% for bullet in section.bullets %}
+{{ bullet }}
+{% endfor %}
+{% if not loop.last %}
+
+{% endif %}
+{% endfor %}
