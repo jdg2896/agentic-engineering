@@ -22,3 +22,7 @@ Format: `<type>[optional scope]: <description>`
 Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
 
 Example: `feat(renderer): add cluster bullet support`
+
+## Writing specs
+
+Design specs live under `docs/specs/`. Before writing one, read [`docs/specs/TEMPLATE.md`](docs/specs/TEMPLATE.md) and follow its structure (Why / What / Constraints / Current State / Tasks / Validation). Keep tasks small enough to execute in a fresh session — each one should touch ≤3 files and have a concrete `Verify` step.

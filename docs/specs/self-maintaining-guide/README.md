@@ -6,10 +6,10 @@ Self-contained implementation tasks for the v1 self-maintaining resource guide.
 
 If you're picking up a task in a fresh session:
 
-1. **Read `docs/specs/SPEC.md`** — full design context.
+1. **Read `SPEC.md`** — full design context.
 2. **Read the task file** for the task you're working on (e.g., `T1-schema-renderer.md`).
 3. **Work on a branch matching the task file's branch convention** (e.g., `t1/schema-renderer`).
-4. **Open a PR** with the conventional title (`T<n>: <short name>`). Reference `docs/specs/SPEC.md` sections you relied on.
+4. **Open a PR** with the conventional title (`T<n>: <short name>`). Reference `SPEC.md` sections you relied on.
 5. **Acceptance criteria in the task file are the contract** — the PR is done when those pass, no more, no less.
 
 ## Task order
@@ -31,11 +31,11 @@ Linear dependencies. Each task assumes prior tasks have been merged to `main`.
 - One PR per task. Squash-merge.
 - Branch name: `t<n>/<slug>`.
 - PR title: `T<n>: <short name>`.
-- PR body: bullet list of what was built, link to relevant `docs/specs/SPEC.md` sections, and any deviations from the task file (with reasoning).
+- PR body: bullet list of what was built, link to relevant `SPEC.md` sections, and any deviations from the task file (with reasoning).
 - **Out-of-scope sections in task files are binding** — don't pull future-task work forward, even if it seems convenient.
 
 ## What NOT to do in a task session
 
-- Don't redesign — the design is in `docs/specs/SPEC.md`. If a real design issue surfaces, surface it in the PR description and stop, don't unilaterally re-decide.
+- Don't redesign — the design is in `SPEC.md`. If a real design issue surfaces, surface it in the PR description and stop, don't unilaterally re-decide.
 - Don't add features beyond the task scope.
 - Don't generate documentation, READMEs, or summary files unless the task requires it.
