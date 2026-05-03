@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date
 from pathlib import Path
@@ -21,9 +22,18 @@ REPORT_PATH = ROOT / "verification_report.json"
 TIMEOUT = 15
 MAX_REDIRECTS = 5
 MAX_WORKERS = 10
+SOFT_404_SNIFF_BYTES = 32_768
 
 _REPO = os.environ.get("GITHUB_REPOSITORY", "jdg2896/agentic-engineering")
 USER_AGENT = f"agentic-engineering-bot (+https://github.com/{_REPO})"
+
+_TITLE_RE = re.compile(r"<title[^>]*>([^<]+)</title>", re.I)
+# Title-based soft-404 markers. We only inspect <title> to avoid false positives from
+# legitimate pages that happen to mention "not found" in body copy.
+_SOFT_404_TITLE_PATTERNS = [
+    re.compile(r"^\s*(?:404\b|page not found\b|not found\b)", re.I),
+    re.compile(r"\bpage not found\b", re.I),
+]
 
 
 def _normalize(url: str) -> tuple[str, str]:
@@ -41,6 +51,34 @@ def _same_location(original: str, final: str) -> bool:
     return _normalize(original) == _normalize(final)
 
 
+def _looks_like_soft_404(html: str) -> bool:
+    """True if the HTML's <title> matches a soft-404 marker (e.g. SPAs that 200 a not-found page)."""
+    match = _TITLE_RE.search(html)
+    if not match:
+        return False
+    title = match.group(1).strip()
+    return any(p.search(title) for p in _SOFT_404_TITLE_PATTERNS)
+
+
+def _fetch_html_snippet(
+    session: requests.Session, url: str, headers: dict, max_bytes: int = SOFT_404_SNIFF_BYTES
+) -> str | None:
+    """Fetch up to max_bytes of an HTML response. Returns None if not HTML or on error."""
+    try:
+        resp = session.get(url, headers=headers, timeout=TIMEOUT, allow_redirects=True, stream=True)
+    except requests.RequestException:
+        return None
+    try:
+        if "html" not in resp.headers.get("content-type", "").lower():
+            return None
+        chunk = resp.raw.read(max_bytes, decode_content=True) or b""
+        return chunk.decode("utf-8", errors="replace")
+    except requests.RequestException:
+        return None
+    finally:
+        resp.close()
+
+
 def check_url(resource: dict) -> dict:
     url = resource["url"]
     paywall = resource.get("paywall", False)
@@ -52,6 +90,7 @@ def check_url(resource: dict) -> dict:
     status_code: int | None = None
     final_url = url
     error: str | None = None
+    content_type = ""
 
     try:
         resp = session.head(url, headers=headers, timeout=TIMEOUT, allow_redirects=True)
@@ -59,6 +98,7 @@ def check_url(resource: dict) -> dict:
             resp = session.get(url, headers=headers, timeout=TIMEOUT, allow_redirects=True)
         status_code = resp.status_code
         final_url = resp.url
+        content_type = resp.headers.get("content-type", "")
     except requests.TooManyRedirects:
         error = "too_many_redirects"
     except requests.Timeout:
@@ -70,6 +110,7 @@ def check_url(resource: dict) -> dict:
 
     result: dict = {
         "id": resource["id"],
+        "kind": resource.get("kind", "resource"),
         "url": url,
         "status_code": status_code,
         "final_url": final_url if final_url != url else None,
@@ -93,6 +134,14 @@ def check_url(resource: dict) -> dict:
         return result
 
     if 200 <= status_code < 300:
+        # Soft-404 sniff: SPAs (e.g. platform.claude.com) return 200 with a "Not Found" body.
+        # Skip cleanly if response isn't HTML or the GET fails.
+        if "html" in content_type.lower() or not content_type:
+            body = _fetch_html_snippet(session, final_url, headers)
+            if body and _looks_like_soft_404(body):
+                result["error"] = "soft_404"
+                result["outcome"] = "dead"
+                return result
         if _same_location(url, final_url):
             result["outcome"] = "ok"
         else:
@@ -104,8 +153,33 @@ def check_url(resource: dict) -> dict:
     return result
 
 
-def run_verification(resources: list, limit: int | None) -> list[dict]:
-    targets = resources[:limit] if limit is not None else resources
+def _slugify(name: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    return slug or "wf"
+
+
+def collect_targets(data) -> list[dict]:
+    """Build a flat list of verification targets from both resources and worth_following."""
+    targets: list[dict] = []
+    for r in data.get("resources") or []:
+        targets.append({
+            "id": r["id"],
+            "url": r["url"],
+            "paywall": r.get("paywall", False),
+            "kind": "resource",
+        })
+    for r in data.get("worth_following") or []:
+        targets.append({
+            "id": f"wf:{_slugify(r['name'])}",
+            "url": r["url"],
+            "paywall": False,
+            "kind": "worth_following",
+        })
+    return targets
+
+
+def run_verification(targets: list, limit: int | None) -> list[dict]:
+    targets = targets[:limit] if limit is not None else targets
     results: list[dict] = [{}] * len(targets)
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
@@ -118,6 +192,7 @@ def run_verification(resources: list, limit: int | None) -> list[dict]:
                 r = targets[idx]
                 results[idx] = {
                     "id": r["id"],
+                    "kind": r.get("kind", "resource"),
                     "url": r["url"],
                     "status_code": None,
                     "final_url": None,
@@ -143,7 +218,10 @@ def build_report(results: list[dict]) -> dict:
 
 
 def apply_updates(yaml_data: object, results: list[dict], today: date) -> None:
-    """Mutate ruamel.yaml CommentedMap resources in-place for ok/paywall_skipped outcomes."""
+    """Mutate ruamel.yaml CommentedMap resources in-place for ok/paywall_skipped outcomes.
+
+    Only `resources:` entries carry `verified_at`; `worth_following:` is left untouched.
+    """
     by_id = {r["id"]: r for r in results}
     for resource in yaml_data["resources"]:
         res_id = resource["id"]
@@ -190,10 +268,11 @@ def main() -> None:
     with open(RESOURCES_PATH) as f:
         data = yaml.load(f)
 
-    resources = data["resources"]
-    print(f"Verifying {min(args.limit, len(resources)) if args.limit else len(resources)} resources...")
+    targets = collect_targets(data)
+    total = min(args.limit, len(targets)) if args.limit else len(targets)
+    print(f"Verifying {total} targets (resources + worth_following)...")
 
-    results = run_verification(resources, args.limit)
+    results = run_verification(targets, args.limit)
     report = build_report(results)
 
     print_summary(report)
