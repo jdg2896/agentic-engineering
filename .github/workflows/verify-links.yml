@@ -1,0 +1,110 @@
+name: Verify links
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-pause:
+    runs-on: ubuntu-latest
+    outputs:
+      paused: ${{ steps.check.outputs.paused }}
+    steps:
+      - id: check
+        run: |
+          if [ "${{ vars.MAINTENANCE_PAUSED }}" = "true" ]; then
+            echo "paused=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Maintenance paused — skipping verification."
+          else
+            echo "paused=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  verify:
+    needs: check-pause
+    if: needs.check-pause.outputs.paused != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - run: uv sync --frozen
+
+      - name: Run link verifier
+        run: uv run python scripts/verify_links.py
+
+      - name: Re-render guide
+        run: uv run python scripts/render.py
+
+      - name: Compute week tag and PR metadata
+        id: meta
+        run: |
+          YEAR_WEEK=$(date -u +%Y-W%V)
+          echo "YEAR_WEEK=$YEAR_WEEK" >> "$GITHUB_ENV"
+
+          python3 - <<'EOF'
+          import json, os, textwrap
+          from pathlib import Path
+
+          report = json.loads(Path("verification_report.json").read_text())
+          counts = report["counts"]
+
+          ok_count = counts["ok"]
+          dead_count = counts["dead"]
+          migrated_count = counts["migrated"]
+
+          def row(r):
+              code = r.get("status_code") or r.get("error", "?")
+              final = r.get("final_url") or ""
+              line = f"- `{r['url']}` — {code}"
+              if final:
+                  line += f" → `{final}`"
+              return line
+
+          ok_rows = "\n".join(row(r) for r in report["ok"]) or "_none_"
+          dead_rows = "\n".join(row(r) for r in report["dead"]) or "_none_"
+          migrated_rows = "\n".join(row(r) for r in report["migrated"]) or "_none_"
+
+          body = f"""## Verified ✓ ({ok_count})
+
+          <details>
+          <summary>Expand</summary>
+
+          {ok_rows}
+
+          </details>
+
+          ## Dead ({dead_count})
+
+          {dead_rows}
+
+          ## Migrated ({migrated_count})
+
+          {migrated_rows}
+          """
+
+          body = textwrap.dedent(body).strip()
+
+          env_file = os.environ["GITHUB_ENV"]
+          with open(env_file, "a") as f:
+              f.write(f"VERIFY_OK={ok_count}\n")
+              f.write(f"VERIFY_DEAD={dead_count}\n")
+              f.write(f"VERIFY_MIGRATED={migrated_count}\n")
+              # Write multi-line env var using EOF delimiter
+              f.write("PR_BODY<<__EOF__\n")
+              f.write(body + "\n")
+              f.write("__EOF__\n")
+          EOF
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bot/verify-${{ env.YEAR_WEEK }}
+          title: "Weekly verification — ${{ env.VERIFY_OK }} ok / ${{ env.VERIFY_DEAD }} dead / ${{ env.VERIFY_MIGRATED }} migrated"
+          body: ${{ env.PR_BODY }}
+          commit-message: "chore(verify): weekly link verification ${{ env.YEAR_WEEK }}"
+          labels: automated,link-health
