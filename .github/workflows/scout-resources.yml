@@ -46,13 +46,13 @@ jobs:
         run: |
           uv run python3 - <<'EOF'
           import os
-          from datetime import datetime, date
+          from datetime import datetime, date, timezone
           from pathlib import Path
 
           import yaml as pyyaml
           from ruamel.yaml import YAML
 
-          year_week = datetime.utcnow().strftime("%Y-W%V")
+          year_week = datetime.now(timezone.utc).strftime("%Y-W%V")
 
           candidates_path = Path("candidates.yaml")
           if candidates_path.exists():
@@ -71,6 +71,11 @@ jobs:
               ryaml = YAML()
               ryaml.preserve_quotes = True
               ryaml.default_flow_style = False
+              ryaml.indent(mapping=2, sequence=4, offset=2)
+              ryaml.representer.add_representer(
+                  type(None),
+                  lambda dumper, data: dumper.represent_scalar("tag:yaml.org,2002:null", "null"),
+              )
 
               with open("resources.yaml") as f:
                   res_data = ryaml.load(f)
