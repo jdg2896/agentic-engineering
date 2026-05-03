@@ -7,2539 +7,2563 @@
 # entries below exist only so the top-7 list can resolve their slugs in T1.
 
 sections:
-  - id: foundations
-    order: 1
-    title: 'Foundational design & "what is an agent"'
-    description: |
-      Mental models for what an agent is, when to build one vs. a workflow,
-      context engineering, and the canonical "agents are mostly software"
-      doctrine. Read this first.
-  - id: tools-mcp
-    order: 2
-    title: "Tool integration & MCP"
-    description: |
-      Model Context Protocol spec, architecture, and ecosystem tooling —
-      official reference servers, community registries, the agent-to-tool
-      surface area, and the emerging A2A agent-to-agent protocol.
-  - id: multi-agent-frameworks
-    order: 3
-    title: "Multi-agent orchestration frameworks"
-    description: |
-      Runtime libraries and graph-based orchestration frameworks for building
-      multi-agent systems in Python and TypeScript — LangGraph, OpenAI Agents
-      SDK, Microsoft Agent Framework, Google ADK, CrewAI, Pydantic AI, and the
-      lighter-weight TS options.
-  - id: durable-execution
-    order: 4
-    title: "Durable execution for agents"
-    description: |
-      Workflow engines and durable-execution runtimes that bring fault-tolerance,
-      retries, and human-in-the-loop checkpointing to long-running agent loops —
-      Temporal, Inngest, Restate, Hatchet, DBOS.
-  - id: memory-systems
-    order: 5
-    title: "Memory systems"
-    description: |
-      Approaches to giving agents persistent, tiered memory — from simple
-      file-backed tools to bi-temporal knowledge graphs and full
-      MemGPT-lineage runtimes (Letta, Mem0, Zep/Graphiti, LangMem).
-  - id: sandboxing
-    order: 6
-    title: "Sandboxing & code execution"
-    description: |
-      Secure execution environments for code-executing agents — Firecracker
-      microVMs, gVisor user-space kernels, Cloudflare Containers, native macOS
-      containers, sub-millisecond WASM micro-sandboxes, and the trade-offs
-      between them.
-  - id: inference-gateway
-    order: 7
-    title: "Inference & gateway infrastructure"
-    description: |
-      Self-hosted inference servers (vLLM, SGLang, TGI), multi-provider gateway
-      proxies (LiteLLM, Portkey, OpenRouter), and prompt-caching docs — the
-      infrastructure layer between your agent and the model.
-  - id: eval-philosophy
-    order: 8
-    title: "Evaluation — philosophy (read these first)"
-    description: |
-      Foundational thinking on how to build evaluation loops, why vibes-based
-      iteration fails, and the principles behind LLM-as-judge graders. The
-      "stop vibe-checking, start measuring" canon plus the academic backing.
-  - id: eval-frameworks
-    order: 9
-    title: "Evaluation — frameworks & benchmarks"
-    description: |
-      Frameworks and benchmarks for running agent evals — Inspect AI, OpenAI
-      Evals, Promptfoo, DeepEval, Ragas, the SaaS platforms (LangSmith,
-      Braintrust, Phoenix, Langfuse, Patronus), and the canonical agentic task
-      benchmarks (SWE-bench, GAIA, τ-bench, WebArena, OSWorld).
-  - id: observability
-    order: 10
-    title: "Observability & tracing"
-    description: |
-      OpenTelemetry GenAI semantic conventions and the tooling built on them —
-      OpenLLMetry, Langfuse, Phoenix, LangSmith, Helicone, Honeycomb, Datadog —
-      for tracing, logging, and monitoring LLM calls and agent spans.
-  - id: production-testing
-    order: 11
-    title: "Production testing patterns & cost/latency"
-    description: |
-      CI integration for eval gates, production trace sampling back into eval
-      datasets (the data flywheel), and per-trace/per-user/per-prompt cost and
-      latency attribution.
-  - id: security
-    order: 12
-    title: "Security for agents"
-    description: |
-      Threat models, vulnerability taxonomies (OWASP LLM Top 10, MITRE ATLAS),
-      published defense patterns (CaMeL, dual-LLM), and concrete prompt-injection
-      and RCE write-ups for agents.
-  - id: coding-agent-infra
-    order: 13
-    title: "Coding agent infrastructure (read for harness design even if not building one)"
-    description: |
-      Harness design, hook systems, tool allowlists, and operational patterns
-      for building and running coding agents — Claude Code best practices, the
-      Claude Agent SDK, Cognition's Devin learnings, Aider, Sourcegraph Amp,
-      and the Ralph Wiggum loop.
-  - id: backend-patterns
-    order: 14
-    title: "Backend-specific agent patterns (SRE, K8s, IaC)"
-    description: |
-      Agent applications targeting SRE, Kubernetes, IaC, and incident-response
-      workflows — k8sgpt, HolmesGPT, Datadog Bits AI SRE, Honeycomb's
-      observability agent, Terraform's MCP server, and the canonical
-      multi-agent research-system case study.
+- id: foundations
+  order: 1
+  title: 'Foundational design & "what is an agent"'
+  description: |
+    Mental models for what an agent is, when to build one vs. a workflow,
+    context engineering, and the canonical "agents are mostly software"
+    doctrine. Read this first.
+- id: tools-mcp
+  order: 2
+  title: "Tool integration & MCP"
+  description: |
+    Model Context Protocol spec, architecture, and ecosystem tooling —
+    official reference servers, community registries, the agent-to-tool
+    surface area, and the emerging A2A agent-to-agent protocol.
+- id: multi-agent-frameworks
+  order: 3
+  title: "Multi-agent orchestration frameworks"
+  description: |
+    Runtime libraries and graph-based orchestration frameworks for building
+    multi-agent systems in Python and TypeScript — LangGraph, OpenAI Agents
+    SDK, Microsoft Agent Framework, Google ADK, CrewAI, Pydantic AI, and the
+    lighter-weight TS options.
+- id: durable-execution
+  order: 4
+  title: "Durable execution for agents"
+  description: |
+    Workflow engines and durable-execution runtimes that bring fault-tolerance,
+    retries, and human-in-the-loop checkpointing to long-running agent loops —
+    Temporal, Inngest, Restate, Hatchet, DBOS.
+- id: memory-systems
+  order: 5
+  title: "Memory systems"
+  description: |
+    Approaches to giving agents persistent, tiered memory — from simple
+    file-backed tools to bi-temporal knowledge graphs and full
+    MemGPT-lineage runtimes (Letta, Mem0, Zep/Graphiti, LangMem).
+- id: sandboxing
+  order: 6
+  title: "Sandboxing & code execution"
+  description: |
+    Secure execution environments for code-executing agents — Firecracker
+    microVMs, gVisor user-space kernels, Cloudflare Containers, native macOS
+    containers, sub-millisecond WASM micro-sandboxes, and the trade-offs
+    between them.
+- id: inference-gateway
+  order: 7
+  title: "Inference & gateway infrastructure"
+  description: |
+    Self-hosted inference servers (vLLM, SGLang, TGI), multi-provider gateway
+    proxies (LiteLLM, Portkey, OpenRouter), and prompt-caching docs — the
+    infrastructure layer between your agent and the model.
+- id: eval-philosophy
+  order: 8
+  title: "Evaluation — philosophy (read these first)"
+  description: |
+    Foundational thinking on how to build evaluation loops, why vibes-based
+    iteration fails, and the principles behind LLM-as-judge graders. The
+    "stop vibe-checking, start measuring" canon plus the academic backing.
+- id: eval-frameworks
+  order: 9
+  title: "Evaluation — frameworks & benchmarks"
+  description: |
+    Frameworks and benchmarks for running agent evals — Inspect AI, OpenAI
+    Evals, Promptfoo, DeepEval, Ragas, the SaaS platforms (LangSmith,
+    Braintrust, Phoenix, Langfuse, Patronus), and the canonical agentic task
+    benchmarks (SWE-bench, GAIA, τ-bench, WebArena, OSWorld).
+- id: observability
+  order: 10
+  title: "Observability & tracing"
+  description: |
+    OpenTelemetry GenAI semantic conventions and the tooling built on them —
+    OpenLLMetry, Langfuse, Phoenix, LangSmith, Helicone, Honeycomb, Datadog —
+    for tracing, logging, and monitoring LLM calls and agent spans.
+- id: production-testing
+  order: 11
+  title: "Production testing patterns & cost/latency"
+  description: |
+    CI integration for eval gates, production trace sampling back into eval
+    datasets (the data flywheel), and per-trace/per-user/per-prompt cost and
+    latency attribution.
+- id: security
+  order: 12
+  title: "Security for agents"
+  description: |
+    Threat models, vulnerability taxonomies (OWASP LLM Top 10, MITRE ATLAS),
+    published defense patterns (CaMeL, dual-LLM), and concrete prompt-injection
+    and RCE write-ups for agents.
+- id: coding-agent-infra
+  order: 13
+  title: "Coding agent infrastructure (read for harness design even if not building
+    one)"
+  description: |
+    Harness design, hook systems, tool allowlists, and operational patterns
+    for building and running coding agents — Claude Code best practices, the
+    Claude Agent SDK, Cognition's Devin learnings, Aider, Sourcegraph Amp,
+    and the Ralph Wiggum loop.
+- id: backend-patterns
+  order: 14
+  title: "Backend-specific agent patterns (SRE, K8s, IaC)"
+  description: |
+    Agent applications targeting SRE, Kubernetes, IaC, and incident-response
+    workflows — k8sgpt, HolmesGPT, Datadog Bits AI SRE, Honeycomb's
+    observability agent, Terraform's MCP server, and the canonical
+    multi-agent research-system case study.
 
 top_7:
-  - building-effective-agents
-  - effective-context-engineering
-  - twelve-factor-agents
-  - multi-agent-research-system
-  - dont-build-multi-agents
-  - openai-practical-guide
-  - applied-llms-year
+- building-effective-agents
+- effective-context-engineering
+- twelve-factor-agents
+- multi-agent-research-system
+- dont-build-multi-agents
+- openai-practical-guide
+- applied-llms-year
 
 resources:
   # ----------------------------------------------------------------------
   # Section 1: foundations
   # ----------------------------------------------------------------------
-  - id: building-effective-agents
-    section: foundations
-    url: https://www.anthropic.com/research/building-effective-agents
-    title: "Building Effective Agents"
-    author: "Anthropic"
-    type: article
-    license: null
-    blurb: "Workflows (orchestrator/router/parallel/eval-optimizer) vs true agents."
-    cluster: null
-    tags: [canonical, mental-model]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
-    top_7_author: "Anthropic (Schluntz/Zhang)"
-    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds on.'
+- id: building-effective-agents
+  section: foundations
+  url: https://www.anthropic.com/research/building-effective-agents
+  title: "Building Effective Agents"
+  author: "Anthropic"
+  type: article
+  license:
+  blurb: "Workflows (orchestrator/router/parallel/eval-optimizer) vs true agents."
+  cluster:
+  tags: [canonical, mental-model]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
+  top_7_author: "Anthropic (Schluntz/Zhang)"
+  top_7_blurb: 'The "workflows vs agents" mental model that everything else builds
+    on.'
 
-  - id: effective-context-engineering
-    section: foundations
-    url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
-    title: "Effective context engineering for AI agents"
-    author: "Anthropic"
-    type: article
-    license: null
-    blurb: "Compaction, sub-agents, structured note-taking."
-    cluster: null
-    tags: [canonical, context-engineering]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
-    top_7_blurb: "The successor concept to prompt engineering; defines the actual job."
+- id: effective-context-engineering
+  section: foundations
+  url: 
+    https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+  title: "Effective context engineering for AI agents"
+  author: "Anthropic"
+  type: article
+  license:
+  blurb: "Compaction, sub-agents, structured note-taking."
+  cluster:
+  tags: [canonical, context-engineering]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
+  top_7_blurb: "The successor concept to prompt engineering; defines the actual job."
 
-  - id: writing-effective-tools
-    section: foundations
-    url: https://www.anthropic.com/engineering/writing-tools-for-agents
-    title: "Writing effective tools for AI agents"
-    author: "Anthropic"
-    type: article
-    license: null
-    blurb: "Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement."
-    cluster: null
-    tags: [tools]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: writing-effective-tools
+  section: foundations
+  url: https://www.anthropic.com/engineering/writing-tools-for-agents
+  title: "Writing effective tools for AI agents"
+  author: "Anthropic"
+  type: article
+  license:
+  blurb: "Tools as contracts between deterministic and non-deterministic systems;
+    eval-driven tool refinement."
+  cluster:
+  tags: [tools]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: effective-harnesses
-    section: foundations
-    url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
-    title: "Effective harnesses for long-running agents"
-    author: "Anthropic"
-    type: article
-    license: null
-    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt + git)."
-    cluster: null
-    tags: [harness, long-running]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: effective-harnesses
+  section: foundations
+  url: 
+    https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+  title: "Effective harnesses for long-running agents"
+  author: "Anthropic"
+  type: article
+  license:
+  blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt
+    + git)."
+  cluster:
+  tags: [harness, long-running]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: how-anthropic-uses-claude-code
-    section: foundations
-    url: https://www.anthropic.com/news/how-anthropic-teams-use-claude-code
-    title: "How Anthropic teams use Claude Code"
-    author: "Anthropic"
-    type: article
-    license: null
-    blurb: "Internal-team patterns across infra, security, data science."
-    cluster: null
-    tags: [claude-code, case-study]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: how-anthropic-uses-claude-code
+  section: foundations
+  url: https://www.anthropic.com/news/how-anthropic-teams-use-claude-code
+  title: "How Anthropic teams use Claude Code"
+  author: "Anthropic"
+  type: article
+  license:
+  blurb: "Internal-team patterns across infra, security, data science."
+  cluster:
+  tags: [claude-code, case-study]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: building-agents-claude-agent-sdk
-    section: foundations
-    url: https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk
-    title: "Building agents with the Claude Agent SDK"
-    author: "Anthropic"
-    type: article
-    license: null
-    blurb: ""
-    cluster: null
-    tags: [claude-agent-sdk]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: building-agents-claude-agent-sdk
+  section: foundations
+  url: 
+    https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk
+  title: "Building agents with the Claude Agent SDK"
+  author: "Anthropic"
+  type: article
+  license:
+  blurb: ""
+  cluster:
+  tags: [claude-agent-sdk]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openai-practical-guide
-    section: foundations
-    url: https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
-    title: "A practical guide to building agents (PDF)"
-    author: "OpenAI"
-    type: article
-    license: null
-    blurb: "Use cases, design foundations, multi-agent, guardrails."
-    cluster: null
-    tags: [canonical]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
-    top_7_blurb: "The complementary canonical from the other lab."
+- id: openai-practical-guide
+  section: foundations
+  url: 
+    https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+  title: "A practical guide to building agents (PDF)"
+  author: "OpenAI"
+  type: article
+  license:
+  blurb: "Use cases, design foundations, multi-agent, guardrails."
+  cluster:
+  tags: [canonical]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
+  top_7_blurb: "The complementary canonical from the other lab."
 
-  - id: twelve-factor-agents
-    section: foundations
-    url: https://github.com/humanlayer/12-factor-agents
-    title: "12-Factor Agents"
-    author: "Dex Horthy"
-    type: repo
-    license: null
-    blurb: 'Coined "context engineering" in April 2025.'
-    cluster: null
-    tags: [canonical, mental-model]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
-    top_7_author: "Dex Horthy / HumanLayer"
-    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.'
+- id: twelve-factor-agents
+  section: foundations
+  url: https://github.com/humanlayer/12-factor-agents
+  title: "12-Factor Agents"
+  author: "Dex Horthy"
+  type: repo
+  license:
+  blurb: 'Coined "context engineering" in April 2025.'
+  cluster:
+  tags: [canonical, mental-model]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
+  top_7_author: "Dex Horthy / HumanLayer"
+  top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents
+    are mostly software" doctrine.'
 
-  - id: twelve-factor-agents-talk
-    section: foundations
-    url: https://www.youtube.com/watch?v=8kMaTybvDUw
-    title: "12-Factor Agents talk (YouTube)"
-    author: "Dex Horthy"
-    type: video
-    license: null
-    blurb: "~30 min version of the README."
-    cluster: null
-    tags: [video]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: twelve-factor-agents-talk
+  section: foundations
+  url: https://www.youtube.com/watch?v=8kMaTybvDUw
+  title: "12-Factor Agents talk (YouTube)"
+  author: "Dex Horthy"
+  type: video
+  license:
+  blurb: "~30 min version of the README."
+  cluster:
+  tags: [video]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: dont-build-multi-agents
-    section: foundations
-    url: https://cognition.ai/blog/dont-build-multi-agents
-    title: "Don't Build Multi-Agents"
-    author: "Cognition"
-    type: article
-    license: null
-    blurb: "Context fragmentation as the core failure mode."
-    cluster: null
-    tags: [canonical, multi-agent]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
-    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26."
+- id: dont-build-multi-agents
+  section: foundations
+  url: https://cognition.ai/blog/dont-build-multi-agents
+  title: "Don't Build Multi-Agents"
+  author: "Cognition"
+  type: article
+  license:
+  blurb: "Context fragmentation as the core failure mode."
+  cluster:
+  tags: [canonical, multi-agent]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
+  top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of agent
+    architecture in 2025/26."
 
-  - id: agentic-engineering-patterns
-    section: foundations
-    url: https://simonw.substack.com/p/agentic-engineering-patterns
-    title: "Agentic Engineering Patterns"
-    author: "Simon Willison"
-    type: article
-    license: null
-    blurb: "Living catalog of patterns for code-generating-and-executing agents."
-    cluster: null
-    tags: [patterns]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: agentic-engineering-patterns
+  section: foundations
+  url: https://simonw.substack.com/p/agentic-engineering-patterns
+  title: "Agentic Engineering Patterns"
+  author: "Simon Willison"
+  type: article
+  license:
+  blurb: "Living catalog of patterns for code-generating-and-executing agents."
+  cluster:
+  tags: [patterns]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: lethal-trifecta
-    section: foundations
-    url: https://simonw.substack.com/p/the-lethal-trifecta-for-ai-agents
-    title: "The lethal trifecta for AI agents"
-    author: "Simon Willison"
-    type: article
-    license: null
-    blurb: "Private data + untrusted content + exfiltration channel = the agent threat model."
-    cluster: null
-    tags: [security, threat-model]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: lethal-trifecta
+  section: foundations
+  url: https://simonw.substack.com/p/the-lethal-trifecta-for-ai-agents
+  title: "The lethal trifecta for AI agents"
+  author: "Simon Willison"
+  type: article
+  license:
+  blurb: "Private data + untrusted content + exfiltration channel = the agent threat
+    model."
+  cluster:
+  tags: [security, threat-model]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: simon-willison-ai-agents
-    section: foundations
-    url: https://simonwillison.net/tags/ai-agents/
-    title: "Simon Willison's ai-agents tag"
-    author: null
-    type: article
-    license: null
-    blurb: "Best running curation in the field."
-    cluster: null
-    tags: [curation]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: simon-willison-ai-agents
+  section: foundations
+  url: https://simonwillison.net/tags/ai-agents/
+  title: "Simon Willison's ai-agents tag"
+  author:
+  type: article
+  license:
+  blurb: "Best running curation in the field."
+  cluster:
+  tags: [curation]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: llm-patterns
-    section: foundations
-    url: https://eugeneyan.com/writing/llm-patterns/
-    title: "Patterns for Building LLM-based Systems & Products"
-    author: "Eugene Yan"
-    type: article
-    license: null
-    blurb: "Evals/RAG/Cache/Guardrails/Defensive-UX."
-    cluster: null
-    tags: [patterns]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: llm-patterns
+  section: foundations
+  url: https://eugeneyan.com/writing/llm-patterns/
+  title: "Patterns for Building LLM-based Systems & Products"
+  author: "Eugene Yan"
+  type: article
+  license:
+  blurb: "Evals/RAG/Cache/Guardrails/Defensive-UX."
+  cluster:
+  tags: [patterns]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: genai-platform
-    section: foundations
-    url: https://huyenchip.com/2024/07/25/genai-platform.html
-    title: "Building A Generative AI Platform"
-    author: "Chip Huyen"
-    type: article
-    license: null
-    blurb: "Reference architecture: gateway → routing → cache → guardrails → telemetry."
-    cluster: null
-    tags: [architecture]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: genai-platform
+  section: foundations
+  url: https://huyenchip.com/2024/07/25/genai-platform.html
+  title: "Building A Generative AI Platform"
+  author: "Chip Huyen"
+  type: article
+  license:
+  blurb: "Reference architecture: gateway → routing → cache → guardrails → telemetry."
+  cluster:
+  tags: [architecture]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 2: tools-mcp
   # ----------------------------------------------------------------------
-  - id: mcp-spec
-    section: tools-mcp
-    url: https://modelcontextprotocol.io/specification/2025-11-25
-    title: "Model Context Protocol — Specification"
-    author: null
-    type: spec
-    license: null
-    blurb: "Latest spec; JSON-RPC 2.0; tools/resources/prompts primitives."
-    cluster: null
-    tags: [mcp, spec]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mcp-spec
+  section: tools-mcp
+  url: https://modelcontextprotocol.io/specification/2025-11-25
+  title: "Model Context Protocol — Specification"
+  author:
+  type: spec
+  license:
+  blurb: "Latest spec; JSON-RPC 2.0; tools/resources/prompts primitives."
+  cluster:
+  tags: [mcp, spec]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mcp-architecture
-    section: tools-mcp
-    url: https://modelcontextprotocol.io/docs/learn/architecture
-    title: "MCP — Architecture overview"
-    author: null
-    type: docs
-    license: null
-    blurb: "Mental model."
-    cluster: null
-    tags: [mcp]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mcp-architecture
+  section: tools-mcp
+  url: https://modelcontextprotocol.io/docs/learn/architecture
+  title: "MCP — Architecture overview"
+  author:
+  type: docs
+  license:
+  blurb: "Mental model."
+  cluster:
+  tags: [mcp]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mcp-authorization
-    section: tools-mcp
-    url: https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
-    title: "MCP — Authorization"
-    author: null
-    type: spec
-    license: null
-    blurb: "OAuth flow; required reading before exposing MCP servers."
-    cluster: null
-    tags: [mcp, security]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mcp-authorization
+  section: tools-mcp
+  url: 
+    https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
+  title: "MCP — Authorization"
+  author:
+  type: spec
+  license:
+  blurb: "OAuth flow; required reading before exposing MCP servers."
+  cluster:
+  tags: [mcp, security]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mcp-roadmap-2026
-    section: tools-mcp
-    url: https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
-    title: "The 2026 MCP Roadmap"
-    author: null
-    type: article
-    license: null
-    blurb: "Where the protocol is headed."
-    cluster: null
-    tags: [mcp]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mcp-roadmap-2026
+  section: tools-mcp
+  url: https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
+  title: "The 2026 MCP Roadmap"
+  author:
+  type: article
+  license:
+  blurb: "Where the protocol is headed."
+  cluster:
+  tags: [mcp]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mcp-servers-repo
-    section: tools-mcp
-    url: https://github.com/modelcontextprotocol/servers
-    title: "modelcontextprotocol/servers"
-    author: null
-    type: repo
-    license: null
-    blurb: "Official reference implementations."
-    cluster: null
-    tags: [mcp, reference]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mcp-servers-repo
+  section: tools-mcp
+  url: https://github.com/modelcontextprotocol/servers
+  title: "modelcontextprotocol/servers"
+  author:
+  type: repo
+  license:
+  blurb: "Official reference implementations."
+  cluster:
+  tags: [mcp, reference]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: awesome-mcp-servers-wong2
-    section: tools-mcp
-    url: https://github.com/wong2/awesome-mcp-servers
-    title: "wong2/awesome-mcp-servers"
-    author: null
-    type: repo
-    license: null
-    blurb: "Two best-maintained registries."
-    cluster: awesome-mcp-servers
-    tags: [mcp, registry]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: awesome-mcp-servers-wong2
+  section: tools-mcp
+  url: https://github.com/wong2/awesome-mcp-servers
+  title: "wong2/awesome-mcp-servers"
+  author:
+  type: repo
+  license:
+  blurb: "Two best-maintained registries."
+  cluster: awesome-mcp-servers
+  tags: [mcp, registry]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: awesome-mcp-servers-appcypher
-    section: tools-mcp
-    url: https://github.com/appcypher/awesome-mcp-servers
-    title: "appcypher/awesome-mcp-servers"
-    author: null
-    type: repo
-    license: null
-    blurb: ""
-    cluster: awesome-mcp-servers
-    tags: [mcp, registry]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: awesome-mcp-servers-appcypher
+  section: tools-mcp
+  url: https://github.com/appcypher/awesome-mcp-servers
+  title: "appcypher/awesome-mcp-servers"
+  author:
+  type: repo
+  license:
+  blurb: ""
+  cluster: awesome-mcp-servers
+  tags: [mcp, registry]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: anthropic-tool-use-docs
-    section: tools-mcp
-    url: https://platform.claude.com/docs/en/build-with-claude/tool-use
-    title: "Anthropic — Tool use docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Schema design, parallel calls, structured outputs."
-    cluster: null
-    tags: [tools]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: anthropic-tool-use-docs
+  section: tools-mcp
+  url: https://platform.claude.com/docs/en/build-with-claude/tool-use
+  title: "Anthropic — Tool use docs"
+  author:
+  type: docs
+  license:
+  blurb: "Schema design, parallel calls, structured outputs."
+  cluster:
+  tags: [tools]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: a2a-announcement
-    section: tools-mcp
-    url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
-    title: "Announcing the Agent2Agent Protocol (A2A)"
-    author: "Google"
-    type: article
-    license: null
-    blurb: "Agent-to-agent (vs agent-to-tool) protocol."
-    cluster: null
-    tags: [a2a]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: a2a-announcement
+  section: tools-mcp
+  url: 
+    https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+  title: "Announcing the Agent2Agent Protocol (A2A)"
+  author: "Google"
+  type: article
+  license:
+  blurb: "Agent-to-agent (vs agent-to-tool) protocol."
+  cluster:
+  tags: [a2a]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: a2a-spec
-    section: tools-mcp
-    url: https://a2a-protocol.org/latest/specification/
-    title: "A2A specification"
-    author: null
-    type: spec
-    license: null
-    blurb: "Now under Linux Foundation; gRPC support since v0.3."
-    cluster: null
-    tags: [a2a, spec]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: a2a-spec
+  section: tools-mcp
+  url: https://a2a-protocol.org/latest/specification/
+  title: "A2A specification"
+  author:
+  type: spec
+  license:
+  blurb: "Now under Linux Foundation; gRPC support since v0.3."
+  cluster:
+  tags: [a2a, spec]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # applied-llms-year: top-7 entry without a section listing in the original.
   # Permanent home is eval-philosophy; hidden: true so render round-trips cleanly.
-  - id: applied-llms-year
-    section: eval-philosophy
-    url: https://applied-llms.org/
-    title: "What We Learned From a Year of Building with LLMs"
-    author: "Yan/Bischof/Frye/Husain/Liu/Shankar"
-    type: article
-    license: null
-    blurb: "Tactical → operational → strategic; the field's distilled playbook."
-    cluster: null
-    tags: [canonical]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output round-trips cleanly against the original (original has no section listing for this entry)."
-    hidden: true
+- id: applied-llms-year
+  section: eval-philosophy
+  url: https://applied-llms.org/
+  title: "What We Learned From a Year of Building with LLMs"
+  author: "Yan/Bischof/Frye/Husain/Liu/Shankar"
+  type: article
+  license:
+  blurb: "Tactical → operational → strategic; the field's distilled playbook."
+  cluster:
+  tags: [canonical]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes: "Permanent home is eval-philosophy; kept hidden so the rendered output round-trips
+    cleanly against the original (original has no section listing for this entry)."
+  hidden: true
 
   # ----------------------------------------------------------------------
   # Section 3: multi-agent-frameworks
   # ----------------------------------------------------------------------
-  - id: langgraph-overview
-    section: multi-agent-frameworks
-    url: https://docs.langchain.com/oss/python/langgraph/overview
-    title: "LangGraph overview"
-    author: null
-    type: docs
-    license: null
-    blurb: "Stateful graph runtime; 1.0 shipped Oct 2025."
-    cluster: null
-    tags: [langgraph, orchestration]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langgraph-overview
+  section: multi-agent-frameworks
+  url: https://docs.langchain.com/oss/python/langgraph/overview
+  title: "LangGraph overview"
+  author:
+  type: docs
+  license:
+  blurb: "Stateful graph runtime; 1.0 shipped Oct 2025."
+  cluster:
+  tags: [langgraph, orchestration]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langgraph-persistence
-    section: multi-agent-frameworks
-    url: https://langchain-ai.github.io/langgraph/concepts/persistence/
-    title: "LangGraph — persistence & checkpointing"
-    author: null
-    type: docs
-    license: null
-    blurb: "Threads, checkpointers, cross-thread memory."
-    cluster: null
-    tags: [langgraph, persistence]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langgraph-persistence
+  section: multi-agent-frameworks
+  url: https://langchain-ai.github.io/langgraph/concepts/persistence/
+  title: "LangGraph — persistence & checkpointing"
+  author:
+  type: docs
+  license:
+  blurb: "Threads, checkpointers, cross-thread memory."
+  cluster:
+  tags: [langgraph, persistence]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langgraph-hitl
-    section: multi-agent-frameworks
-    url: https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/
-    title: "LangGraph — human-in-the-loop"
-    author: null
-    type: docs
-    license: null
-    blurb: "`interrupt()`, time-travel, approval gates."
-    cluster: null
-    tags: [langgraph, hitl]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langgraph-hitl
+  section: multi-agent-frameworks
+  url: https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/
+  title: "LangGraph — human-in-the-loop"
+  author:
+  type: docs
+  license:
+  blurb: "`interrupt()`, time-travel, approval gates."
+  cluster:
+  tags: [langgraph, hitl]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langgraph-multi-agent
-    section: multi-agent-frameworks
-    url: https://langchain-ai.github.io/langgraph/concepts/multi_agent/
-    title: "LangGraph — multi-agent systems"
-    author: null
-    type: docs
-    license: null
-    blurb: "Supervisor, swarm, hierarchical patterns."
-    cluster: null
-    tags: [langgraph, multi-agent]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langgraph-multi-agent
+  section: multi-agent-frameworks
+  url: https://langchain-ai.github.io/langgraph/concepts/multi_agent/
+  title: "LangGraph — multi-agent systems"
+  author:
+  type: docs
+  license:
+  blurb: "Supervisor, swarm, hierarchical patterns."
+  cluster:
+  tags: [langgraph, multi-agent]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openai-agents-sdk
-    section: multi-agent-frameworks
-    url: https://openai.github.io/openai-agents-python/
-    title: "OpenAI Agents SDK (Python)"
-    author: null
-    type: docs
-    license: null
-    blurb: "Successor to Swarm."
-    cluster: null
-    tags: [openai, orchestration]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openai-agents-sdk
+  section: multi-agent-frameworks
+  url: https://openai.github.io/openai-agents-python/
+  title: "OpenAI Agents SDK (Python)"
+  author:
+  type: docs
+  license:
+  blurb: "Successor to Swarm."
+  cluster:
+  tags: [openai, orchestration]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openai-agents-sdk-repo
-    section: multi-agent-frameworks
-    url: https://github.com/openai/openai-agents-python
-    title: "openai/openai-agents-python"
-    author: null
-    type: repo
-    license: null
-    blurb: "Source."
-    cluster: null
-    tags: [openai]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openai-agents-sdk-repo
+  section: multi-agent-frameworks
+  url: https://github.com/openai/openai-agents-python
+  title: "openai/openai-agents-python"
+  author:
+  type: repo
+  license:
+  blurb: "Source."
+  cluster:
+  tags: [openai]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: microsoft-agent-framework
-    section: multi-agent-frameworks
-    url: https://learn.microsoft.com/en-us/agent-framework/
-    title: "Microsoft Agent Framework"
-    author: null
-    type: docs
-    license: null
-    blurb: "Successor to AutoGen + Semantic Kernel; .NET/Python."
-    cluster: null
-    tags: [microsoft, orchestration]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: microsoft-agent-framework
+  section: multi-agent-frameworks
+  url: https://learn.microsoft.com/en-us/agent-framework/
+  title: "Microsoft Agent Framework"
+  author:
+  type: docs
+  license:
+  blurb: "Successor to AutoGen + Semantic Kernel; .NET/Python."
+  cluster:
+  tags: [microsoft, orchestration]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: autogen-v04
-    section: multi-agent-frameworks
-    url: https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
-    title: "AutoGen v0.4"
-    author: null
-    type: docs
-    license: null
-    blurb: "Asynchronous actor-model multi-agent runtime."
-    cluster: null
-    tags: [microsoft, orchestration]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: autogen-v04
+  section: multi-agent-frameworks
+  url: 
+    https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
+  title: "AutoGen v0.4"
+  author:
+  type: docs
+  license:
+  blurb: "Asynchronous actor-model multi-agent runtime."
+  cluster:
+  tags: [microsoft, orchestration]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: google-adk-docs
-    section: multi-agent-frameworks
-    url: https://google.github.io/adk-docs/
-    title: "Google ADK (Agent Development Kit) docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Open-source, multi-language (Python/TS/Go/Java)."
-    cluster: null
-    tags: [google, orchestration]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: google-adk-docs
+  section: multi-agent-frameworks
+  url: https://google.github.io/adk-docs/
+  title: "Google ADK (Agent Development Kit) docs"
+  author:
+  type: docs
+  license:
+  blurb: "Open-source, multi-language (Python/TS/Go/Java)."
+  cluster:
+  tags: [google, orchestration]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: google-adk-python
-    section: multi-agent-frameworks
-    url: https://github.com/google/adk-python
-    title: "google/adk-python"
-    author: null
-    type: repo
-    license: null
-    blurb: "Source."
-    cluster: null
-    tags: [google]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: google-adk-python
+  section: multi-agent-frameworks
+  url: https://github.com/google/adk-python
+  title: "google/adk-python"
+  author:
+  type: repo
+  license:
+  blurb: "Source."
+  cluster:
+  tags: [google]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: crewai-docs
-    section: multi-agent-frameworks
-    url: https://docs.crewai.com/
-    title: "CrewAI docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Role/task/crew abstraction; lighter than LangGraph."
-    cluster: null
-    tags: [orchestration]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: crewai-docs
+  section: multi-agent-frameworks
+  url: https://docs.crewai.com/
+  title: "CrewAI docs"
+  author:
+  type: docs
+  license:
+  blurb: "Role/task/crew abstraction; lighter than LangGraph."
+  cluster:
+  tags: [orchestration]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: pydantic-ai
-    section: multi-agent-frameworks
-    url: https://ai.pydantic.dev/
-    title: "Pydantic AI"
-    author: null
-    type: docs
-    license: null
-    blurb: "Type-safe agents with DI; the pleasant Python option."
-    cluster: null
-    tags: [orchestration, python]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: pydantic-ai
+  section: multi-agent-frameworks
+  url: https://ai.pydantic.dev/
+  title: "Pydantic AI"
+  author:
+  type: docs
+  license:
+  blurb: "Type-safe agents with DI; the pleasant Python option."
+  cluster:
+  tags: [orchestration, python]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: smolagents
-    section: multi-agent-frameworks
-    url: https://huggingface.co/docs/smolagents/index
-    title: "smolagents"
-    author: "Hugging Face"
-    type: docs
-    license: null
-    blurb: "Minimalist code-acting agent library."
-    cluster: null
-    tags: [orchestration]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: smolagents
+  section: multi-agent-frameworks
+  url: https://huggingface.co/docs/smolagents/index
+  title: "smolagents"
+  author: "Hugging Face"
+  type: docs
+  license:
+  blurb: "Minimalist code-acting agent library."
+  cluster:
+  tags: [orchestration]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mastra
-    section: multi-agent-frameworks
-    url: https://mastra.ai/docs
-    title: "Mastra"
-    author: null
-    type: docs
-    license: null
-    blurb: "TypeScript-first."
-    cluster: null
-    tags: [orchestration, typescript]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mastra
+  section: multi-agent-frameworks
+  url: https://mastra.ai/docs
+  title: "Mastra"
+  author:
+  type: docs
+  license:
+  blurb: "TypeScript-first."
+  cluster:
+  tags: [orchestration, typescript]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: inngest-agentkit
-    section: multi-agent-frameworks
-    url: https://agentkit.inngest.com/overview
-    title: "Inngest AgentKit"
-    author: null
-    type: docs
-    license: null
-    blurb: "TS framework on top of Inngest's durable runtime."
-    cluster: null
-    tags: [orchestration, typescript, durable-execution]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: inngest-agentkit
+  section: multi-agent-frameworks
+  url: https://agentkit.inngest.com/overview
+  title: "Inngest AgentKit"
+  author:
+  type: docs
+  license:
+  blurb: "TS framework on top of Inngest's durable runtime."
+  cluster:
+  tags: [orchestration, typescript, durable-execution]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 4: durable-execution
   # ----------------------------------------------------------------------
-  - id: temporal-resilient-ai
-    section: durable-execution
-    url: https://temporal.io/blog/build-resilient-agentic-ai-with-temporal
-    title: "Temporal — Build resilient Agentic AI with Temporal"
-    author: null
-    type: article
-    license: null
-    blurb: "Why agent loops belong in workflow engines."
-    cluster: null
-    tags: [temporal, durable-execution]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: temporal-resilient-ai
+  section: durable-execution
+  url: https://temporal.io/blog/build-resilient-agentic-ai-with-temporal
+  title: "Temporal — Build resilient Agentic AI with Temporal"
+  author:
+  type: article
+  license:
+  blurb: "Why agent loops belong in workflow engines."
+  cluster:
+  tags: [temporal, durable-execution]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: temporal-durable-execution-ai
-    section: durable-execution
-    url: https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
-    title: "Temporal — Durable Execution meets AI"
-    author: null
-    type: article
-    license: null
-    blurb: "Tools as activities, signals for HITL, child workflows for sub-agents."
-    cluster: null
-    tags: [temporal, durable-execution]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: temporal-durable-execution-ai
+  section: durable-execution
+  url: 
+    https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
+  title: "Temporal — Durable Execution meets AI"
+  author:
+  type: article
+  license:
+  blurb: "Tools as activities, signals for HITL, child workflows for sub-agents."
+  cluster:
+  tags: [temporal, durable-execution]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: temporal-ai-agent-repo
-    section: durable-execution
-    url: https://github.com/temporal-community/temporal-ai-agent
-    title: "temporal-community/temporal-ai-agent"
-    author: null
-    type: repo
-    license: null
-    blurb: "Reference implementation."
-    cluster: null
-    tags: [temporal]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: temporal-ai-agent-repo
+  section: durable-execution
+  url: https://github.com/temporal-community/temporal-ai-agent
+  title: "temporal-community/temporal-ai-agent"
+  author:
+  type: repo
+  license:
+  blurb: "Reference implementation."
+  cluster:
+  tags: [temporal]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: inngest-durable-execution
-    section: durable-execution
-    url: https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
-    title: "Inngest — Durable Execution: The Key to Harnessing AI Agents in Production"
-    author: null
-    type: article
-    license: null
-    blurb: "Step functions wrapping LLM calls."
-    cluster: null
-    tags: [inngest, durable-execution]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: inngest-durable-execution
+  section: durable-execution
+  url: 
+    https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
+  title: "Inngest — Durable Execution: The Key to Harnessing AI Agents in Production"
+  author:
+  type: article
+  license:
+  blurb: "Step functions wrapping LLM calls."
+  cluster:
+  tags: [inngest, durable-execution]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: restate-ai-agents
-    section: durable-execution
-    url: https://docs.restate.dev/use-cases/ai-agents
-    title: "Restate — AI agents"
-    author: null
-    type: docs
-    license: null
-    blurb: "Lightweight durable execution; agents as virtual objects."
-    cluster: null
-    tags: [restate, durable-execution]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: restate-ai-agents
+  section: durable-execution
+  url: https://docs.restate.dev/use-cases/ai-agents
+  title: "Restate — AI agents"
+  author:
+  type: docs
+  license:
+  blurb: "Lightweight durable execution; agents as virtual objects."
+  cluster:
+  tags: [restate, durable-execution]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: hatchet-durable-tasks
-    section: durable-execution
-    url: https://docs.hatchet.run/v1/durable-tasks
-    title: "Hatchet — Durable Tasks"
-    author: null
-    type: docs
-    license: null
-    blurb: "Postgres-backed task queue with agent-aware patterns (agentic loops, HITL)."
-    cluster: null
-    tags: [hatchet, durable-execution]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: hatchet-durable-tasks
+  section: durable-execution
+  url: https://docs.hatchet.run/v1/durable-tasks
+  title: "Hatchet — Durable Tasks"
+  author:
+  type: docs
+  license:
+  blurb: "Postgres-backed task queue with agent-aware patterns (agentic loops, HITL)."
+  cluster:
+  tags: [hatchet, durable-execution]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: dbos-durable-execution
-    section: durable-execution
-    url: https://www.dbos.dev/blog/durable-execution-crashproof-ai-agents
-    title: "DBOS — Durable Execution for Building Crashproof AI Agents"
-    author: null
-    type: article
-    license: null
-    blurb: "Postgres-as-runtime; smaller-team alternative to Temporal."
-    cluster: null
-    tags: [dbos, durable-execution]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: dbos-durable-execution
+  section: durable-execution
+  url: https://www.dbos.dev/blog/durable-execution-crashproof-ai-agents
+  title: "DBOS — Durable Execution for Building Crashproof AI Agents"
+  author:
+  type: article
+  license:
+  blurb: "Postgres-as-runtime; smaller-team alternative to Temporal."
+  cluster:
+  tags: [dbos, durable-execution]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 5: memory-systems
   # ----------------------------------------------------------------------
-  - id: anthropic-memory-tool
-    section: memory-systems
-    url: https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
-    title: "Anthropic — Memory tool"
-    author: null
-    type: docs
-    license: null
-    blurb: "First-party file-backed memory."
-    cluster: null
-    tags: [anthropic, memory]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: anthropic-memory-tool
+  section: memory-systems
+  url: 
+    https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
+  title: "Anthropic — Memory tool"
+  author:
+  type: docs
+  license:
+  blurb: "First-party file-backed memory."
+  cluster:
+  tags: [anthropic, memory]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: letta-docs
-    section: memory-systems
-    url: https://docs.letta.com/
-    title: "Letta docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Production fork of MemGPT; tiered memory (core/archival/recall)."
-    cluster: null
-    tags: [letta, memory]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: letta-docs
+  section: memory-systems
+  url: https://docs.letta.com/
+  title: "Letta docs"
+  author:
+  type: docs
+  license:
+  blurb: "Production fork of MemGPT; tiered memory (core/archival/recall)."
+  cluster:
+  tags: [letta, memory]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: memgpt-paper
-    section: memory-systems
-    url: https://arxiv.org/abs/2310.08560
-    title: "MemGPT paper — LLMs as Operating Systems"
-    author: null
-    type: paper
-    license: null
-    blurb: "The paged-memory paper that started the wave."
-    cluster: null
-    tags: [memory, paper]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: memgpt-paper
+  section: memory-systems
+  url: https://arxiv.org/abs/2310.08560
+  title: "MemGPT paper — LLMs as Operating Systems"
+  author:
+  type: paper
+  license:
+  blurb: "The paged-memory paper that started the wave."
+  cluster:
+  tags: [memory, paper]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mem0-docs
-    section: memory-systems
-    url: https://docs.mem0.ai/
-    title: "Mem0 docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Drop-in memory layer with extraction/consolidation."
-    cluster: null
-    tags: [memory]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mem0-docs
+  section: memory-systems
+  url: https://docs.mem0.ai/
+  title: "Mem0 docs"
+  author:
+  type: docs
+  license:
+  blurb: "Drop-in memory layer with extraction/consolidation."
+  cluster:
+  tags: [memory]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: zep-graphiti
-    section: memory-systems
-    url: https://help.getzep.com/
-    title: "Zep / Graphiti"
-    author: null
-    type: docs
-    license: null
-    blurb: "Bi-temporal knowledge graph for memory with fact validity windows."
-    cluster: null
-    tags: [memory, knowledge-graph]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: zep-graphiti
+  section: memory-systems
+  url: https://help.getzep.com/
+  title: "Zep / Graphiti"
+  author:
+  type: docs
+  license:
+  blurb: "Bi-temporal knowledge graph for memory with fact validity windows."
+  cluster:
+  tags: [memory, knowledge-graph]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: graphiti-repo
-    section: memory-systems
-    url: https://github.com/getzep/graphiti
-    title: "getzep/graphiti"
-    author: null
-    type: repo
-    license: null
-    blurb: "The temporal-graph engine standalone."
-    cluster: null
-    tags: [memory, knowledge-graph]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: graphiti-repo
+  section: memory-systems
+  url: https://github.com/getzep/graphiti
+  title: "getzep/graphiti"
+  author:
+  type: repo
+  license:
+  blurb: "The temporal-graph engine standalone."
+  cluster:
+  tags: [memory, knowledge-graph]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langmem
-    section: memory-systems
-    url: https://langchain-ai.github.io/langmem/
-    title: "LangMem"
-    author: null
-    type: docs
-    license: null
-    blurb: "Semantic / episodic / procedural primitives over LangGraph stores."
-    cluster: null
-    tags: [memory, langgraph]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langmem
+  section: memory-systems
+  url: https://langchain-ai.github.io/langmem/
+  title: "LangMem"
+  author:
+  type: docs
+  license:
+  blurb: "Semantic / episodic / procedural primitives over LangGraph stores."
+  cluster:
+  tags: [memory, langgraph]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: generative-agents-paper
-    section: memory-systems
-    url: https://arxiv.org/abs/2304.03442
-    title: "Generative Agents (Park et al.)"
-    author: null
-    type: paper
-    license: null
-    blurb: "Reflection + episodic memory; still the best single read."
-    cluster: null
-    tags: [memory, paper]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: generative-agents-paper
+  section: memory-systems
+  url: https://arxiv.org/abs/2304.03442
+  title: "Generative Agents (Park et al.)"
+  author:
+  type: paper
+  license:
+  blurb: "Reflection + episodic memory; still the best single read."
+  cluster:
+  tags: [memory, paper]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 6: sandboxing
   # ----------------------------------------------------------------------
-  - id: e2b-docs
-    section: sandboxing
-    url: https://e2b.dev/docs
-    title: "E2B docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Firecracker microVM sandboxes; the de-facto hosted choice."
-    cluster: null
-    tags: [sandboxing, firecracker]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: e2b-docs
+  section: sandboxing
+  url: https://e2b.dev/docs
+  title: "E2B docs"
+  author:
+  type: docs
+  license:
+  blurb: "Firecracker microVM sandboxes; the de-facto hosted choice."
+  cluster:
+  tags: [sandboxing, firecracker]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: modal-sandboxes
-    section: sandboxing
-    url: https://modal.com/docs/guide/sandbox
-    title: "Modal Sandboxes"
-    author: null
-    type: docs
-    license: null
-    blurb: "gVisor + filesystem snapshots; good for batch fleets."
-    cluster: null
-    tags: [sandboxing, gvisor]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: modal-sandboxes
+  section: sandboxing
+  url: https://modal.com/docs/guide/sandbox
+  title: "Modal Sandboxes"
+  author:
+  type: docs
+  license:
+  blurb: "gVisor + filesystem snapshots; good for batch fleets."
+  cluster:
+  tags: [sandboxing, gvisor]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: daytona-docs
-    section: sandboxing
-    url: https://www.daytona.io/docs
-    title: "Daytona docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "OSS sandbox repurposed for agents; sub-200ms cold start claims."
-    cluster: null
-    tags: [sandboxing]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: daytona-docs
+  section: sandboxing
+  url: https://www.daytona.io/docs
+  title: "Daytona docs"
+  author:
+  type: docs
+  license:
+  blurb: "OSS sandbox repurposed for agents; sub-200ms cold start claims."
+  cluster:
+  tags: [sandboxing]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: cloudflare-containers-agents
-    section: sandboxing
-    url: https://developers.cloudflare.com/containers/
-    title: "Cloudflare — Containers for Agents"
-    author: null
-    type: docs
-    license: null
-    blurb: "Per-agent containers tied to Durable Objects."
-    cluster: null
-    tags: [sandboxing, cloudflare]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: cloudflare-containers-agents
+  section: sandboxing
+  url: https://developers.cloudflare.com/containers/
+  title: "Cloudflare — Containers for Agents"
+  author:
+  type: docs
+  license:
+  blurb: "Per-agent containers tied to Durable Objects."
+  cluster:
+  tags: [sandboxing, cloudflare]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: cloudflare-sandbox-sdk
-    section: sandboxing
-    url: https://github.com/cloudflare/sandbox-sdk
-    title: "cloudflare/sandbox-sdk"
-    author: null
-    type: repo
-    license: null
-    blurb: "Reference SDK for spawning sandboxes from Workers."
-    cluster: null
-    tags: [sandboxing, cloudflare]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: cloudflare-sandbox-sdk
+  section: sandboxing
+  url: https://github.com/cloudflare/sandbox-sdk
+  title: "cloudflare/sandbox-sdk"
+  author:
+  type: repo
+  license:
+  blurb: "Reference SDK for spawning sandboxes from Workers."
+  cluster:
+  tags: [sandboxing, cloudflare]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: apple-container
-    section: sandboxing
-    url: https://github.com/apple/container
-    title: "apple/container"
-    author: null
-    type: repo
-    license: null
-    blurb: "Native macOS container runtime; useful for local agent dev."
-    cluster: null
-    tags: [sandboxing, macos]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: apple-container
+  section: sandboxing
+  url: https://github.com/apple/container
+  title: "apple/container"
+  author:
+  type: repo
+  license:
+  blurb: "Native macOS container runtime; useful for local agent dev."
+  cluster:
+  tags: [sandboxing, macos]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: hyperlight
-    section: sandboxing
-    url: https://github.com/hyperlight-dev/hyperlight
-    title: "hyperlight-dev/hyperlight"
-    author: null
-    type: repo
-    license: null
-    blurb: "Microsoft's sub-millisecond WASM/VM micro-sandbox."
-    cluster: null
-    tags: [sandboxing, wasm]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: hyperlight
+  section: sandboxing
+  url: https://github.com/hyperlight-dev/hyperlight
+  title: "hyperlight-dev/hyperlight"
+  author:
+  type: repo
+  license:
+  blurb: "Microsoft's sub-millisecond WASM/VM micro-sandbox."
+  cluster:
+  tags: [sandboxing, wasm]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: gvisor-docs
-    section: sandboxing
-    url: https://gvisor.dev/docs/
-    title: "gVisor docs"
-    author: null
-    type: docs
-    license: null
-    blurb: 'User-space kernel; understand it before trusting "sandboxed" claims.'
-    cluster: null
-    tags: [sandboxing, gvisor]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: gvisor-docs
+  section: sandboxing
+  url: https://gvisor.dev/docs/
+  title: "gVisor docs"
+  author:
+  type: docs
+  license:
+  blurb: 'User-space kernel; understand it before trusting "sandboxed" claims.'
+  cluster:
+  tags: [sandboxing, gvisor]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 7: inference-gateway
   # ----------------------------------------------------------------------
-  - id: vllm-docs
-    section: inference-gateway
-    url: https://docs.vllm.ai/
-    title: "vLLM docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Highest-throughput OSS inference; PagedAttention + prefix caching."
-    cluster: null
-    tags: [inference, vllm]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: vllm-docs
+  section: inference-gateway
+  url: https://docs.vllm.ai/
+  title: "vLLM docs"
+  author:
+  type: docs
+  license:
+  blurb: "Highest-throughput OSS inference; PagedAttention + prefix caching."
+  cluster:
+  tags: [inference, vllm]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: sglang
-    section: inference-gateway
-    url: https://docs.sglang.ai/
-    title: "SGLang"
-    author: null
-    type: docs
-    license: null
-    blurb: "RadixAttention; great for tool-using agents that share prefixes."
-    cluster: null
-    tags: [inference]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: sglang
+  section: inference-gateway
+  url: https://docs.sglang.ai/
+  title: "SGLang"
+  author:
+  type: docs
+  license:
+  blurb: "RadixAttention; great for tool-using agents that share prefixes."
+  cluster:
+  tags: [inference]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: huggingface-tgi
-    section: inference-gateway
-    url: https://huggingface.co/docs/text-generation-inference
-    title: "Hugging Face TGI"
-    author: null
-    type: docs
-    license: null
-    blurb: "Mature self-hosted with constrained decoding."
-    cluster: null
-    tags: [inference]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: huggingface-tgi
+  section: inference-gateway
+  url: https://huggingface.co/docs/text-generation-inference
+  title: "Hugging Face TGI"
+  author:
+  type: docs
+  license:
+  blurb: "Mature self-hosted with constrained decoding."
+  cluster:
+  tags: [inference]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: litellm
-    section: inference-gateway
-    url: https://docs.litellm.ai/
-    title: "LiteLLM"
-    author: null
-    type: docs
-    license: null
-    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing layer."
-    cluster: null
-    tags: [gateway, routing]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: litellm
+  section: inference-gateway
+  url: https://docs.litellm.ai/
+  title: "LiteLLM"
+  author:
+  type: docs
+  license:
+  blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing
+    layer."
+  cluster:
+  tags: [gateway, routing]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: portkey-gateway
-    section: inference-gateway
-    url: https://portkey.ai/docs
-    title: "Portkey AI Gateway"
-    author: null
-    type: docs
-    license: null
-    blurb: "OSS gateway with guardrails, caching, conditional routing."
-    cluster: null
-    tags: [gateway, routing]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: portkey-gateway
+  section: inference-gateway
+  url: https://portkey.ai/docs
+  title: "Portkey AI Gateway"
+  author:
+  type: docs
+  license:
+  blurb: "OSS gateway with guardrails, caching, conditional routing."
+  cluster:
+  tags: [gateway, routing]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openrouter
-    section: inference-gateway
-    url: https://openrouter.ai/docs
-    title: "OpenRouter docs"
-    author: null
-    type: docs
-    license: null
-    blurb: "Hosted multi-provider routing."
-    cluster: null
-    tags: [gateway, routing]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openrouter
+  section: inference-gateway
+  url: https://openrouter.ai/docs
+  title: "OpenRouter docs"
+  author:
+  type: docs
+  license:
+  blurb: "Hosted multi-provider routing."
+  cluster:
+  tags: [gateway, routing]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: anthropic-prompt-caching
-    section: inference-gateway
-    url: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
-    title: "Anthropic — Prompt caching"
-    author: null
-    type: docs
-    license: null
-    blurb: "Cache-key design, 5-min TTL, 85% latency reduction reference."
-    cluster: null
-    tags: [anthropic, caching]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: anthropic-prompt-caching
+  section: inference-gateway
+  url: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
+  title: "Anthropic — Prompt caching"
+  author:
+  type: docs
+  license:
+  blurb: "Cache-key design, 5-min TTL, 85% latency reduction reference."
+  cluster:
+  tags: [anthropic, caching]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openai-latency-optimization
-    section: inference-gateway
-    url: https://platform.openai.com/docs/guides/latency-optimization
-    title: "OpenAI — Latency optimization"
-    author: null
-    type: docs
-    license: null
-    blurb: "TTFT vs total time; streaming patterns."
-    cluster: null
-    tags: [openai, latency]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openai-latency-optimization
+  section: inference-gateway
+  url: https://platform.openai.com/docs/guides/latency-optimization
+  title: "OpenAI — Latency optimization"
+  author:
+  type: docs
+  license:
+  blurb: "TTFT vs total time; streaming patterns."
+  cluster:
+  tags: [openai, latency]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 8: eval-philosophy
   # ----------------------------------------------------------------------
-  - id: evals-hamel
-    section: eval-philosophy
-    url: https://hamel.dev/blog/posts/evals/
-    title: "Your AI Product Needs Evals"
-    author: "Hamel Husain"
-    type: article
-    license: null
-    blurb: 'The canonical "stop vibe-checking, start measuring."'
-    cluster: null
-    tags: [evals, canonical]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: evals-hamel
+  section: eval-philosophy
+  url: https://hamel.dev/blog/posts/evals/
+  title: "Your AI Product Needs Evals"
+  author: "Hamel Husain"
+  type: article
+  license:
+  blurb: 'The canonical "stop vibe-checking, start measuring."'
+  cluster:
+  tags: [evals, canonical]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: field-guide-hamel
-    section: eval-philosophy
-    url: https://hamel.dev/blog/posts/field-guide/
-    title: "A Field Guide to Rapidly Improving AI Products"
-    author: "Hamel Husain"
-    type: article
-    license: null
-    blurb: "Error-analysis loops, eval-driven iteration."
-    cluster: null
-    tags: [evals]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: field-guide-hamel
+  section: eval-philosophy
+  url: https://hamel.dev/blog/posts/field-guide/
+  title: "A Field Guide to Rapidly Improving AI Products"
+  author: "Hamel Husain"
+  type: article
+  license:
+  blurb: "Error-analysis loops, eval-driven iteration."
+  cluster:
+  tags: [evals]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: evals-faq-hamel
-    section: eval-philosophy
-    url: https://hamel.dev/blog/posts/evals-faq/
-    title: "LLM Evals: Everything You Need to Know"
-    author: "Hamel Husain"
-    type: article
-    license: null
-    blurb: "FAQ from the Hamel/Shreya course."
-    cluster: null
-    tags: [evals]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: evals-faq-hamel
+  section: eval-philosophy
+  url: https://hamel.dev/blog/posts/evals-faq/
+  title: "LLM Evals: Everything You Need to Know"
+  author: "Hamel Husain"
+  type: article
+  license:
+  blurb: "FAQ from the Hamel/Shreya course."
+  cluster:
+  tags: [evals]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: task-specific-evals-eugeneyan
-    section: eval-philosophy
-    url: https://eugeneyan.com/writing/evals/
-    title: "Task-Specific LLM Evals That Do & Don't Work"
-    author: "Eugene Yan"
-    type: article
-    license: null
-    blurb: "Why ROUGE/BLEU/BERTScore mislead."
-    cluster: null
-    tags: [evals]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: task-specific-evals-eugeneyan
+  section: eval-philosophy
+  url: https://eugeneyan.com/writing/evals/
+  title: "Task-Specific LLM Evals That Do & Don't Work"
+  author: "Eugene Yan"
+  type: article
+  license:
+  blurb: "Why ROUGE/BLEU/BERTScore mislead."
+  cluster:
+  tags: [evals]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: llm-evaluators-eugeneyan
-    section: eval-philosophy
-    url: https://eugeneyan.com/writing/llm-evaluators/
-    title: "LLM-Evaluators a.k.a. LLM-as-Judge"
-    author: "Eugene Yan"
-    type: article
-    license: null
-    blurb: "Pairwise vs pointwise, position bias, calibration."
-    cluster: null
-    tags: [evals, llm-as-judge]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: llm-evaluators-eugeneyan
+  section: eval-philosophy
+  url: https://eugeneyan.com/writing/llm-evaluators/
+  title: "LLM-Evaluators a.k.a. LLM-as-Judge"
+  author: "Eugene Yan"
+  type: article
+  license:
+  blurb: "Pairwise vs pointwise, position bias, calibration."
+  cluster:
+  tags: [evals, llm-as-judge]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: spade-paper
-    section: eval-philosophy
-    url: https://arxiv.org/abs/2401.03038
-    title: "SPADE (Shankar et al.)"
-    author: null
-    type: paper
-    license: null
-    blurb: "Auto-synthesized assertions from prompt deltas."
-    cluster: null
-    tags: [evals, paper]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: spade-paper
+  section: eval-philosophy
+  url: https://arxiv.org/abs/2401.03038
+  title: "SPADE (Shankar et al.)"
+  author:
+  type: paper
+  license:
+  blurb: "Auto-synthesized assertions from prompt deltas."
+  cluster:
+  tags: [evals, paper]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: evalgen-paper
-    section: eval-philosophy
-    url: https://arxiv.org/abs/2404.12272
-    title: "Who Validates the Validators? (EvalGen)"
-    author: "Shankar et al"
-    type: paper
-    license: null
-    blurb: "Critical paper on grader drift."
-    cluster: null
-    tags: [evals, paper, llm-as-judge]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: evalgen-paper
+  section: eval-philosophy
+  url: https://arxiv.org/abs/2404.12272
+  title: "Who Validates the Validators? (EvalGen)"
+  author: "Shankar et al"
+  type: paper
+  license:
+  blurb: "Critical paper on grader drift."
+  cluster:
+  tags: [evals, paper, llm-as-judge]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mt-bench-paper
-    section: eval-philosophy
-    url: https://arxiv.org/abs/2306.05685
-    title: "Judging LLM-as-a-Judge (MT-Bench)"
-    author: null
-    type: paper
-    license: null
-    blurb: "The original position/verbosity/self-preference bias paper."
-    cluster: null
-    tags: [evals, paper, llm-as-judge]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mt-bench-paper
+  section: eval-philosophy
+  url: https://arxiv.org/abs/2306.05685
+  title: "Judging LLM-as-a-Judge (MT-Bench)"
+  author:
+  type: paper
+  license:
+  blurb: "The original position/verbosity/self-preference bias paper."
+  cluster:
+  tags: [evals, paper, llm-as-judge]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: rag-search-jason-liu
-    section: eval-philosophy
-    url: https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/
-    title: "Low-Hanging Fruit for RAG Search"
-    author: "Jason Liu"
-    type: article
-    license: null
-    blurb: "Retrieval-side instrumentation."
-    cluster: null
-    tags: [evals, rag]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: rag-search-jason-liu
+  section: eval-philosophy
+  url: https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/
+  title: "Low-Hanging Fruit for RAG Search"
+  author: "Jason Liu"
+  type: article
+  license:
+  blurb: "Retrieval-side instrumentation."
+  cluster:
+  tags: [evals, rag]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 9: eval-frameworks
   # ----------------------------------------------------------------------
-  - id: inspect-ai
-    section: eval-frameworks
-    url: https://inspect.aisi.org.uk/
-    title: "Inspect AI"
-    author: "UK AISI"
-    type: docs
-    license: "OS"
-    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support, used by Anthropic/DeepMind."
-    cluster: null
-    tags: [evals, inspect-ai]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: inspect-ai
+  section: eval-frameworks
+  url: https://inspect.aisi.org.uk/
+  title: "Inspect AI"
+  author: "UK AISI"
+  type: docs
+  license: "OS"
+  blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support,
+    used by Anthropic/DeepMind."
+  cluster:
+  tags: [evals, inspect-ai]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: inspect-ai-repo
-    section: eval-frameworks
-    url: https://github.com/UKGovernmentBEIS/inspect_ai
-    title: "UKGovernmentBEIS/inspect_ai"
-    author: null
-    type: repo
-    license: "OS"
-    blurb: "Source."
-    cluster: null
-    tags: [evals, inspect-ai]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: inspect-ai-repo
+  section: eval-frameworks
+  url: https://github.com/UKGovernmentBEIS/inspect_ai
+  title: "UKGovernmentBEIS/inspect_ai"
+  author:
+  type: repo
+  license: "OS"
+  blurb: "Source."
+  cluster:
+  tags: [evals, inspect-ai]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openai-evals
-    section: eval-frameworks
-    url: https://github.com/openai/evals
-    title: "OpenAI Evals"
-    author: null
-    type: repo
-    license: "OS"
-    blurb: "**OS.** Original registry-of-evals framework."
-    cluster: null
-    tags: [evals, openai]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openai-evals
+  section: eval-frameworks
+  url: https://github.com/openai/evals
+  title: "OpenAI Evals"
+  author:
+  type: repo
+  license: "OS"
+  blurb: "**OS.** Original registry-of-evals framework."
+  cluster:
+  tags: [evals, openai]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: promptfoo
-    section: eval-frameworks
-    url: https://www.promptfoo.dev/docs/intro/
-    title: "Promptfoo"
-    author: null
-    type: docs
-    license: "OS+SaaS"
-    blurb: "**OS + SaaS.** YAML matrix testing + red-team module; CI-friendly."
-    cluster: null
-    tags: [evals, ci]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: promptfoo
+  section: eval-frameworks
+  url: https://www.promptfoo.dev/docs/intro/
+  title: "Promptfoo"
+  author:
+  type: docs
+  license: "OS+SaaS"
+  blurb: "**OS + SaaS.** YAML matrix testing + red-team module; CI-friendly."
+  cluster:
+  tags: [evals, ci]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: deepeval
-    section: eval-frameworks
-    url: https://github.com/confident-ai/deepeval
-    title: "DeepEval"
-    author: null
-    type: repo
-    license: "OS"
-    blurb: "**OS.** Pytest-style assertions + 14 default metrics."
-    cluster: null
-    tags: [evals]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: deepeval
+  section: eval-frameworks
+  url: https://github.com/confident-ai/deepeval
+  title: "DeepEval"
+  author:
+  type: repo
+  license: "OS"
+  blurb: "**OS.** Pytest-style assertions + 14 default metrics."
+  cluster:
+  tags: [evals]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: ragas
-    section: eval-frameworks
-    url: https://docs.ragas.io/
-    title: "Ragas"
-    author: null
-    type: docs
-    license: "OS"
-    blurb: "**OS.** RAG-specific metrics standard."
-    cluster: null
-    tags: [evals, rag]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: ragas
+  section: eval-frameworks
+  url: https://docs.ragas.io/
+  title: "Ragas"
+  author:
+  type: docs
+  license: "OS"
+  blurb: "**OS.** RAG-specific metrics standard."
+  cluster:
+  tags: [evals, rag]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langsmith-evaluations
-    section: eval-frameworks
-    url: https://docs.smith.langchain.com/evaluation
-    title: "LangSmith Evaluations"
-    author: null
-    type: docs
-    license: "SaaS"
-    blurb: "**SaaS.**"
-    cluster: null
-    tags: [evals, langsmith]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langsmith-evaluations
+  section: eval-frameworks
+  url: https://docs.smith.langchain.com/evaluation
+  title: "LangSmith Evaluations"
+  author:
+  type: docs
+  license: "SaaS"
+  blurb: "**SaaS.**"
+  cluster:
+  tags: [evals, langsmith]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: braintrust
-    section: eval-frameworks
-    url: https://www.braintrust.dev/docs
-    title: "Braintrust"
-    author: null
-    type: docs
-    license: "SaaS"
-    blurb: "**SaaS.** Hill-climbing dev loop with strong DX."
-    cluster: null
-    tags: [evals]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: braintrust
+  section: eval-frameworks
+  url: https://www.braintrust.dev/docs
+  title: "Braintrust"
+  author:
+  type: docs
+  license: "SaaS"
+  blurb: "**SaaS.** Hill-climbing dev loop with strong DX."
+  cluster:
+  tags: [evals]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: arize-phoenix
-    section: eval-frameworks
-    url: https://docs.arize.com/phoenix
-    title: "Arize Phoenix"
-    author: null
-    type: docs
-    license: "OS"
-    blurb: "**OS.** OTel-native traces + evals."
-    cluster: null
-    tags: [evals, observability]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: arize-phoenix
+  section: eval-frameworks
+  url: https://docs.arize.com/phoenix
+  title: "Arize Phoenix"
+  author:
+  type: docs
+  license: "OS"
+  blurb: "**OS.** OTel-native traces + evals."
+  cluster:
+  tags: [evals, observability]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langfuse-evaluations
-    section: eval-frameworks
-    url: https://langfuse.com/docs/scores/overview
-    title: "Langfuse Evaluations"
-    author: null
-    type: docs
-    license: "OS+SaaS"
-    blurb: "**OS + SaaS.**"
-    cluster: null
-    tags: [evals, langfuse]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langfuse-evaluations
+  section: eval-frameworks
+  url: https://langfuse.com/docs/scores/overview
+  title: "Langfuse Evaluations"
+  author:
+  type: docs
+  license: "OS+SaaS"
+  blurb: "**OS + SaaS.**"
+  cluster:
+  tags: [evals, langfuse]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: patronus-ai
-    section: eval-frameworks
-    url: https://docs.patronus.ai/
-    title: "Patronus AI"
-    author: null
-    type: docs
-    license: "SaaS"
-    blurb: "**SaaS.** Managed judge models (Lynx for hallucination)."
-    cluster: null
-    tags: [evals, llm-as-judge]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: patronus-ai
+  section: eval-frameworks
+  url: https://docs.patronus.ai/
+  title: "Patronus AI"
+  author:
+  type: docs
+  license: "SaaS"
+  blurb: "**SaaS.** Managed judge models (Lynx for hallucination)."
+  cluster:
+  tags: [evals, llm-as-judge]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # Benchmarks cluster — renders as "- **Benchmarks:** link1, link2, ..., linkN."
-  - id: benchmark-swebench
-    section: eval-frameworks
-    url: https://www.swebench.com/
-    title: "SWE-bench"
-    author: null
-    type: article
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    cluster_label: "Benchmarks"
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-swebench
+  section: eval-frameworks
+  url: https://www.swebench.com/
+  title: "SWE-bench"
+  author:
+  type: article
+  license:
+  blurb:
+  cluster: benchmarks-9
+  cluster_label: "Benchmarks"
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-swebench-verified
-    section: eval-frameworks
-    url: https://openai.com/index/introducing-swe-bench-verified/
-    title: "SWE-bench Verified"
-    author: null
-    type: article
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-swebench-verified
+  section: eval-frameworks
+  url: https://openai.com/index/introducing-swe-bench-verified/
+  title: "SWE-bench Verified"
+  author:
+  type: article
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-gaia
-    section: eval-frameworks
-    url: https://arxiv.org/abs/2311.12983
-    title: "GAIA"
-    author: null
-    type: paper
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-gaia
+  section: eval-frameworks
+  url: https://arxiv.org/abs/2311.12983
+  title: "GAIA"
+  author:
+  type: paper
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-tau-bench
-    section: eval-frameworks
-    url: https://github.com/sierra-research/tau-bench
-    title: "τ-bench"
-    author: null
-    type: repo
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-tau-bench
+  section: eval-frameworks
+  url: https://github.com/sierra-research/tau-bench
+  title: "τ-bench"
+  author:
+  type: repo
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-webarena
-    section: eval-frameworks
-    url: https://webarena.dev/
-    title: "WebArena"
-    author: null
-    type: article
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-webarena
+  section: eval-frameworks
+  url: https://webarena.dev/
+  title: "WebArena"
+  author:
+  type: article
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-osworld
-    section: eval-frameworks
-    url: https://os-world.github.io/
-    title: "OSWorld"
-    author: null
-    type: article
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-osworld
+  section: eval-frameworks
+  url: https://os-world.github.io/
+  title: "OSWorld"
+  author:
+  type: article
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-mle-bench
-    section: eval-frameworks
-    url: https://github.com/openai/mle-bench
-    title: "MLE-bench"
-    author: null
-    type: repo
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-mle-bench
+  section: eval-frameworks
+  url: https://github.com/openai/mle-bench
+  title: "MLE-bench"
+  author:
+  type: repo
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: benchmark-swelancer
-    section: eval-frameworks
-    url: https://arxiv.org/abs/2502.12115
-    title: "SWE-Lancer"
-    author: null
-    type: paper
-    license: null
-    blurb: null
-    cluster: benchmarks-9
-    tags: [evals, benchmark]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: benchmark-swelancer
+  section: eval-frameworks
+  url: https://arxiv.org/abs/2502.12115
+  title: "SWE-Lancer"
+  author:
+  type: paper
+  license:
+  blurb:
+  cluster: benchmarks-9
+  tags: [evals, benchmark]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 10: observability
   # ----------------------------------------------------------------------
-  - id: otel-genai-semconv
-    section: observability
-    url: https://opentelemetry.io/docs/specs/semconv/gen-ai/
-    title: "OpenTelemetry GenAI Semantic Conventions"
-    author: null
-    type: spec
-    license: null
-    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build to this and swap backends."
-    cluster: null
-    tags: [observability, opentelemetry]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: otel-genai-semconv
+  section: observability
+  url: https://opentelemetry.io/docs/specs/semconv/gen-ai/
+  title: "OpenTelemetry GenAI Semantic Conventions"
+  author:
+  type: spec
+  license:
+  blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build to
+    this and swap backends."
+  cluster:
+  tags: [observability, opentelemetry]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: otel-genai-metrics
-    section: observability
-    url: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/
-    title: "OTel GenAI Metrics Spec"
-    author: null
-    type: spec
-    license: null
-    blurb: "Standard metric names (`gen_ai.client.token.usage`, etc.)."
-    cluster: null
-    tags: [observability, opentelemetry]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: otel-genai-metrics
+  section: observability
+  url: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/
+  title: "OTel GenAI Metrics Spec"
+  author:
+  type: spec
+  license:
+  blurb: "Standard metric names (`gen_ai.client.token.usage`, etc.)."
+  cluster:
+  tags: [observability, opentelemetry]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openllmetry
-    section: observability
-    url: https://github.com/traceloop/openllmetry
-    title: "OpenLLMetry"
-    author: null
-    type: repo
-    license: "OS"
-    blurb: "**OS.** OTel SDK + auto-instrumentation for LLM/vector/agent libs."
-    cluster: null
-    tags: [observability, opentelemetry]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openllmetry
+  section: observability
+  url: https://github.com/traceloop/openllmetry
+  title: "OpenLLMetry"
+  author:
+  type: repo
+  license: "OS"
+  blurb: "**OS.** OTel SDK + auto-instrumentation for LLM/vector/agent libs."
+  cluster:
+  tags: [observability, opentelemetry]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langfuse
-    section: observability
-    url: https://langfuse.com/docs
-    title: "Langfuse"
-    author: null
-    type: docs
-    license: "OS+SaaS"
-    blurb: "**OS + SaaS.** Self-hostable observability + evals + prompt mgmt."
-    cluster: null
-    tags: [observability, langfuse]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langfuse
+  section: observability
+  url: https://langfuse.com/docs
+  title: "Langfuse"
+  author:
+  type: docs
+  license: "OS+SaaS"
+  blurb: "**OS + SaaS.** Self-hostable observability + evals + prompt mgmt."
+  cluster:
+  tags: [observability, langfuse]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: arize-phoenix-repo
-    section: observability
-    url: https://github.com/Arize-ai/phoenix
-    title: "Arize Phoenix"
-    author: null
-    type: repo
-    license: "OS"
-    blurb: "**OS.** OpenInference traces; runs locally."
-    cluster: null
-    tags: [observability]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: arize-phoenix-repo
+  section: observability
+  url: https://github.com/Arize-ai/phoenix
+  title: "Arize Phoenix"
+  author:
+  type: repo
+  license: "OS"
+  blurb: "**OS.** OpenInference traces; runs locally."
+  cluster:
+  tags: [observability]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langsmith-tracing
-    section: observability
-    url: https://docs.smith.langchain.com/observability
-    title: "LangSmith Tracing"
-    author: null
-    type: docs
-    license: "SaaS"
-    blurb: "**SaaS.** Framework-agnostic via SDK despite the name."
-    cluster: null
-    tags: [observability, langsmith]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langsmith-tracing
+  section: observability
+  url: https://docs.smith.langchain.com/observability
+  title: "LangSmith Tracing"
+  author:
+  type: docs
+  license: "SaaS"
+  blurb: "**SaaS.** Framework-agnostic via SDK despite the name."
+  cluster:
+  tags: [observability, langsmith]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: helicone
-    section: observability
-    url: https://docs.helicone.ai/
-    title: "Helicone"
-    author: null
-    type: docs
-    license: "OS+SaaS"
-    blurb: "**OS + SaaS.** Proxy-based logging — lowest-friction integration."
-    cluster: null
-    tags: [observability]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: helicone
+  section: observability
+  url: https://docs.helicone.ai/
+  title: "Helicone"
+  author:
+  type: docs
+  license: "OS+SaaS"
+  blurb: "**OS + SaaS.** Proxy-based logging — lowest-friction integration."
+  cluster:
+  tags: [observability]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: honeycomb-observability
-    section: observability
-    url: https://www.honeycomb.io/blog/observability-3-ai-software
-    title: "Honeycomb — Observability for AI Applications"
-    author: null
-    type: article
-    license: null
-    blurb: "Best engineering content on high-cardinality LLM tracing."
-    cluster: null
-    tags: [observability, honeycomb]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: honeycomb-observability
+  section: observability
+  url: https://www.honeycomb.io/blog/observability-3-ai-software
+  title: "Honeycomb — Observability for AI Applications"
+  author:
+  type: article
+  license:
+  blurb: "Best engineering content on high-cardinality LLM tracing."
+  cluster:
+  tags: [observability, honeycomb]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: datadog-llm-observability
-    section: observability
-    url: https://docs.datadoghq.com/llm_observability/
-    title: "Datadog LLM Observability"
-    author: null
-    type: docs
-    license: "SaaS"
-    blurb: "**SaaS.** Strongest if already on Datadog."
-    cluster: null
-    tags: [observability, datadog]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: datadog-llm-observability
+  section: observability
+  url: https://docs.datadoghq.com/llm_observability/
+  title: "Datadog LLM Observability"
+  author:
+  type: docs
+  license: "SaaS"
+  blurb: "**SaaS.** Strongest if already on Datadog."
+  cluster:
+  tags: [observability, datadog]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 11: production-testing
   # ----------------------------------------------------------------------
-  - id: promptfoo-ci
-    section: production-testing
-    url: https://www.promptfoo.dev/docs/integrations/github-action/
-    title: "Promptfoo in CI (GitHub Action)"
-    author: null
-    type: docs
-    license: null
-    blurb: "Block PRs on eval regressions."
-    cluster: null
-    tags: [evals, ci, promptfoo]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: promptfoo-ci
+  section: production-testing
+  url: https://www.promptfoo.dev/docs/integrations/github-action/
+  title: "Promptfoo in CI (GitHub Action)"
+  author:
+  type: docs
+  license:
+  blurb: "Block PRs on eval regressions."
+  cluster:
+  tags: [evals, ci, promptfoo]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langsmith-online-evals
-    section: production-testing
-    url: https://docs.smith.langchain.com/observability/how_to_guides/online_evaluations
-    title: "LangSmith — Online evaluations"
-    author: null
-    type: docs
-    license: null
-    blurb: "Sampling prod traces back into eval datasets (the data flywheel)."
-    cluster: null
-    tags: [evals, langsmith, production]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langsmith-online-evals
+  section: production-testing
+  url: 
+    https://docs.smith.langchain.com/observability/how_to_guides/online_evaluations
+  title: "LangSmith — Online evaluations"
+  author:
+  type: docs
+  license:
+  blurb: "Sampling prod traces back into eval datasets (the data flywheel)."
+  cluster:
+  tags: [evals, langsmith, production]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: honeycomb-we-shipped-ai
-    section: production-testing
-    url: https://www.honeycomb.io/blog/we-shipped-ai-product
-    title: "Honeycomb — We shipped AI"
-    author: null
-    type: article
-    license: null
-    blurb: "Honest postmortem-style writing on shadow traffic + Query Assistant."
-    cluster: null
-    tags: [production, honeycomb]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: honeycomb-we-shipped-ai
+  section: production-testing
+  url: https://www.honeycomb.io/blog/we-shipped-ai-product
+  title: "Honeycomb — We shipped AI"
+  author:
+  type: article
+  license:
+  blurb: "Honest postmortem-style writing on shadow traffic + Query Assistant."
+  cluster:
+  tags: [production, honeycomb]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: langfuse-cost-tracking
-    section: production-testing
-    url: https://langfuse.com/docs/model-usage-and-cost
-    title: "Langfuse — Cost tracking"
-    author: null
-    type: docs
-    license: null
-    blurb: "Per-trace, per-user, per-prompt cost attribution."
-    cluster: null
-    tags: [observability, cost, langfuse]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: langfuse-cost-tracking
+  section: production-testing
+  url: https://langfuse.com/docs/model-usage-and-cost
+  title: "Langfuse — Cost tracking"
+  author:
+  type: docs
+  license:
+  blurb: "Per-trace, per-user, per-prompt cost attribution."
+  cluster:
+  tags: [observability, cost, langfuse]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: helicone-caching
-    section: production-testing
-    url: https://docs.helicone.ai/features/advanced-usage/caching
-    title: "Helicone — Caching dashboards"
-    author: null
-    type: docs
-    license: null
-    blurb: "Per-route token spend + cache hit rates."
-    cluster: null
-    tags: [observability, cost, helicone]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: helicone-caching
+  section: production-testing
+  url: https://docs.helicone.ai/features/advanced-usage/caching
+  title: "Helicone — Caching dashboards"
+  author:
+  type: docs
+  license:
+  blurb: "Per-route token spend + cache hit rates."
+  cluster:
+  tags: [observability, cost, helicone]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 12: security
   # ----------------------------------------------------------------------
-  - id: owasp-llm-top10
-    section: security
-    url: https://genai.owasp.org/llm-top-10/
-    title: "OWASP Top 10 for LLM Applications 2025"
-    author: null
-    type: article
-    license: null
-    blurb: "Use as a checklist."
-    cluster: null
-    tags: [security, owasp]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: owasp-llm-top10
+  section: security
+  url: https://genai.owasp.org/llm-top-10/
+  title: "OWASP Top 10 for LLM Applications 2025"
+  author:
+  type: article
+  license:
+  blurb: "Use as a checklist."
+  cluster:
+  tags: [security, owasp]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: embrace-the-red
-    section: security
-    url: https://embracethered.com/blog/
-    title: "Embrace The Red"
-    author: "Johann Rehberger"
-    type: article
-    license: null
-    blurb: "The best running blog on real agent exploits."
-    cluster: null
-    tags: [security, prompt-injection]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: embrace-the-red
+  section: security
+  url: https://embracethered.com/blog/
+  title: "Embrace The Red"
+  author: "Johann Rehberger"
+  type: article
+  license:
+  blurb: "The best running blog on real agent exploits."
+  cluster:
+  tags: [security, prompt-injection]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: simon-willison-prompt-injection
-    section: security
-    url: https://simonwillison.net/tags/prompt-injection/
-    title: "Simon Willison — prompt injection tag"
-    author: null
-    type: article
-    license: null
-    blurb: "Ongoing curation of every notable incident."
-    cluster: null
-    tags: [security, prompt-injection]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: simon-willison-prompt-injection
+  section: security
+  url: https://simonwillison.net/tags/prompt-injection/
+  title: "Simon Willison — prompt injection tag"
+  author:
+  type: article
+  license:
+  blurb: "Ongoing curation of every notable incident."
+  cluster:
+  tags: [security, prompt-injection]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # Same URL as `lethal-trifecta` in section 1; section 12 uses a shorter title and different blurb.
-  - id: lethal-trifecta-security
-    section: security
-    url: https://simonw.substack.com/p/the-lethal-trifecta-for-ai-agents
-    title: "The lethal trifecta"
-    author: "Simon Willison"
-    type: article
-    license: null
-    blurb: "The threat model in one essay."
-    cluster: null
-    tags: [security, threat-model]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: lethal-trifecta-security
+  section: security
+  url: https://simonw.substack.com/p/the-lethal-trifecta-for-ai-agents
+  title: "The lethal trifecta"
+  author: "Simon Willison"
+  type: article
+  license:
+  blurb: "The threat model in one essay."
+  cluster:
+  tags: [security, threat-model]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: camel-paper
-    section: security
-    url: https://arxiv.org/abs/2503.18813
-    title: "CaMeL: Defeating Prompt Injections by Design"
-    author: "Google DeepMind"
-    type: paper
-    license: null
-    blurb: "Capabilities-based dual-LLM design; strongest published defense pattern."
-    cluster: null
-    tags: [security, prompt-injection, paper]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: camel-paper
+  section: security
+  url: https://arxiv.org/abs/2503.18813
+  title: "CaMeL: Defeating Prompt Injections by Design"
+  author: "Google DeepMind"
+  type: paper
+  license:
+  blurb: "Capabilities-based dual-LLM design; strongest published defense pattern."
+  cluster:
+  tags: [security, prompt-injection, paper]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: anthropic-responsible-scaling
-    section: security
-    url: https://www.anthropic.com/responsible-scaling-policy
-    title: "Anthropic Responsible Scaling Policy"
-    author: null
-    type: article
-    license: null
-    blurb: "Frontier-lab safety framework; a template for your own deployment gates."
-    cluster: null
-    tags: [security, safety]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: anthropic-responsible-scaling
+  section: security
+  url: https://www.anthropic.com/responsible-scaling-policy
+  title: "Anthropic Responsible Scaling Policy"
+  author:
+  type: article
+  license:
+  blurb: "Frontier-lab safety framework; a template for your own deployment gates."
+  cluster:
+  tags: [security, safety]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: nist-ai-rmf
-    section: security
-    url: https://www.nist.gov/itl/ai-risk-management-framework
-    title: "NIST AI RMF + Generative AI Profile"
-    author: null
-    type: article
-    license: null
-    blurb: "Risk-management vocabulary auditors will use."
-    cluster: null
-    tags: [security, compliance]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: nist-ai-rmf
+  section: security
+  url: https://www.nist.gov/itl/ai-risk-management-framework
+  title: "NIST AI RMF + Generative AI Profile"
+  author:
+  type: article
+  license:
+  blurb: "Risk-management vocabulary auditors will use."
+  cluster:
+  tags: [security, compliance]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: mitre-atlas
-    section: security
-    url: https://atlas.mitre.org/
-    title: "MITRE ATLAS"
-    author: null
-    type: article
-    license: null
-    blurb: "ATT&CK-style matrix for ML/agent threats."
-    cluster: null
-    tags: [security, threat-model]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: mitre-atlas
+  section: security
+  url: https://atlas.mitre.org/
+  title: "MITRE ATLAS"
+  author:
+  type: article
+  license:
+  blurb: "ATT&CK-style matrix for ML/agent threats."
+  cluster:
+  tags: [security, threat-model]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: trailofbits-prompt-injection-rce
-    section: security
-    url: https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
-    title: "Trail of Bits — Prompt injection to RCE in AI agents"
-    author: null
-    type: article
-    license: null
-    blurb: "Recent, concrete RCE chain."
-    cluster: null
-    tags: [security, prompt-injection]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: trailofbits-prompt-injection-rce
+  section: security
+  url: 
+    https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
+  title: "Trail of Bits — Prompt injection to RCE in AI agents"
+  author:
+  type: article
+  license:
+  blurb: "Recent, concrete RCE chain."
+  cluster:
+  tags: [security, prompt-injection]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 13: coding-agent-infra
   # ----------------------------------------------------------------------
-  - id: claude-code-best-practices
-    section: coding-agent-infra
-    url: https://code.claude.com/docs/en/best-practices
-    title: "Best Practices for Claude Code"
-    author: "Anthropic"
-    type: docs
-    license: null
-    blurb: "CLAUDE.md, tools, harness design."
-    cluster: null
-    tags: [claude-code, harness]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: claude-code-best-practices
+  section: coding-agent-infra
+  url: https://code.claude.com/docs/en/best-practices
+  title: "Best Practices for Claude Code"
+  author: "Anthropic"
+  type: docs
+  license:
+  blurb: "CLAUDE.md, tools, harness design."
+  cluster:
+  tags: [claude-code, harness]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: claude-agent-sdk-overview
-    section: coding-agent-infra
-    url: https://platform.claude.com/docs/en/agent-sdk/overview
-    title: "Claude Agent SDK overview"
-    author: "Anthropic"
-    type: docs
-    license: null
-    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP."
-    cluster: null
-    tags: [claude-agent-sdk, harness]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: claude-agent-sdk-overview
+  section: coding-agent-infra
+  url: https://platform.claude.com/docs/en/agent-sdk/overview
+  title: "Claude Agent SDK overview"
+  author: "Anthropic"
+  type: docs
+  license:
+  blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools
+    as in-process MCP."
+  cluster:
+  tags: [claude-agent-sdk, harness]
+  added_at: 2026-05-03
+  verified_at: 2026-05-03
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: claude-agent-sdk-python-repo
-    section: coding-agent-infra
-    url: https://github.com/anthropics/claude-agent-sdk-python
-    title: "anthropics/claude-agent-sdk-python"
-    author: null
-    type: repo
-    license: null
-    blurb: "Source."
-    cluster: null
-    tags: [claude-agent-sdk]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: claude-agent-sdk-python-repo
+  section: coding-agent-infra
+  url: https://github.com/anthropics/claude-agent-sdk-python
+  title: "anthropics/claude-agent-sdk-python"
+  author:
+  type: repo
+  license:
+  blurb: "Source."
+  cluster:
+  tags: [claude-agent-sdk]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: cognition-devin-dogfooding
-    section: coding-agent-infra
-    url: https://cognition.ai/blog/how-cognition-uses-devin-to-build-devin
-    title: "Cognition — How Cognition uses Devin to build Devin"
-    author: null
-    type: article
-    license: null
-    blurb: "Internal dogfooding patterns."
-    cluster: null
-    tags: [coding-agent, case-study]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: cognition-devin-dogfooding
+  section: coding-agent-infra
+  url: https://cognition.ai/blog/how-cognition-uses-devin-to-build-devin
+  title: "Cognition — How Cognition uses Devin to build Devin"
+  author:
+  type: article
+  license:
+  blurb: "Internal dogfooding patterns."
+  cluster:
+  tags: [coding-agent, case-study]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: cognition-multi-agents-working
-    section: coding-agent-infra
-    url: https://cognition.ai/blog/multi-agents-working
-    title: "Cognition — Multi-Agents: What's Actually Working"
-    author: null
-    type: article
-    license: null
-    blurb: 'The pragmatic update to "Don''t Build Multi-Agents."'
-    cluster: null
-    tags: [coding-agent, multi-agent]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: cognition-multi-agents-working
+  section: coding-agent-infra
+  url: https://cognition.ai/blog/multi-agents-working
+  title: "Cognition — Multi-Agents: What's Actually Working"
+  author:
+  type: article
+  license:
+  blurb: 'The pragmatic update to "Don''t Build Multi-Agents."'
+  cluster:
+  tags: [coding-agent, multi-agent]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: aider-blog
-    section: coding-agent-infra
-    url: https://aider.chat/docs/
-    title: "Aider blog"
-    author: null
-    type: docs
-    license: null
-    blurb: "Repo-map, edit formats; the leaderboard is one of the best practical evals."
-    cluster: null
-    tags: [coding-agent, evals]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: aider-blog
+  section: coding-agent-infra
+  url: https://aider.chat/docs/
+  title: "Aider blog"
+  author:
+  type: docs
+  license:
+  blurb: "Repo-map, edit formats; the leaderboard is one of the best practical evals."
+  cluster:
+  tags: [coding-agent, evals]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: sourcegraph-amp
-    section: coding-agent-infra
-    url: https://ampcode.com/news
-    title: "Sourcegraph Amp — engineering posts"
-    author: null
-    type: article
-    license: null
-    blurb: "Long-form on tool design and oracle patterns."
-    cluster: null
-    tags: [coding-agent]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: sourcegraph-amp
+  section: coding-agent-infra
+  url: https://ampcode.com/news
+  title: "Sourcegraph Amp — engineering posts"
+  author:
+  type: article
+  license:
+  blurb: "Long-form on tool design and oracle patterns."
+  cluster:
+  tags: [coding-agent]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: openai-codex-repo
-    section: coding-agent-infra
-    url: https://github.com/openai/codex
-    title: "openai/codex"
-    author: null
-    type: repo
-    license: null
-    blurb: "Reference open-source coding-agent CLI."
-    cluster: null
-    tags: [coding-agent, openai]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: openai-codex-repo
+  section: coding-agent-infra
+  url: https://github.com/openai/codex
+  title: "openai/codex"
+  author:
+  type: repo
+  license:
+  blurb: "Reference open-source coding-agent CLI."
+  cluster:
+  tags: [coding-agent, openai]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: ghuntley-coding-agent-workshop
-    section: coding-agent-infra
-    url: https://ghuntley.com/agent/
-    title: "Geoffrey Huntley — how to build a coding agent (workshop)"
-    author: null
-    type: article
-    license: null
-    blurb: "Free workshop on building one from scratch."
-    cluster: null
-    tags: [coding-agent]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: ghuntley-coding-agent-workshop
+  section: coding-agent-infra
+  url: https://ghuntley.com/agent/
+  title: "Geoffrey Huntley — how to build a coding agent (workshop)"
+  author:
+  type: article
+  license:
+  blurb: "Free workshop on building one from scratch."
+  cluster:
+  tags: [coding-agent]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: ghuntley-ralph-wiggum
-    section: coding-agent-infra
-    url: https://ghuntley.com/ralph/
-    title: "Geoffrey Huntley — Ralph Wiggum loop"
-    author: null
-    type: article
-    license: null
-    blurb: "The brute-force feedback-loop pattern essay."
-    cluster: null
-    tags: [coding-agent, patterns]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: ghuntley-ralph-wiggum
+  section: coding-agent-infra
+  url: https://ghuntley.com/ralph/
+  title: "Geoffrey Huntley — Ralph Wiggum loop"
+  author:
+  type: article
+  license:
+  blurb: "The brute-force feedback-loop pattern essay."
+  cluster:
+  tags: [coding-agent, patterns]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
   # ----------------------------------------------------------------------
   # Section 14: backend-patterns
   # (multi-agent-research-system is last — matches original doc order)
   # ----------------------------------------------------------------------
-  - id: k8sgpt
-    section: backend-patterns
-    url: https://docs.k8sgpt.ai/
-    title: "k8sgpt"
-    author: "CNCF Sandbox"
-    type: docs
-    license: null
-    blurb: "Read-only K8s diagnosis agent; canonical example."
-    cluster: null
-    tags: [sre, kubernetes]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: k8sgpt
+  section: backend-patterns
+  url: https://docs.k8sgpt.ai/
+  title: "k8sgpt"
+  author: "CNCF Sandbox"
+  type: docs
+  license:
+  blurb: "Read-only K8s diagnosis agent; canonical example."
+  cluster:
+  tags: [sre, kubernetes]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: holmesgpt
-    section: backend-patterns
-    url: https://github.com/robusta-dev/holmes-gpt
-    title: "HolmesGPT"
-    author: "Robusta"
-    type: repo
-    license: null
-    blurb: "On-call investigation agent with runbooks-as-tools."
-    cluster: null
-    tags: [sre, kubernetes]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: holmesgpt
+  section: backend-patterns
+  url: https://github.com/robusta-dev/holmes-gpt
+  title: "HolmesGPT"
+  author: "Robusta"
+  type: repo
+  license:
+  blurb: "On-call investigation agent with runbooks-as-tools."
+  cluster:
+  tags: [sre, kubernetes]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: datadog-bits-ai-sre
-    section: backend-patterns
-    url: https://www.datadoghq.com/blog/bits-ai-sre/
-    title: "Datadog — Bits AI SRE"
-    author: null
-    type: article
-    license: null
-    blurb: "Datadog's autonomous incident-response agent design."
-    cluster: null
-    tags: [sre, datadog]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: datadog-bits-ai-sre
+  section: backend-patterns
+  url: https://www.datadoghq.com/blog/bits-ai-sre/
+  title: "Datadog — Bits AI SRE"
+  author:
+  type: article
+  license:
+  blurb: "Datadog's autonomous incident-response agent design."
+  cluster:
+  tags: [sre, datadog]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: honeycomb-agent-observability
-    section: backend-patterns
-    url: https://www.honeycomb.io/blog/ai-agent-observability
-    title: "Honeycomb — Building an AI Agent for Observability"
-    author: null
-    type: article
-    license: null
-    blurb: "Hard-won lessons on agents over telemetry data."
-    cluster: null
-    tags: [observability, honeycomb]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: honeycomb-agent-observability
+  section: backend-patterns
+  url: https://www.honeycomb.io/blog/ai-agent-observability
+  title: "Honeycomb — Building an AI Agent for Observability"
+  author:
+  type: article
+  license:
+  blurb: "Hard-won lessons on agents over telemetry data."
+  cluster:
+  tags: [observability, honeycomb]
+  added_at: 2026-05-03
+  verified_at:
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: terraform-mcp-server
-    section: backend-patterns
-    url: https://github.com/hashicorp/terraform-mcp-server
-    title: "HashiCorp — Terraform MCP server"
-    author: null
-    type: repo
-    license: null
-    blurb: "Reference IaC tool surface."
-    cluster: null
-    tags: [iac, mcp]
-    added_at: 2026-05-03
-    verified_at: null
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
+- id: terraform-mcp-server
+  section: backend-patterns
+  url: https://github.com/hashicorp/terraform-mcp-server
+  title: "HashiCorp — Terraform MCP server"
+  author:
+  type: repo
+  license:
+  blurb: "Reference IaC tool surface."
+  cluster:
+  tags: [iac, mcp]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
 
-  - id: multi-agent-research-system
-    section: backend-patterns
-    url: https://www.anthropic.com/engineering/multi-agent-research-system
-    title: "Anthropic — How we built our multi-agent research system"
-    author: null
-    type: article
-    license: null
-    blurb: "Best multi-agent case study, period."
-    cluster: null
-    tags: [canonical, multi-agent, case-study]
-    added_at: 2026-05-03
-    verified_at: 2026-05-03
-    archived: false
-    paywall: false
-    superseded_by: null
-    notes: null
-    hidden: false
-    top_7_title: "How we built our multi-agent research system"
-    top_7_author: "Anthropic"
-    top_7_blurb: "The best single multi-agent case study, with concrete failure modes."
+- id: multi-agent-research-system
+  section: backend-patterns
+  url: https://www.anthropic.com/engineering/multi-agent-research-system
+  title: "Anthropic — How we built our multi-agent research system"
+  author:
+  type: article
+  license:
+  blurb: "Best multi-agent case study, period."
+  cluster:
+  tags: [canonical, multi-agent, case-study]
+  added_at: 2026-05-03
+  verified_at: '2026-05-03'
+  archived: false
+  paywall: false
+  superseded_by:
+  notes:
+  hidden: false
+  top_7_title: "How we built our multi-agent research system"
+  top_7_author: "Anthropic"
+  top_7_blurb: "The best single multi-agent case study, with concrete failure modes."
