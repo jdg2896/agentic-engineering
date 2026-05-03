@@ -1,0 +1,132 @@
+sources:
+  # ── Author / blog feeds ───────────────────────────────────────────────────
+
+  - id: simonwillison-ai-agents
+    type: atom
+    url: https://simonwillison.net/tags/ai-agents/atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: hamel-husain
+    type: rss
+    url: https://hamel.dev/index.xml
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: eugene-yan
+    type: rss
+    url: https://eugeneyan.com/rss/
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: chip-huyen
+    type: rss
+    url: https://huyenchip.com/feed.xml
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: embrace-the-red
+    type: rss
+    url: https://embracethered.com/blog/index.xml
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: cloudflare-ai-agents
+    type: rss
+    url: https://blog.cloudflare.com/tag/ai-agents/rss
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: langchain-blog
+    type: rss
+    url: https://www.langchain.com/blog/rss.xml
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: cognition-blog
+    type: rss
+    url: https://cognition.ai/rss.xml
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  # ── GitHub release feeds ──────────────────────────────────────────────────
+
+  - id: langgraph-releases
+    type: github-releases
+    url: https://github.com/langchain-ai/langgraph/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: openai-agents-python-releases
+    type: github-releases
+    url: https://github.com/openai/openai-agents-python/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: inspect-ai-releases
+    type: github-releases
+    url: https://github.com/UKGovernmentBEIS/inspect_ai/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: letta-releases
+    type: github-releases
+    url: https://github.com/letta-ai/letta/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: autogen-releases
+    type: github-releases
+    url: https://github.com/microsoft/autogen/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: adk-python-releases
+    type: github-releases
+    url: https://github.com/google/adk-python/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: smolagents-releases
+    type: github-releases
+    url: https://github.com/huggingface/smolagents/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
+
+  - id: mcp-servers-releases
+    type: github-releases
+    url: https://github.com/modelcontextprotocol/servers/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-05-03
+    enabled: true
+    notes: null
