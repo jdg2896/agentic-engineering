@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render agentic-engineering.md from resources.yaml + templates/."""
+"""Render README.md from resources.yaml + templates/."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 RESOURCES_PATH = ROOT / "resources.yaml"
 TEMPLATES_DIR = ROOT / "templates"
-OUTPUT_PATH = ROOT / "agentic-engineering.md"
+OUTPUT_PATH = ROOT / "README.md"
 
 
 def format_link(resource: dict) -> str:
