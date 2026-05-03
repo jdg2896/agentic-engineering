@@ -124,18 +124,22 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
+    verified_at: &id001 2026-05-03
   - name: Cognition blog
     url: https://cognition.ai/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
   - name: Simon Willison
     url: https://simonwillison.net/
     blurb: The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
+    verified_at: *id001
   - name: Embrace The Red
     url: https://embracethered.com/blog/
     blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
+    verified_at: *id001
   - name: Cloudflare AI agents tag
     url: https://blog.cloudflare.com/tag/ai-agents/
     blurb: Agent-runtime and infra posts from Cloudflare's edge platform.
+    first_dead_at: *id001
   - name: LangChain blog
     url: https://blog.langchain.com/
     blurb: Framework updates, multi-agent patterns, and ecosystem news.
@@ -143,6 +147,7 @@ worth_following:
     url: https://hamel.dev/
     blurb: Applied LLM engineering and evals from a practitioner perspective.
 
+    verified_at: *id001
 resources:
   # ----------------------------------------------------------------------
   # Section 1: foundations
@@ -177,7 +182,7 @@ resources:
     cluster: null
     tags: [canonical, context-engineering]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -195,7 +200,7 @@ resources:
     cluster: null
     tags: [tools]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -212,7 +217,7 @@ resources:
     cluster: null
     tags: [harness, long-running]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -263,7 +268,7 @@ resources:
     cluster: null
     tags: [canonical]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -281,7 +286,7 @@ resources:
     cluster: null
     tags: [canonical, mental-model]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -300,7 +305,7 @@ resources:
     cluster: null
     tags: [video]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -317,7 +322,7 @@ resources:
     cluster: null
     tags: [canonical, multi-agent]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -335,7 +340,7 @@ resources:
     cluster: null
     tags: [patterns]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -352,7 +357,7 @@ resources:
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -369,7 +374,7 @@ resources:
     cluster: null
     tags: [curation]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -386,7 +391,7 @@ resources:
     cluster: null
     tags: [patterns]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -403,7 +408,7 @@ resources:
     cluster: null
     tags: [architecture]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -423,7 +428,7 @@ resources:
     cluster: null
     tags: [mcp, spec]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -440,7 +445,7 @@ resources:
     cluster: null
     tags: [mcp]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -457,7 +462,7 @@ resources:
     cluster: null
     tags: [mcp, security]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -474,7 +479,7 @@ resources:
     cluster: null
     tags: [mcp]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -491,7 +496,7 @@ resources:
     cluster: null
     tags: [mcp, reference]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -508,7 +513,7 @@ resources:
     cluster: awesome-mcp-servers
     tags: [mcp, registry]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -525,7 +530,7 @@ resources:
     cluster: awesome-mcp-servers
     tags: [mcp, registry]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -559,7 +564,7 @@ resources:
     cluster: null
     tags: [a2a]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -576,7 +581,7 @@ resources:
     cluster: null
     tags: [a2a, spec]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -595,7 +600,7 @@ resources:
     cluster: null
     tags: [canonical]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -616,7 +621,7 @@ resources:
     cluster: null
     tags: [langgraph, orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -633,7 +638,7 @@ resources:
     cluster: null
     tags: [langgraph, persistence]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -650,7 +655,7 @@ resources:
     cluster: null
     tags: [langgraph, hitl]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -667,7 +672,7 @@ resources:
     cluster: null
     tags: [langgraph, multi-agent]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -684,7 +689,7 @@ resources:
     cluster: null
     tags: [openai, orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -701,7 +706,7 @@ resources:
     cluster: null
     tags: [openai]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -718,7 +723,7 @@ resources:
     cluster: null
     tags: [microsoft, orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -735,7 +740,7 @@ resources:
     cluster: null
     tags: [microsoft, orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -769,7 +774,7 @@ resources:
     cluster: null
     tags: [google]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -786,7 +791,7 @@ resources:
     cluster: null
     tags: [orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -820,7 +825,7 @@ resources:
     cluster: null
     tags: [orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -837,7 +842,7 @@ resources:
     cluster: null
     tags: [orchestration, typescript]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -874,7 +879,7 @@ resources:
     cluster: null
     tags: [temporal, durable-execution]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -891,7 +896,7 @@ resources:
     cluster: null
     tags: [temporal, durable-execution]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -908,7 +913,7 @@ resources:
     cluster: null
     tags: [temporal]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -925,7 +930,7 @@ resources:
     cluster: null
     tags: [inngest, durable-execution]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -942,7 +947,7 @@ resources:
     cluster: null
     tags: [restate, durable-execution]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -959,7 +964,7 @@ resources:
     cluster: null
     tags: [hatchet, durable-execution]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -976,7 +981,7 @@ resources:
     cluster: null
     tags: [dbos, durable-execution]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1002,6 +1007,7 @@ resources:
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: letta-docs
     section: memory-systems
     url: https://docs.letta.com/
@@ -1013,7 +1019,7 @@ resources:
     cluster: null
     tags: [letta, memory]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1030,7 +1036,7 @@ resources:
     cluster: null
     tags: [memory, paper]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1081,7 +1087,7 @@ resources:
     cluster: null
     tags: [memory, knowledge-graph]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1098,7 +1104,7 @@ resources:
     cluster: null
     tags: [memory, langgraph]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1115,7 +1121,7 @@ resources:
     cluster: null
     tags: [memory, paper]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1135,7 +1141,7 @@ resources:
     cluster: null
     tags: [sandboxing, firecracker]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1169,7 +1175,7 @@ resources:
     cluster: null
     tags: [sandboxing]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1186,7 +1192,7 @@ resources:
     cluster: null
     tags: [sandboxing, cloudflare]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1203,7 +1209,7 @@ resources:
     cluster: null
     tags: [sandboxing, cloudflare]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1220,7 +1226,7 @@ resources:
     cluster: null
     tags: [sandboxing, macos]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1237,7 +1243,7 @@ resources:
     cluster: null
     tags: [sandboxing, wasm]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1254,7 +1260,7 @@ resources:
     cluster: null
     tags: [sandboxing, gvisor]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1325,7 +1331,7 @@ resources:
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1376,7 +1382,7 @@ resources:
     cluster: null
     tags: [anthropic, caching]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1393,7 +1399,7 @@ resources:
     cluster: null
     tags: [openai, latency]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1413,7 +1419,7 @@ resources:
     cluster: null
     tags: [evals, canonical]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1430,7 +1436,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1447,7 +1453,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1464,7 +1470,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1481,7 +1487,7 @@ resources:
     cluster: null
     tags: [evals, llm-as-judge]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1498,7 +1504,7 @@ resources:
     cluster: null
     tags: [evals, paper]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1515,7 +1521,7 @@ resources:
     cluster: null
     tags: [evals, paper, llm-as-judge]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1532,7 +1538,7 @@ resources:
     cluster: null
     tags: [evals, paper, llm-as-judge]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1549,7 +1555,7 @@ resources:
     cluster: null
     tags: [evals, rag]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1569,7 +1575,7 @@ resources:
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1586,7 +1592,7 @@ resources:
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1603,7 +1609,7 @@ resources:
     cluster: null
     tags: [evals, openai]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1620,7 +1626,7 @@ resources:
     cluster: null
     tags: [evals, ci]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1637,7 +1643,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1688,7 +1694,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1758,7 +1764,7 @@ resources:
     cluster_label: "Benchmarks"
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1775,7 +1781,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1792,7 +1798,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1809,7 +1815,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1826,7 +1832,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1843,7 +1849,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1860,7 +1866,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1877,7 +1883,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1897,7 +1903,7 @@ resources:
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1914,7 +1920,7 @@ resources:
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1931,7 +1937,7 @@ resources:
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1948,7 +1954,7 @@ resources:
     cluster: null
     tags: [observability, langfuse]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1965,7 +1971,7 @@ resources:
     cluster: null
     tags: [observability]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2022,6 +2028,7 @@ resources:
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: datadog-llm-observability
     section: observability
     url: https://docs.datadoghq.com/llm_observability/
@@ -2033,7 +2040,7 @@ resources:
     cluster: null
     tags: [observability, datadog]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2053,7 +2060,7 @@ resources:
     cluster: null
     tags: [evals, ci, promptfoo]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2087,7 +2094,7 @@ resources:
     cluster: null
     tags: [production, honeycomb]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2121,7 +2128,7 @@ resources:
     cluster: null
     tags: [observability, cost, helicone]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2141,7 +2148,7 @@ resources:
     cluster: null
     tags: [security, owasp]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2158,7 +2165,7 @@ resources:
     cluster: null
     tags: [security, prompt-injection]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2175,7 +2182,7 @@ resources:
     cluster: null
     tags: [security, prompt-injection]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2193,7 +2200,7 @@ resources:
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2210,7 +2217,7 @@ resources:
     cluster: null
     tags: [security, prompt-injection, paper]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2227,7 +2234,7 @@ resources:
     cluster: null
     tags: [security, safety]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2244,7 +2251,7 @@ resources:
     cluster: null
     tags: [security, compliance]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2261,7 +2268,7 @@ resources:
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2278,7 +2285,7 @@ resources:
     cluster: null
     tags: [security, prompt-injection]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2298,7 +2305,7 @@ resources:
     cluster: null
     tags: [claude-code, harness]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2332,7 +2339,7 @@ resources:
     cluster: null
     tags: [claude-agent-sdk]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2349,7 +2356,7 @@ resources:
     cluster: null
     tags: [coding-agent, case-study]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2366,7 +2373,7 @@ resources:
     cluster: null
     tags: [coding-agent, multi-agent]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2383,7 +2390,7 @@ resources:
     cluster: null
     tags: [coding-agent, evals]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2417,7 +2424,7 @@ resources:
     cluster: null
     tags: [coding-agent, openai]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2434,7 +2441,7 @@ resources:
     cluster: null
     tags: [coding-agent]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2451,7 +2458,7 @@ resources:
     cluster: null
     tags: [coding-agent, patterns]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2472,7 +2479,7 @@ resources:
     cluster: null
     tags: [sre, kubernetes]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2495,6 +2502,7 @@ resources:
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: datadog-bits-ai-sre
     section: backend-patterns
     url: https://www.datadoghq.com/blog/bits-ai-sre/
@@ -2506,7 +2514,7 @@ resources:
     cluster: null
     tags: [sre, datadog]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2529,6 +2537,7 @@ resources:
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: terraform-mcp-server
     section: backend-patterns
     url: https://github.com/hashicorp/terraform-mcp-server
@@ -2540,7 +2549,7 @@ resources:
     cluster: null
     tags: [iac, mcp]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2557,7 +2566,7 @@ resources:
     cluster: null
     tags: [canonical, multi-agent, case-study]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
