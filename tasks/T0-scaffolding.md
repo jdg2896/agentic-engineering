@@ -27,7 +27,7 @@ Create:
   - `tests/`
   - `scout/`
 - **Update `README.md`** to add two short lines:
-  - one pointing at `SPEC.md` for the design
+  - one pointing at `docs/specs/SPEC.md` for the design
   - one pointing at `tasks/` for the implementation breakdown
 
 ## Acceptance
