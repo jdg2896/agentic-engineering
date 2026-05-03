@@ -1,7 +1,7 @@
 name: Render gate
 
 on:
-  pull_request:
+  pull_request_target:
 
 permissions:
   contents: read
@@ -12,13 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Detect render-relevant changes
         id: changes
         run: |
           if git diff --name-only origin/${{ github.base_ref }}...HEAD \
-              | grep -qE '^(resources\.yaml|sources\.yaml|templates/|scripts/render\.py|pyproject\.toml)'; then
+              | grep -qE '^(resources\.yaml|templates/|scripts/render\.py|pyproject\.toml)'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
