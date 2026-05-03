@@ -139,6 +139,11 @@ def main() -> None:
     ryaml = YAML()
     ryaml.preserve_quotes = True
     ryaml.default_flow_style = False
+    ryaml.indent(mapping=2, sequence=4, offset=2)
+    ryaml.representer.add_representer(
+        type(None),
+        lambda dumper, data: dumper.represent_scalar("tag:yaml.org,2002:null", "null"),
+    )
 
     with open(SOURCES_PATH) as f:
         sources_data = ryaml.load(f)
