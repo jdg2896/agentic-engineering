@@ -107,3 +107,74 @@ def test_render_script_exits_cleanly() -> None:
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+# --- Quarantine filtering ----------------------------------------------------
+
+
+def _section_fixtures() -> list[dict]:
+    return [{"id": "s1", "order": 1, "title": "Section One"}]
+
+
+def test_build_populated_sections_excludes_quarantined() -> None:
+    sections = _section_fixtures()
+    resources = [
+        {"id": "alive", "section": "s1", "title": "Alive", "url": "https://a/"},
+        {
+            "id": "dead",
+            "section": "s1",
+            "title": "Dead",
+            "url": "https://d/",
+            "quarantined_at": "2026-05-03",
+        },
+    ]
+    populated = render.build_populated_sections(sections, resources)
+    bullets = " ".join(populated[0]["bullets"])
+    assert "Alive" in bullets
+    assert "Dead" not in bullets
+
+
+def test_build_populated_sections_still_excludes_hidden_and_superseded() -> None:
+    sections = _section_fixtures()
+    resources = [
+        {"id": "a", "section": "s1", "title": "A", "url": "https://a/"},
+        {"id": "b", "section": "s1", "title": "B", "url": "https://b/", "hidden": True},
+        {"id": "c", "section": "s1", "title": "C", "url": "https://c/", "superseded_by": "a"},
+    ]
+    populated = render.build_populated_sections(sections, resources)
+    bullets = " ".join(populated[0]["bullets"])
+    assert "A" in bullets
+    assert "B" not in bullets
+    assert "C" not in bullets
+
+
+def test_visible_worth_following_filters_quarantined() -> None:
+    wf = [
+        {"name": "Alive", "url": "https://a/", "blurb": "x"},
+        {"name": "Dead", "url": "https://d/", "blurb": "x", "quarantined_at": "2026-05-03"},
+    ]
+    out = render.visible_worth_following(wf)
+    assert [w["name"] for w in out] == ["Alive"]
+
+
+def test_top_7_check_passes_when_nothing_quarantined() -> None:
+    by_id = {
+        "x": {"id": "x", "title": "X", "url": "https://x/"},
+        "y": {"id": "y", "title": "Y", "url": "https://y/"},
+    }
+    render._check_top_7_not_quarantined(["x", "y"], by_id)  # no raise
+
+
+def test_top_7_check_raises_with_useful_message_on_quarantined_slug() -> None:
+    by_id = {
+        "x": {"id": "x", "title": "X", "url": "https://x/"},
+        "y": {
+            "id": "y",
+            "title": "Y",
+            "url": "https://y/",
+            "quarantined_at": "2026-05-03",
+            "quarantine_reason": "404",
+        },
+    }
+    with pytest.raises(ValueError, match=r"top_7 references quarantined.*y \(404\)"):
+        render._check_top_7_not_quarantined(["x", "y"], by_id)
