@@ -64,11 +64,22 @@ def format_attribution(author: str | None, blurb: str | None) -> str:
 def render_bullet(cluster_resources: list[dict], today: date) -> str:
     first = cluster_resources[0]
     links = [format_link(r, today) for r in cluster_resources]
+    # cluster_label: renders as "- **Label:** link1, link2, ..., linkN."
+    # Used for the benchmarks line in section 9 where the original format is a
+    # labelled comma list with no "and" before the final item.
+    if first.get("cluster_label"):
+        label = first["cluster_label"]
+        return f"- **{label}:** {', '.join(links)}."
     return f"- {join_links(links)}{format_attribution(first.get('author'), first.get('blurb'))}"
 
 
 def render_top_7_line(resource: dict, today: date) -> str:
-    link = format_link(resource, today)
+    # top_7_title overrides the link text in the top-7 list when the section
+    # listing and top-7 entry use different titles for the same URL.
+    title = resource.get("top_7_title") or resource["title"]
+    base = f"[{title}]({resource['url']})"
+    mark = " ✓" if is_verified(resource, today) else ""
+    link = f"{base}{mark}"
     author = resource.get("top_7_author") or resource.get("author")
     blurb = resource.get("top_7_blurb") or resource.get("blurb")
     return f"{link}{format_attribution(author, blurb)}"
