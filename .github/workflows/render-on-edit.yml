@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - resources.yaml
+      - sources.yaml
       - templates/**
       - scripts/render.py
       - pyproject.toml
