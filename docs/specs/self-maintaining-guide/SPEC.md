@@ -2,6 +2,8 @@
 
 _Status: v1 design, signed off via /grill-me on 2026-05-03._
 
+> **Note:** For decisions about the renderer's output target and surfaced artifacts (`✓` marks, header date, opinionated stack), see [`readme-as-rendered-output.md`](../readme-as-rendered-output.md) (2026-05-03).
+
 ## 1. Goal
 
 Turn `agentic-engineering.md` from a hand-edited Markdown file into a **self-maintaining curated resource guide** for backend engineers leveraging agentic engineering in their dev workflows. Two automated agents keep it fresh:
