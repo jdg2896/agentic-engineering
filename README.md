@@ -178,6 +178,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [openai/codex](https://github.com/openai/codex) — Reference open-source coding-agent CLI.
 - [Geoffrey Huntley — how to build a coding agent (workshop)](https://ghuntley.com/agent/) — Free workshop on building one from scratch.
 - [Geoffrey Huntley — Ralph Wiggum loop](https://ghuntley.com/ralph/) — The brute-force feedback-loop pattern essay.
+- [Open SWE: An Open-Source Framework for Internal Coding Agents](https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents) — LangChain. Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
 
 ## 14. Backend-specific agent patterns (SRE, K8s, IaC)
 

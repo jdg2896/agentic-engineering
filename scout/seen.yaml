@@ -1,1 +1,33 @@
-seen: []
+seen:
+  - url: 
+      https://simonwillison.net/2026/May/5/our-ai-started-a-cafe-in-stockholm/#atom-tag
+    title: Our AI started a cafe in Stockholm
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-05-07'
+  - url: https://embracethered.com/blog/posts/2026/defcon-talk-copirate-365/
+    title: 'Copirate 365 at DEF CON: Plundering in the Depths of Microsoft Copilot
+      (CVE-2026-24299)'
+    source_id: embrace-the-red
+    rejected_at: '2026-05-07'
+  - url: https://blog.cloudflare.com/copy-fail-linux-vulnerability-mitigation/
+    title: How Cloudflare responded to the “Copy Fail” Linux vulnerability
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-07'
+  - url: https://blog.cloudflare.com/de-tld-outage-dnssec/
+    title: 'When DNSSEC goes wrong: how we responded to the .de TLD outage'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-07'
+  - url: 
+      https://www.langchain.com/blog/building-a-company-due-diligence-agent-with-deep-agents-langsmith-and-parallel
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-05-07'
+  - url: 
+      https://www.langchain.com/blog/agent-observability-needs-feedback-to-power-learning
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-05-07'
+  - url: https://www.langchain.com/blog/open-models-have-crossed-a-threshold
+    title: Open Models have crossed a threshold
+    source_id: langchain-blog
+    rejected_at: '2026-05-07'
