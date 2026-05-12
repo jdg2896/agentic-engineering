@@ -81,11 +81,11 @@ def _yaml(*, resources=None, worth_following=None, top_7=None) -> dict:
     }
 
 
-def _result(*, id, url, outcome, status_code=None, error=None, kind="resource") -> dict:
+def _result(*, id, url, outcome, status_code=None, error=None, kind="resource", final_url=None) -> dict:
     return {
         "id": id, "url": url, "outcome": outcome,
         "status_code": status_code, "error": error,
-        "kind": kind, "final_url": None,
+        "kind": kind, "final_url": final_url,
     }
 
 
@@ -163,17 +163,30 @@ def test_ok_with_no_prior_dead_is_plain_verified() -> None:
     assert ch["transition"] == "verified"
 
 
-def test_migrated_clears_first_dead_at_but_does_not_stamp_verified() -> None:
+def test_migrated_rewrites_url_stamps_verified_and_clears_first_dead_at() -> None:
     data = _yaml(resources=[{
         "id": "a", "url": "https://a/",
         "first_dead_at": date(2026, 4, 20),
         "verified_at": date(2026, 3, 1),
     }])
+    results = [_result(
+        id="a", url="https://a/", outcome="migrated", status_code=200,
+        final_url="https://a-new/",
+    )]
+    [ch] = verify_links.compute_state_changes(data, results, TODAY)
+    assert ch["set"] == {"url": "https://a-new/", "verified_at": TODAY}
+    assert ch["clear"] == ["first_dead_at"]
+    assert ch["transition"] == "migrated"
+
+
+def test_migrated_without_final_url_still_stamps_verified() -> None:
+    # Defensive: outcome=migrated implies final_url is set, but tolerate missing.
+    data = _yaml(resources=[{"id": "a", "url": "https://a/"}])
     results = [_result(id="a", url="https://a/", outcome="migrated", status_code=200)]
     [ch] = verify_links.compute_state_changes(data, results, TODAY)
-    assert ch["set"] == {}
-    assert ch["clear"] == ["first_dead_at"]
-    assert ch["transition"] == "migrated_clear"
+    assert ch["set"] == {"verified_at": TODAY}
+    assert ch["clear"] == []
+    assert ch["transition"] == "migrated"
 
 
 def test_paywall_skipped_treated_like_ok() -> None:

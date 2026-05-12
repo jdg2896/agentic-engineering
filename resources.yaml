@@ -2032,7 +2032,7 @@ resources:
     cluster: null
     tags: [observability]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
