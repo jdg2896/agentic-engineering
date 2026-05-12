@@ -288,9 +288,13 @@ def compute_state_changes(yaml_data, results: list[dict], today: date) -> list[d
             else:
                 transition = "verified"
         elif outcome == "migrated":
+            final_url = result.get("final_url")
+            if final_url and final_url != entry.get("url"):
+                set_fields["url"] = final_url
+            set_fields["verified_at"] = today
             if fd_at is not None:
                 clear_fields.append("first_dead_at")
-                transition = "migrated_clear"
+            transition = "migrated"
         elif outcome == "dead":
             if q_at is not None:
                 pass  # already quarantined: no-op, don't restart the clock
