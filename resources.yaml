@@ -96,8 +96,7 @@ sections:
       and RCE write-ups for agents.
   - id: coding-agent-infra
     order: 13
-    title: "Coding agent infrastructure (read for harness design even if not building
-      one)"
+    title: "Coding agent infrastructure (read for harness design even if not building one)"
     description: |
       Harness design, hook systems, tool allowlists, and operational patterns
       for building and running coding agents — Claude Code best practices, the
@@ -124,30 +123,28 @@ top_7:
 worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
-    blurb: Engineering posts from the model-maker — agents, tooling, and 
-      operational patterns.
-    verified_at: &id001 2026-05-04
+    blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
+    verified_at: &id001 2026-05-18
   - name: Cognition blog
     url: https://cognition.ai/blog
-    blurb: Case studies on building Devin; the productive disagreement to "Don't
-      Build Multi-Agents."
+    blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
+    verified_at: *id001
   - name: Simon Willison
     url: https://simonwillison.net/
-    blurb: The field's running curator — daily-ish takes on LLMs, agents, and 
-      prompt injection.
+    blurb: The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
     verified_at: *id001
   - name: Embrace The Red
     url: https://embracethered.com/blog/
-    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass
-      techniques.
+    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
     verified_at: *id001
   - name: Cloudflare AI agents tag
     url: https://blog.cloudflare.com/tag/ai-agents/
     blurb: Agent-runtime and infra posts from Cloudflare's edge platform.
     first_dead_at: &id002 2026-05-03
   - name: LangChain blog
-    url: https://blog.langchain.com/
+    url: https://www.langchain.com/blog
     blurb: Framework updates, multi-agent patterns, and ecosystem news.
+    verified_at: *id001
   - name: Hamel's blog
     url: https://hamel.dev/
     blurb: Applied LLM engineering and evals from a practitioner perspective.
@@ -159,7 +156,7 @@ resources:
   # ----------------------------------------------------------------------
   - id: building-effective-agents
     section: foundations
-    url: https://www.anthropic.com/research/building-effective-agents
+    url: https://www.anthropic.com/engineering/building-effective-agents
     title: "Building Effective Agents"
     author: "Anthropic"
     type: article
@@ -168,19 +165,17 @@ resources:
     cluster: null
     tags: [canonical, mental-model]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
     top_7_author: "Anthropic (Schluntz/Zhang)"
-    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds
-      on.'
+    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds on.'
 
   - id: effective-context-engineering
     section: foundations
-    url: 
-      https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+    url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
     title: "Effective context engineering for AI agents"
     author: "Anthropic"
     type: article
@@ -194,8 +189,7 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "The successor concept to prompt engineering; defines the actual
-      job."
+    top_7_blurb: "The successor concept to prompt engineering; defines the actual job."
 
   - id: writing-effective-tools
     section: foundations
@@ -204,8 +198,7 @@ resources:
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Tools as contracts between deterministic and non-deterministic systems;
-      eval-driven tool refinement."
+    blurb: "Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement."
     cluster: null
     tags: [tools]
     added_at: 2026-05-03
@@ -217,14 +210,12 @@ resources:
 
   - id: effective-harnesses
     section: foundations
-    url: 
-      https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+    url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
     title: "Effective harnesses for long-running agents"
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt
-      + git)."
+    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt + git)."
     cluster: null
     tags: [harness, long-running]
     added_at: 2026-05-03
@@ -236,7 +227,7 @@ resources:
 
   - id: how-anthropic-uses-claude-code
     section: foundations
-    url: https://www.anthropic.com/news/how-anthropic-teams-use-claude-code
+    url: https://claude.com/blog/how-anthropic-teams-use-claude-code
     title: "How Anthropic teams use Claude Code"
     author: "Anthropic"
     type: article
@@ -245,7 +236,7 @@ resources:
     cluster: null
     tags: [claude-code, case-study]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -253,8 +244,7 @@ resources:
 
   - id: building-agents-claude-agent-sdk
     section: foundations
-    url: 
-      https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk
+    url: https://claude.com/blog/building-agents-with-the-claude-agent-sdk
     title: "Building agents with the Claude Agent SDK"
     author: "Anthropic"
     type: article
@@ -263,7 +253,7 @@ resources:
     cluster: null
     tags: [claude-agent-sdk]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -271,8 +261,7 @@ resources:
 
   - id: openai-practical-guide
     section: foundations
-    url: 
-      https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+    url: https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
     title: "A practical guide to building agents (PDF)"
     author: "OpenAI"
     type: article
@@ -305,8 +294,7 @@ resources:
     superseded_by: null
     notes: null
     top_7_author: "Dex Horthy / HumanLayer"
-    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents
-      are mostly software" doctrine.'
+    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.'
 
   - id: twelve-factor-agents-talk
     section: foundations
@@ -341,8 +329,7 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of
-      agent architecture in 2025/26."
+    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26."
 
   - id: agentic-engineering-patterns
     section: foundations
@@ -368,8 +355,7 @@ resources:
     author: "Simon Willison"
     type: article
     license: null
-    blurb: "Private data + untrusted content + exfiltration channel = the agent threat
-      model."
+    blurb: "Private data + untrusted content + exfiltration channel = the agent threat model."
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
@@ -469,8 +455,7 @@ resources:
 
   - id: mcp-authorization
     section: tools-mcp
-    url: 
-      https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
+    url: https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
     title: "MCP — Authorization"
     author: null
     type: spec
@@ -555,7 +540,7 @@ resources:
 
   - id: anthropic-tool-use-docs
     section: tools-mcp
-    url: https://platform.claude.com/docs/en/build-with-claude/tool-use
+    url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
     title: "Anthropic — Tool use docs"
     author: null
     type: docs
@@ -564,7 +549,7 @@ resources:
     cluster: null
     tags: [tools]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -572,8 +557,7 @@ resources:
 
   - id: a2a-announcement
     section: tools-mcp
-    url: 
-      https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+    url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
     title: "Announcing the Agent2Agent Protocol (A2A)"
     author: "Google"
     type: article
@@ -622,9 +606,7 @@ resources:
     archived: false
     paywall: false
     superseded_by: null
-    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output
-      round-trips cleanly against the original (original has no section listing for
-      this entry)."
+    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output round-trips cleanly against the original (original has no section listing for this entry)."
     hidden: true
 
   # ----------------------------------------------------------------------
@@ -751,8 +733,7 @@ resources:
 
   - id: autogen-v04
     section: multi-agent-frameworks
-    url: 
-      https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
+    url: https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
     title: "AutoGen v0.4"
     author: null
     type: docs
@@ -769,7 +750,7 @@ resources:
 
   - id: google-adk-docs
     section: multi-agent-frameworks
-    url: https://google.github.io/adk-docs/
+    url: https://adk.dev/
     title: "Google ADK (Agent Development Kit) docs"
     author: null
     type: docs
@@ -778,7 +759,7 @@ resources:
     cluster: null
     tags: [google, orchestration]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -820,7 +801,7 @@ resources:
 
   - id: pydantic-ai
     section: multi-agent-frameworks
-    url: https://ai.pydantic.dev/
+    url: https://pydantic.dev/docs/ai/overview/
     title: "Pydantic AI"
     author: null
     type: docs
@@ -829,7 +810,7 @@ resources:
     cluster: null
     tags: [orchestration, python]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -871,7 +852,7 @@ resources:
 
   - id: inngest-agentkit
     section: multi-agent-frameworks
-    url: https://agentkit.inngest.com/overview
+    url: https://agentkit.inngest.com/
     title: "Inngest AgentKit"
     author: null
     type: docs
@@ -880,7 +861,7 @@ resources:
     cluster: null
     tags: [orchestration, typescript, durable-execution]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -908,8 +889,7 @@ resources:
 
   - id: temporal-durable-execution-ai
     section: durable-execution
-    url: 
-      https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
+    url: https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
     title: "Temporal — Durable Execution meets AI"
     author: null
     type: article
@@ -943,8 +923,7 @@ resources:
 
   - id: inngest-durable-execution
     section: durable-execution
-    url: 
-      https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
+    url: https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
     title: "Inngest — Durable Execution: The Key to Harnessing AI Agents in Production"
     author: null
     type: article
@@ -1015,8 +994,7 @@ resources:
   # ----------------------------------------------------------------------
   - id: anthropic-memory-tool
     section: memory-systems
-    url: 
-      https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
+    url: https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
     title: "Anthropic — Memory tool"
     author: null
     type: docs
@@ -1068,7 +1046,7 @@ resources:
 
   - id: mem0-docs
     section: memory-systems
-    url: https://docs.mem0.ai/
+    url: https://docs.mem0.ai/introduction
     title: "Mem0 docs"
     author: null
     type: docs
@@ -1077,7 +1055,7 @@ resources:
     cluster: null
     tags: [memory]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1085,7 +1063,7 @@ resources:
 
   - id: zep-graphiti
     section: memory-systems
-    url: https://help.getzep.com/
+    url: https://help.getzep.com/overview
     title: "Zep / Graphiti"
     author: null
     type: docs
@@ -1094,7 +1072,7 @@ resources:
     cluster: null
     tags: [memory, knowledge-graph]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1173,7 +1151,7 @@ resources:
 
   - id: modal-sandboxes
     section: sandboxing
-    url: https://modal.com/docs/guide/sandbox
+    url: https://modal.com/docs/guide/sandboxes
     title: "Modal Sandboxes"
     author: null
     type: docs
@@ -1182,7 +1160,7 @@ resources:
     cluster: null
     tags: [sandboxing, gvisor]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1295,7 +1273,7 @@ resources:
   # ----------------------------------------------------------------------
   - id: vllm-docs
     section: inference-gateway
-    url: https://docs.vllm.ai/
+    url: https://docs.vllm.ai/en/latest/
     title: "vLLM docs"
     author: null
     type: docs
@@ -1304,7 +1282,7 @@ resources:
     cluster: null
     tags: [inference, vllm]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1312,7 +1290,7 @@ resources:
 
   - id: sglang
     section: inference-gateway
-    url: https://docs.sglang.ai/
+    url: https://docs.sglang.io/
     title: "SGLang"
     author: null
     type: docs
@@ -1321,7 +1299,7 @@ resources:
     cluster: null
     tags: [inference]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1329,7 +1307,7 @@ resources:
 
   - id: huggingface-tgi
     section: inference-gateway
-    url: https://huggingface.co/docs/text-generation-inference
+    url: https://huggingface.co/docs/text-generation-inference/index
     title: "Hugging Face TGI"
     author: null
     type: docs
@@ -1338,7 +1316,7 @@ resources:
     cluster: null
     tags: [inference]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1351,8 +1329,7 @@ resources:
     author: null
     type: docs
     license: null
-    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing
-      layer."
+    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing layer."
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
@@ -1364,7 +1341,7 @@ resources:
 
   - id: portkey-gateway
     section: inference-gateway
-    url: https://portkey.ai/docs
+    url: https://portkey.ai/docs/introduction/what-is-portkey
     title: "Portkey AI Gateway"
     author: null
     type: docs
@@ -1373,7 +1350,7 @@ resources:
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1381,7 +1358,7 @@ resources:
 
   - id: openrouter
     section: inference-gateway
-    url: https://openrouter.ai/docs
+    url: https://openrouter.ai/docs/quickstart
     title: "OpenRouter docs"
     author: null
     type: docs
@@ -1390,7 +1367,7 @@ resources:
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1596,8 +1573,7 @@ resources:
     author: "UK AISI"
     type: docs
     license: "OS"
-    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support,
-      used by Anthropic/DeepMind."
+    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support, used by Anthropic/DeepMind."
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
@@ -1677,7 +1653,7 @@ resources:
 
   - id: ragas
     section: eval-frameworks
-    url: https://docs.ragas.io/
+    url: https://docs.ragas.io/en/stable/
     title: "Ragas"
     author: null
     type: docs
@@ -1686,7 +1662,7 @@ resources:
     cluster: null
     tags: [evals, rag]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1694,7 +1670,7 @@ resources:
 
   - id: langsmith-evaluations
     section: eval-frameworks
-    url: https://docs.smith.langchain.com/evaluation
+    url: https://docs.langchain.com/langsmith/evaluation-concepts
     title: "LangSmith Evaluations"
     author: null
     type: docs
@@ -1703,7 +1679,7 @@ resources:
     cluster: null
     tags: [evals, langsmith]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1728,7 +1704,7 @@ resources:
 
   - id: arize-phoenix
     section: eval-frameworks
-    url: https://docs.arize.com/phoenix
+    url: https://arize.com/docs/phoenix
     title: "Arize Phoenix"
     author: null
     type: docs
@@ -1737,7 +1713,7 @@ resources:
     cluster: null
     tags: [evals, observability]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1745,7 +1721,7 @@ resources:
 
   - id: langfuse-evaluations
     section: eval-frameworks
-    url: https://langfuse.com/docs/scores/overview
+    url: https://langfuse.com/docs/evaluation/overview
     title: "Langfuse Evaluations"
     author: null
     type: docs
@@ -1754,7 +1730,7 @@ resources:
     cluster: null
     tags: [evals, langfuse]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1762,7 +1738,7 @@ resources:
 
   - id: patronus-ai
     section: eval-frameworks
-    url: https://docs.patronus.ai/
+    url: https://docs.patronus.ai:443/docs
     title: "Patronus AI"
     author: null
     type: docs
@@ -1771,7 +1747,7 @@ resources:
     cluster: null
     tags: [evals, llm-as-judge]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -1925,8 +1901,7 @@ resources:
     author: null
     type: spec
     license: null
-    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build
-      to this and swap backends."
+    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build to this and swap backends."
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
@@ -2006,7 +1981,7 @@ resources:
 
   - id: langsmith-tracing
     section: observability
-    url: https://docs.smith.langchain.com/observability
+    url: https://docs.langchain.com/langsmith/observability
     title: "LangSmith Tracing"
     author: null
     type: docs
@@ -2015,7 +1990,7 @@ resources:
     cluster: null
     tags: [observability, langsmith]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2023,7 +1998,7 @@ resources:
 
   - id: helicone
     section: observability
-    url: https://docs.helicone.ai/
+    url: https://docs.helicone.ai/getting-started/quick-start
     title: "Helicone"
     author: null
     type: docs
@@ -2095,8 +2070,7 @@ resources:
 
   - id: langsmith-online-evals
     section: production-testing
-    url: 
-      https://docs.smith.langchain.com/observability/how_to_guides/online_evaluations
+    url: https://docs.langchain.com/langsmith/online-evaluations-llm-as-judge
     title: "LangSmith — Online evaluations"
     author: null
     type: docs
@@ -2105,7 +2079,7 @@ resources:
     cluster: null
     tags: [evals, langsmith, production]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2130,7 +2104,7 @@ resources:
 
   - id: langfuse-cost-tracking
     section: production-testing
-    url: https://langfuse.com/docs/model-usage-and-cost
+    url: https://langfuse.com/docs/observability/features/token-and-cost-tracking
     title: "Langfuse — Cost tracking"
     author: null
     type: docs
@@ -2139,7 +2113,7 @@ resources:
     cluster: null
     tags: [observability, cost, langfuse]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2304,8 +2278,7 @@ resources:
 
   - id: trailofbits-prompt-injection-rce
     section: security
-    url: 
-      https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
+    url: https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
     title: "Trail of Bits — Prompt injection to RCE in AI agents"
     author: null
     type: article
@@ -2342,17 +2315,16 @@ resources:
 
   - id: claude-agent-sdk-overview
     section: coding-agent-infra
-    url: https://platform.claude.com/docs/en/agent-sdk/overview
+    url: https://code.claude.com/docs/en/agent-sdk/overview
     title: "Claude Agent SDK overview"
     author: "Anthropic"
     type: docs
     license: null
-    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools
-      as in-process MCP."
+    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP."
     cluster: null
     tags: [claude-agent-sdk, harness]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2428,7 +2400,7 @@ resources:
 
   - id: sourcegraph-amp
     section: coding-agent-infra
-    url: https://ampcode.com/news
+    url: https://ampcode.com/chronicle
     title: "Sourcegraph Amp — engineering posts"
     author: null
     type: article
@@ -2437,7 +2409,7 @@ resources:
     cluster: null
     tags: [coding-agent]
     added_at: 2026-05-03
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2607,15 +2579,12 @@ resources:
     top_7_blurb: "The best single multi-agent case study, with concrete failure modes."
   - id: open-swe-langchain
     section: coding-agent-infra
-    url: 
-      https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
+    url: https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
     title: 'Open SWE: An Open-Source Framework for Internal Coding Agents'
     author: LangChain
     type: article
     license: null
-    blurb: Open-source SWE-agent framework built on LangGraph; covers core 
-      architectural components — task manager, programmer agent, and sandboxed 
-      execution — for deploying internal coding agents at scale.
+    blurb: Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
     cluster: null
     tags:
       - coding-agent
@@ -2624,7 +2593,7 @@ resources:
       - harness-design
       - orchestration
     added_at: '2026-05-07'
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
