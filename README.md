@@ -6,7 +6,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 
 ## 0. If you only read 7 things
 
-1. [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — Anthropic (Schluntz/Zhang). The "workflows vs agents" mental model that everything else builds on.
+1. [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — Anthropic (Schluntz/Zhang). The "workflows vs agents" mental model that everything else builds on.
 2. [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic. The successor concept to prompt engineering; defines the actual job.
 3. [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy / HumanLayer. Heroku's 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.
 4. [How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) — Anthropic. The best single multi-agent case study, with concrete failure modes.
@@ -18,12 +18,12 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 
 ## 1. Foundational design & "what is an agent"
 
-- [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — Anthropic. Workflows (orchestrator/router/parallel/eval-optimizer) vs true agents.
+- [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — Anthropic. Workflows (orchestrator/router/parallel/eval-optimizer) vs true agents.
 - [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic. Compaction, sub-agents, structured note-taking.
 - [Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — Anthropic. Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement.
 - [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) — Anthropic. Initializer + worker pattern for cross-context continuity (claude-progress.txt + git).
-- [How Anthropic teams use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code) — Anthropic. Internal-team patterns across infra, security, data science.
-- [Building agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) — Anthropic.
+- [How Anthropic teams use Claude Code](https://claude.com/blog/how-anthropic-teams-use-claude-code) — Anthropic. Internal-team patterns across infra, security, data science.
+- [Building agents with the Claude Agent SDK](https://claude.com/blog/building-agents-with-the-claude-agent-sdk) — Anthropic.
 - [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) — OpenAI. Use cases, design foundations, multi-agent, guardrails.
 - [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. Coined "context engineering" in April 2025.
 - [12-Factor Agents talk (YouTube)](https://www.youtube.com/watch?v=8kMaTybvDUw) — Dex Horthy. ~30 min version of the README.
@@ -42,7 +42,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [The 2026 MCP Roadmap](https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/) — Where the protocol is headed.
 - [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) — Official reference implementations.
 - [wong2/awesome-mcp-servers](https://github.com/wong2/awesome-mcp-servers) and [appcypher/awesome-mcp-servers](https://github.com/appcypher/awesome-mcp-servers) — Two best-maintained registries.
-- [Anthropic — Tool use docs](https://platform.claude.com/docs/en/build-with-claude/tool-use) — Schema design, parallel calls, structured outputs.
+- [Anthropic — Tool use docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) — Schema design, parallel calls, structured outputs.
 - [Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/) — Google. Agent-to-agent (vs agent-to-tool) protocol.
 - [A2A specification](https://a2a-protocol.org/latest/specification/) — Now under Linux Foundation; gRPC support since v0.3.
 
@@ -56,13 +56,13 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [openai/openai-agents-python](https://github.com/openai/openai-agents-python) — Source.
 - [Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/) — Successor to AutoGen + Semantic Kernel; .NET/Python.
 - [AutoGen v0.4](https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html) — Asynchronous actor-model multi-agent runtime.
-- [Google ADK (Agent Development Kit) docs](https://google.github.io/adk-docs/) — Open-source, multi-language (Python/TS/Go/Java).
+- [Google ADK (Agent Development Kit) docs](https://adk.dev/) — Open-source, multi-language (Python/TS/Go/Java).
 - [google/adk-python](https://github.com/google/adk-python) — Source.
 - [CrewAI docs](https://docs.crewai.com/) — Role/task/crew abstraction; lighter than LangGraph.
-- [Pydantic AI](https://ai.pydantic.dev/) — Type-safe agents with DI; the pleasant Python option.
+- [Pydantic AI](https://pydantic.dev/docs/ai/overview/) — Type-safe agents with DI; the pleasant Python option.
 - [smolagents](https://huggingface.co/docs/smolagents/index) — Hugging Face. Minimalist code-acting agent library.
 - [Mastra](https://mastra.ai/docs) — TypeScript-first.
-- [Inngest AgentKit](https://agentkit.inngest.com/overview) — TS framework on top of Inngest's durable runtime.
+- [Inngest AgentKit](https://agentkit.inngest.com/) — TS framework on top of Inngest's durable runtime.
 
 ## 4. Durable execution for agents
 
@@ -79,8 +79,8 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Anthropic — Memory tool](https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool) — First-party file-backed memory.
 - [Letta docs](https://docs.letta.com/) — Production fork of MemGPT; tiered memory (core/archival/recall).
 - [MemGPT paper — LLMs as Operating Systems](https://arxiv.org/abs/2310.08560) — The paged-memory paper that started the wave.
-- [Mem0 docs](https://docs.mem0.ai/) — Drop-in memory layer with extraction/consolidation.
-- [Zep / Graphiti](https://help.getzep.com/) — Bi-temporal knowledge graph for memory with fact validity windows.
+- [Mem0 docs](https://docs.mem0.ai/introduction) — Drop-in memory layer with extraction/consolidation.
+- [Zep / Graphiti](https://help.getzep.com/overview) — Bi-temporal knowledge graph for memory with fact validity windows.
 - [getzep/graphiti](https://github.com/getzep/graphiti) — The temporal-graph engine standalone.
 - [LangMem](https://langchain-ai.github.io/langmem/) — Semantic / episodic / procedural primitives over LangGraph stores.
 - [Generative Agents (Park et al.)](https://arxiv.org/abs/2304.03442) — Reflection + episodic memory; still the best single read.
@@ -88,7 +88,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 ## 6. Sandboxing & code execution
 
 - [E2B docs](https://e2b.dev/docs) — Firecracker microVM sandboxes; the de-facto hosted choice.
-- [Modal Sandboxes](https://modal.com/docs/guide/sandbox) — gVisor + filesystem snapshots; good for batch fleets.
+- [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) — gVisor + filesystem snapshots; good for batch fleets.
 - [Daytona docs](https://www.daytona.io/docs) — OSS sandbox repurposed for agents; sub-200ms cold start claims.
 - [Cloudflare — Containers for Agents](https://developers.cloudflare.com/containers/) — Per-agent containers tied to Durable Objects.
 - [cloudflare/sandbox-sdk](https://github.com/cloudflare/sandbox-sdk) — Reference SDK for spawning sandboxes from Workers.
@@ -98,12 +98,12 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 
 ## 7. Inference & gateway infrastructure
 
-- [vLLM docs](https://docs.vllm.ai/) — Highest-throughput OSS inference; PagedAttention + prefix caching.
-- [SGLang](https://docs.sglang.ai/) — RadixAttention; great for tool-using agents that share prefixes.
-- [Hugging Face TGI](https://huggingface.co/docs/text-generation-inference) — Mature self-hosted with constrained decoding.
+- [vLLM docs](https://docs.vllm.ai/en/latest/) — Highest-throughput OSS inference; PagedAttention + prefix caching.
+- [SGLang](https://docs.sglang.io/) — RadixAttention; great for tool-using agents that share prefixes.
+- [Hugging Face TGI](https://huggingface.co/docs/text-generation-inference/index) — Mature self-hosted with constrained decoding.
 - [LiteLLM](https://docs.litellm.ai/) — 100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing layer.
-- [Portkey AI Gateway](https://portkey.ai/docs) — OSS gateway with guardrails, caching, conditional routing.
-- [OpenRouter docs](https://openrouter.ai/docs) — Hosted multi-provider routing.
+- [Portkey AI Gateway](https://portkey.ai/docs/introduction/what-is-portkey) — OSS gateway with guardrails, caching, conditional routing.
+- [OpenRouter docs](https://openrouter.ai/docs/quickstart) — Hosted multi-provider routing.
 - [Anthropic — Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) — Cache-key design, 5-min TTL, 85% latency reduction reference.
 - [OpenAI — Latency optimization](https://platform.openai.com/docs/guides/latency-optimization) — TTFT vs total time; streaming patterns.
 
@@ -126,12 +126,12 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [OpenAI Evals](https://github.com/openai/evals) — **OS.** Original registry-of-evals framework.
 - [Promptfoo](https://www.promptfoo.dev/docs/intro/) — **OS + SaaS.** YAML matrix testing + red-team module; CI-friendly.
 - [DeepEval](https://github.com/confident-ai/deepeval) — **OS.** Pytest-style assertions + 14 default metrics.
-- [Ragas](https://docs.ragas.io/) — **OS.** RAG-specific metrics standard.
-- [LangSmith Evaluations](https://docs.smith.langchain.com/evaluation) — **SaaS.**
+- [Ragas](https://docs.ragas.io/en/stable/) — **OS.** RAG-specific metrics standard.
+- [LangSmith Evaluations](https://docs.langchain.com/langsmith/evaluation-concepts) — **SaaS.**
 - [Braintrust](https://www.braintrust.dev/docs) — **SaaS.** Hill-climbing dev loop with strong DX.
-- [Arize Phoenix](https://docs.arize.com/phoenix) — **OS.** OTel-native traces + evals.
-- [Langfuse Evaluations](https://langfuse.com/docs/scores/overview) — **OS + SaaS.**
-- [Patronus AI](https://docs.patronus.ai/) — **SaaS.** Managed judge models (Lynx for hallucination).
+- [Arize Phoenix](https://arize.com/docs/phoenix) — **OS.** OTel-native traces + evals.
+- [Langfuse Evaluations](https://langfuse.com/docs/evaluation/overview) — **OS + SaaS.**
+- [Patronus AI](https://docs.patronus.ai:443/docs) — **SaaS.** Managed judge models (Lynx for hallucination).
 - **Benchmarks:** [SWE-bench](https://www.swebench.com/), [SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/), [GAIA](https://arxiv.org/abs/2311.12983), [τ-bench](https://github.com/sierra-research/tau-bench), [WebArena](https://webarena.dev/), [OSWorld](https://os-world.github.io/), [MLE-bench](https://github.com/openai/mle-bench), [SWE-Lancer](https://arxiv.org/abs/2502.12115).
 
 ## 10. Observability & tracing
@@ -141,17 +141,17 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [OpenLLMetry](https://github.com/traceloop/openllmetry) — **OS.** OTel SDK + auto-instrumentation for LLM/vector/agent libs.
 - [Langfuse](https://langfuse.com/docs) — **OS + SaaS.** Self-hostable observability + evals + prompt mgmt.
 - [Arize Phoenix](https://github.com/Arize-ai/phoenix) — **OS.** OpenInference traces; runs locally.
-- [LangSmith Tracing](https://docs.smith.langchain.com/observability) — **SaaS.** Framework-agnostic via SDK despite the name.
-- [Helicone](https://docs.helicone.ai/) — **OS + SaaS.** Proxy-based logging — lowest-friction integration.
+- [LangSmith Tracing](https://docs.langchain.com/langsmith/observability) — **SaaS.** Framework-agnostic via SDK despite the name.
+- [Helicone](https://docs.helicone.ai/getting-started/quick-start) — **OS + SaaS.** Proxy-based logging — lowest-friction integration.
 - [Honeycomb — Observability for AI Applications](https://www.honeycomb.io/blog/observability-3-ai-software) — Best engineering content on high-cardinality LLM tracing.
 - [Datadog LLM Observability](https://docs.datadoghq.com/llm_observability/) — **SaaS.** Strongest if already on Datadog.
 
 ## 11. Production testing patterns & cost/latency
 
 - [Promptfoo in CI (GitHub Action)](https://www.promptfoo.dev/docs/integrations/github-action/) — Block PRs on eval regressions.
-- [LangSmith — Online evaluations](https://docs.smith.langchain.com/observability/how_to_guides/online_evaluations) — Sampling prod traces back into eval datasets (the data flywheel).
+- [LangSmith — Online evaluations](https://docs.langchain.com/langsmith/online-evaluations-llm-as-judge) — Sampling prod traces back into eval datasets (the data flywheel).
 - [Honeycomb — We shipped AI](https://www.honeycomb.io/blog/we-shipped-ai-product) — Honest postmortem-style writing on shadow traffic + Query Assistant.
-- [Langfuse — Cost tracking](https://langfuse.com/docs/model-usage-and-cost) — Per-trace, per-user, per-prompt cost attribution.
+- [Langfuse — Cost tracking](https://langfuse.com/docs/observability/features/token-and-cost-tracking) — Per-trace, per-user, per-prompt cost attribution.
 - [Helicone — Caching dashboards](https://docs.helicone.ai/features/advanced-usage/caching) — Per-route token spend + cache hit rates.
 
 ## 12. Security for agents
@@ -169,12 +169,12 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 ## 13. Coding agent infrastructure (read for harness design even if not building one)
 
 - [Best Practices for Claude Code](https://code.claude.com/docs/en/best-practices) — Anthropic. CLAUDE.md, tools, harness design.
-- [Claude Agent SDK overview](https://platform.claude.com/docs/en/agent-sdk/overview) — Anthropic. Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP.
+- [Claude Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview) — Anthropic. Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP.
 - [anthropics/claude-agent-sdk-python](https://github.com/anthropics/claude-agent-sdk-python) — Source.
 - [Cognition — How Cognition uses Devin to build Devin](https://cognition.ai/blog/how-cognition-uses-devin-to-build-devin) — Internal dogfooding patterns.
 - [Cognition — Multi-Agents: What's Actually Working](https://cognition.ai/blog/multi-agents-working) — The pragmatic update to "Don't Build Multi-Agents."
 - [Aider blog](https://aider.chat/docs/) — Repo-map, edit formats; the leaderboard is one of the best practical evals.
-- [Sourcegraph Amp — engineering posts](https://ampcode.com/news) — Long-form on tool design and oracle patterns.
+- [Sourcegraph Amp — engineering posts](https://ampcode.com/chronicle) — Long-form on tool design and oracle patterns.
 - [openai/codex](https://github.com/openai/codex) — Reference open-source coding-agent CLI.
 - [Geoffrey Huntley — how to build a coding agent (workshop)](https://ghuntley.com/agent/) — Free workshop on building one from scratch.
 - [Geoffrey Huntley — Ralph Wiggum loop](https://ghuntley.com/ralph/) — The brute-force feedback-loop pattern essay.
@@ -198,5 +198,5 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Simon Willison](https://simonwillison.net/) — The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
 - [Embrace The Red](https://embracethered.com/blog/) — Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
 - [Cloudflare AI agents tag](https://blog.cloudflare.com/tag/ai-agents/) — Agent-runtime and infra posts from Cloudflare's edge platform.
-- [LangChain blog](https://blog.langchain.com/) — Framework updates, multi-agent patterns, and ecosystem news.
+- [LangChain blog](https://www.langchain.com/blog) — Framework updates, multi-agent patterns, and ecosystem news.
 - [Hamel's blog](https://hamel.dev/) — Applied LLM engineering and evals from a practitioner perspective.
