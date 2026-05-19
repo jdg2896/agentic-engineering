@@ -6,7 +6,7 @@ _Status: v1 design, signed off via /grill-me on 2026-05-03._
 
 ## 1. Goal
 
-Turn `agentic-engineering.md` from a hand-edited Markdown file into a **self-maintaining curated resource guide** for backend engineers leveraging agentic engineering in their dev workflows. Two automated agents keep it fresh:
+Turn `agentic-engineering.md` from a hand-edited Markdown file into a **self-maintaining curated resource guide** for engineers building agentic systems across disciplines (FE, BE, infra, QA, data). Two automated agents keep it fresh:
 
 - **Verifier** — checks every URL is still live and canonical; opens a PR when something breaks or migrates.
 - **Scout** — periodically scans a curated list of reputable feeds and proposes new resources via PR.
@@ -358,7 +358,7 @@ Establish the structured data schema, build the renderer, and prove correctness 
 
 Hand-written prose templates that wrap the generated lists. Use Jinja2.
 
-- **`header.md`** — title, "Backend & infrastructure focus" subtitle, compilation-date placeholder (renderer fills with the most recent `verified_at`), the verification-mark caveat blurb at top.
+- **`header.md`** — title, the opinionated quality-bar subtitle (`_Opinionated. No tutorials, no listicles, no marketing. Continuously maintained — links verified weekly._`), compilation-date placeholder (renderer fills with the most recent `verified_at`), the verification-mark caveat blurb at top.
 - **`top_7.md`** — the "If you only read 7 things" intro line + numbered list rendered from the `top_7` slugs (resolved against `resources[]`).
 - **`sections.md.j2`** — body template, iterates `sections` in order, rendering each section's resources as a Markdown bullet list.
 - **`opinionated_stack.md`** — the table at the bottom of the current doc, copy-pasted verbatim. Hand-written, not generated.

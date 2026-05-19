@@ -21,6 +21,19 @@ T2 — DONE (2026-05-19)
     opener + criterion; `scout.py --dry-run --limit 3` ran clean
     (0 new entries this run, no parse error).
 
-T3 — TODO
+T3 — DONE (2026-05-19)
+  - docs/specs/self-maintaining-guide.md:9 → reworded to drop "for backend
+    engineers"; now "for engineers building agentic systems across
+    disciplines (FE, BE, infra, QA, data)".
+  - docs/specs/self-maintaining-guide.md:361 → header.md description now
+    references "the opinionated quality-bar subtitle" with the new subtitle
+    line quoted, no "Backend & infrastructure focus".
+  - docs/specs/readme-as-rendered-output.md:111 → quoted subtitle updated to
+    "_Opinionated. No tutorials, no listicles, no marketing. Continuously
+    maintained — links verified weekly._".
+  - Verify: `grep -rn -i "backend" docs/specs/` → only matches are in
+    discipline-agnostic-scope.md (intentional historical refs) and the
+    progress log; both target files clean. `uv run pytest` 41 passed.
+
 T4 — TODO
 T5 — TODO

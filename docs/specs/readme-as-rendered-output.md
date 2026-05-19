@@ -108,7 +108,7 @@ the new content so the diff is reviewable.
 - Templates:
   - Rewrite `templates/header.md`: drop the `compilation_month_year`
     line and the `URLs marked ✓...` preamble. Subtitle becomes:
-    `_Backend & infrastructure focus. Agent/language-agnostic. Continuously maintained — links verified weekly._`
+    `_Opinionated. No tutorials, no listicles, no marketing. Continuously maintained — links verified weekly._`
   - Rename `templates/caveats.md` → `templates/worth_following.md`.
     Replace contents with a Jinja2-iterated `## Worth following for ongoing signal`
     section that renders each entry as a Markdown bullet.
