@@ -35,5 +35,35 @@ T3 — DONE (2026-05-19)
     discipline-agnostic-scope.md (intentional historical refs) and the
     progress log; both target files clean. `uv run pytest` 41 passed.
 
-T4 — TODO
-T5 — TODO
+T4 — SHORTLIST PRODUCED & VERIFIED; AWAITING MAINTAINER APPROVAL (2026-05-19)
+  Proposed FE / computer-use authority feeds (all parse: HTTP 200, bozo=False
+  via feedparser; entry counts noted):
+    1. vercel-blog          atom            https://vercel.com/atom
+       (1160 entries) — Vercel maintains the AI SDK, the dominant toolkit for
+       streaming/agentic UIs in FE apps; primary source for FE-agent patterns.
+    2. browser-use-releases github-releases https://github.com/browser-use/browser-use/releases.atom
+       (10 entries) — leading OSS browser-driving agent lib; releases track
+       computer-use capability/API shifts.
+    3. playwright-releases  github-releases https://github.com/microsoft/playwright/releases.atom
+       (10 entries) — MS Playwright, de-facto browser-automation engine under
+       most QA / computer-use agents.
+    4. openai-news          rss             https://openai.com/news/rss.xml
+       (965 entries) — first-party authority for computer-using agents
+       (Operator) and coding agents (Codex).
+    5. zed-blog             rss             https://zed.dev/blog.rss
+       (133 entries) — Zed ships first-class agentic coding in a high-perf
+       editor; primary source for agent-in-editor design.
+    6. stagehand-releases   github-releases https://github.com/browserbase/stagehand/releases.atom
+       (10 entries) — Browserbase Stagehand, authority framework for AI-driven
+       browser automation.
+    7. chrome-developers    rss             https://developer.chrome.com/static/blog/feed.xml
+       (10 entries) — Chrome DevRel, authority on built-in/web AI APIs (Prompt
+       API, on-device models). MARGINAL: broadest of the set; maintainer to
+       confirm include vs. drop.
+  Dropped during vetting: anthropic-news (no public RSS — www.anthropic.com/
+  rss.xml → 404), cursor-blog (no public RSS — cursor.com/blog/rss.xml → 404).
+  sources.yaml NOT edited (per T4 "Must Not edit yet"). T5 is blocked until
+  the maintainer approves this shortlist (approve-all-7 / approve-core-6 /
+  adjust). Maintainer-approval question was posed but not yet answered.
+
+T5 — BLOCKED on T4 maintainer approval
