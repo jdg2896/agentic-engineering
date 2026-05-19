@@ -31,3 +31,72 @@ seen:
     title: Open Models have crossed a threshold
     source_id: langchain-blog
     rejected_at: '2026-05-07'
+  - url: https://simonwillison.net/2026/May/13/boris-mann/#atom-tag
+    title: Quoting Boris Mann
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-05-14'
+  - url: https://blog.cloudflare.com/clickhouse-query-plan-contention/
+    title: Our billing pipeline was suddenly slow. The culprit was a hidden 
+      bottleneck in ClickHouse
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-14'
+  - url: https://blog.cloudflare.com/browser-run-containers/
+    title: 'Browser Run: now running on Cloudflare Containers, it’s faster and more
+      scalable'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-14'
+  - url: https://blog.cloudflare.com/quic-death-spiral-fix/
+    title: "When \"idle\" isn't idle: how a Linux kernel optimization became a QUIC
+      bug"
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/the-anatomy-of-an-agent-harness
+    title: The Anatomy of an Agent Harness
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/introducing-managed-deep-agents
+    title: 'Managed Deep Agents: the fastest way to ship a production deep agent'
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/deep-agents-0-6
+    title: New in Deep Agents v0.6
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/introducing-context-hub
+    title: Introducing LangSmith Context Hub
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/introducing-llm-gateway
+    title: 'LangSmith LLM Gateway: runtime governance built into the agent lifecycle'
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/langsmith-sandboxes-generally-available
+    title: LangSmith Sandboxes are Generally Available
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/introducing-langsmith-engine
+    title: Introducing Langsmith Engine
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/introducing-smithdb
+    title: We built SmithDB, the data layer for agent observability
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/the-agent-development-lifecycle
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://www.langchain.com/blog/delta-channels-evolving-agent-runtime
+    title: 'Delta Channels: How We’re Evolving our Runtime for Long-Running Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-05-14'
+  - url: https://cognition.ai/blog/android-emulator
+    title: Devin now supports Android emulators
+    source_id: cognition-blog
+    rejected_at: '2026-05-14'
+  - url: 
+      https://cognition.ai/blog/how-to-automate-failure-triages-and-10x-test-generation-what-weve-learned-deploying-ai-across-hilsil-workflows
+    title: "How to Automate Failure Triages and 10x Test Generation: What We've Learned
+      Deploying AI Across HIL/SIL Workflows"
+    source_id: cognition-blog
+    rejected_at: '2026-05-14'
