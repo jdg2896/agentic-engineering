@@ -74,13 +74,13 @@ else
   echo "Created branch: $BRANCH (from main)"
 fi
 
-# Ensure the sandbox exists BEFORE the loop. `docker sandbox run claude`
-# (the agent form) prompts "workspace does not exist, create it? (y/N)"
-# when the sandbox is missing; inside the loop that prompt is invisible and
-# deadlocks forever. `docker sandbox create` is the non-interactive path.
-if ! docker sandbox ls 2>/dev/null | awk 'NR>1 {print $1}' | grep -qx "$SANDBOX_NAME"; then
+# Ensure the sandbox exists BEFORE the loop so the in-loop exec never blocks
+# on an interactive create prompt. `docker sandbox create claude WORKSPACE`
+# auto-names the sandbox `claude-<workspace-basename>` (no --name flag), which
+# is exactly how SANDBOX_NAME is derived above.
+if ! docker sandbox ls -q 2>/dev/null | grep -qx "$SANDBOX_NAME"; then
   echo "Creating sandbox $SANDBOX_NAME (workspace: $REPO_ROOT) ..."
-  docker sandbox create claude --name "$SANDBOX_NAME" "$REPO_ROOT"
+  docker sandbox create claude "$REPO_ROOT"
 fi
 
 open_pr() {
