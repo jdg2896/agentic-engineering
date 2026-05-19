@@ -1,6 +1,6 @@
-# Agentic Engineering Workflow — A Curated Resource Guide
+# Agentic Engineering — A Curated Resource Guide
 
-_Backend & infrastructure focus. Agent/language-agnostic. Continuously maintained — links verified weekly._
+_Opinionated. No tutorials, no listicles, no marketing. Continuously maintained — links verified weekly._
 
 ---
 
@@ -180,7 +180,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Geoffrey Huntley — Ralph Wiggum loop](https://ghuntley.com/ralph/) — The brute-force feedback-loop pattern essay.
 - [Open SWE: An Open-Source Framework for Internal Coding Agents](https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents) — LangChain. Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
 
-## 14. Backend-specific agent patterns (SRE, K8s, IaC)
+## 14. SRE & operations agents (K8s, observability, IaC)
 
 - [k8sgpt](https://docs.k8sgpt.ai/) — CNCF Sandbox. Read-only K8s diagnosis agent; canonical example.
 - [HolmesGPT](https://github.com/robusta-dev/holmes-gpt) — Robusta. On-call investigation agent with runbooks-as-tools.

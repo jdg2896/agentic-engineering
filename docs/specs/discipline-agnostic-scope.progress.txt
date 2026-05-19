@@ -1,0 +1,15 @@
+T1 — DONE (2026-05-19)
+  - templates/header.md: H1 → "# Agentic Engineering — A Curated Resource Guide"
+    (dropped "Workflow"); subtitle → "_Opinionated. No tutorials, no listicles,
+    no marketing. Continuously maintained — links verified weekly._".
+  - resources.yaml: Section 14 title → "SRE & operations agents (K8s,
+    observability, IaC)"; description body rewritten (no "backend" framing,
+    same shape/length, all named tools retained).
+  - Re-rendered README.md via `uv run python scripts/render.py`.
+  - Verify: `uv run pytest` 41 passed; README diff confined to H1, subtitle,
+    Section 14 heading; no "Workflow" title match; no "Backend-specific" match.
+
+T2 — TODO
+T3 — TODO
+T4 — TODO
+T5 — TODO
