@@ -9,7 +9,18 @@ T1 — DONE (2026-05-19)
   - Verify: `uv run pytest` 41 passed; README diff confined to H1, subtitle,
     Section 14 heading; no "Workflow" title match; no "Backend-specific" match.
 
-T2 — TODO
+T2 — DONE (2026-05-19)
+  - scripts/scout.py:50 opener → "You are an editorial assistant for a
+    curated, opinionated resource guide on agentic engineering."
+  - scripts/scout.py:87 inclusion criterion → "Content must be about
+    building, evaluating, operating, or securing agentic systems — any
+    engineering discipline (FE, BE, infra, QA, data)". All other criteria
+    lines left byte-identical.
+  - Verify: grep -ni "backend" scripts/scout.py → no matches;
+    `uv run pytest` 41 passed; build_system_prompt import confirms new
+    opener + criterion; `scout.py --dry-run --limit 3` ran clean
+    (0 new entries this run, no parse error).
+
 T3 — TODO
 T4 — TODO
 T5 — TODO
