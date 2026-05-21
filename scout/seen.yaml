@@ -100,3 +100,28 @@ seen:
       Deploying AI Across HIL/SIL Workflows"
     source_id: cognition-blog
     rejected_at: '2026-05-14'
+  - url: https://blog.cloudflare.com/claude-managed-agents/
+    title: Announcing Claude Managed Agents on Cloudflare
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-21'
+  - url: https://blog.cloudflare.com/cyber-frontier-models/
+    title: 'Project Glasswing: what Mythos showed us'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-21'
+  - url: 
+      https://www.langchain.com/blog/how-we-built-langsmith-engine-our-agent-for-improving-agents
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-05-21'
+  - url: https://www.langchain.com/blog/introducing-langchain-labs
+    title: Introducing LangChain Labs
+    source_id: langchain-blog
+    rejected_at: '2026-05-21'
+  - url: https://www.langchain.com/blog/interrupt-2026-overview
+    title: Everything we shipped at Interrupt
+    source_id: langchain-blog
+    rejected_at: '2026-05-21'
+  - url: https://www.langchain.com/blog/tuning-deep-agents-different-models
+    title: Tuning Deep Agents to Work Well with Different Models
+    source_id: langchain-blog
+    rejected_at: '2026-05-21'
