@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-05-18
+    verified_at: &id001 2026-05-25
   - name: Cognition blog
     url: https://cognition.ai/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
@@ -141,6 +141,8 @@ worth_following:
     url: https://blog.cloudflare.com/tag/ai-agents/
     blurb: Agent-runtime and infra posts from Cloudflare's edge platform.
     first_dead_at: &id002 2026-05-03
+    quarantined_at: *id001
+    quarantine_reason: '404'
   - name: LangChain blog
     url: https://www.langchain.com/blog
     blurb: Framework updates, multi-agent patterns, and ecosystem news.
@@ -1010,6 +1012,8 @@ resources:
     notes: null
 
     first_dead_at: *id002
+    quarantined_at: *id001
+    quarantine_reason: soft_404
   - id: letta-docs
     section: memory-systems
     url: https://docs.letta.com/
@@ -2031,6 +2035,8 @@ resources:
     notes: null
 
     first_dead_at: *id002
+    quarantined_at: *id001
+    quarantine_reason: '404'
   - id: datadog-llm-observability
     section: observability
     url: https://docs.datadoghq.com/llm_observability/
@@ -2505,6 +2511,8 @@ resources:
     notes: null
 
     first_dead_at: *id002
+    quarantined_at: *id001
+    quarantine_reason: '404'
   - id: datadog-bits-ai-sre
     section: backend-patterns
     url: https://www.datadoghq.com/blog/bits-ai-sre/
@@ -2540,6 +2548,8 @@ resources:
     notes: null
 
     first_dead_at: *id002
+    quarantined_at: *id001
+    quarantine_reason: '404'
   - id: terraform-mcp-server
     section: backend-patterns
     url: https://github.com/hashicorp/terraform-mcp-server
