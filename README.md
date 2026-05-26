@@ -76,7 +76,6 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 
 ## 5. Memory systems
 
-- [Anthropic — Memory tool](https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool) — First-party file-backed memory.
 - [Letta docs](https://docs.letta.com/) — Production fork of MemGPT; tiered memory (core/archival/recall).
 - [MemGPT paper — LLMs as Operating Systems](https://arxiv.org/abs/2310.08560) — The paged-memory paper that started the wave.
 - [Mem0 docs](https://docs.mem0.ai/introduction) — Drop-in memory layer with extraction/consolidation.
@@ -144,7 +143,6 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Arize Phoenix](https://github.com/Arize-ai/phoenix) — **OS.** OpenInference traces; runs locally.
 - [LangSmith Tracing](https://docs.langchain.com/langsmith/observability) — **SaaS.** Framework-agnostic via SDK despite the name.
 - [Helicone](https://docs.helicone.ai/getting-started/quick-start) — **OS + SaaS.** Proxy-based logging — lowest-friction integration.
-- [Honeycomb — Observability for AI Applications](https://www.honeycomb.io/blog/observability-3-ai-software) — Best engineering content on high-cardinality LLM tracing.
 - [Datadog LLM Observability](https://docs.datadoghq.com/llm_observability/) — **SaaS.** Strongest if already on Datadog.
 
 ## 11. Production testing patterns & cost/latency
@@ -184,9 +182,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 ## 14. Backend-specific agent patterns (SRE, K8s, IaC)
 
 - [k8sgpt](https://docs.k8sgpt.ai/) — CNCF Sandbox. Read-only K8s diagnosis agent; canonical example.
-- [HolmesGPT](https://github.com/robusta-dev/holmes-gpt) — Robusta. On-call investigation agent with runbooks-as-tools.
 - [Datadog — Bits AI SRE](https://www.datadoghq.com/blog/bits-ai-sre/) — Datadog's autonomous incident-response agent design.
-- [Honeycomb — Building an AI Agent for Observability](https://www.honeycomb.io/blog/ai-agent-observability) — Hard-won lessons on agents over telemetry data.
 - [HashiCorp — Terraform MCP server](https://github.com/hashicorp/terraform-mcp-server) — Reference IaC tool surface.
 - [Anthropic — How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) — Best multi-agent case study, period.
 
@@ -198,6 +194,5 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Cognition blog](https://cognition.ai/blog) — Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
 - [Simon Willison](https://simonwillison.net/) — The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
 - [Embrace The Red](https://embracethered.com/blog/) — Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
-- [Cloudflare AI agents tag](https://blog.cloudflare.com/tag/ai-agents/) — Agent-runtime and infra posts from Cloudflare's edge platform.
 - [LangChain blog](https://www.langchain.com/blog) — Framework updates, multi-agent patterns, and ecosystem news.
 - [Hamel's blog](https://hamel.dev/) — Applied LLM engineering and evals from a practitioner perspective.
