@@ -94,6 +94,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [apple/container](https://github.com/apple/container) — Native macOS container runtime; useful for local agent dev.
 - [hyperlight-dev/hyperlight](https://github.com/hyperlight-dev/hyperlight) — Microsoft's sub-millisecond WASM/VM micro-sandbox.
 - [gVisor docs](https://gvisor.dev/docs/) — User-space kernel; understand it before trusting "sandboxed" claims.
+- [Interpreters in Deep Agents: Code Between Tool Calls and Sandboxes](https://www.langchain.com/blog/give-your-agents-an-interpreter) — LangChain. Embedded interpreter runtimes let agents write code to coordinate tool calls, manage working state between steps, and control what gets surfaced into model context — reducing token pressure and enabling finer-grained orchestration than pure tool-dispatch.
 
 ## 7. Inference & gateway infrastructure
 
