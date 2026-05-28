@@ -125,3 +125,31 @@ seen:
     title: Tuning Deep Agents to Work Well with Different Models
     source_id: langchain-blog
     rejected_at: '2026-05-21'
+  - url: https://blog.cloudflare.com/our-unified-data-platform/
+    title: How we built Cloudflare's data platform and an AI agent on top of it
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-28'
+  - url: https://blog.cloudflare.com/iran-internet-partially-restored-may-2026/
+    title: Iran's Internet is partially restored, Cloudflare Radar data shows
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-05-28'
+  - url: https://www.langchain.com/blog/may-2026-langchain-newsletter
+    title: 'Fixing agent failures in production: Interrupt 2026 recap | LangChain
+      Newsletter'
+    source_id: langchain-blog
+    rejected_at: '2026-05-28'
+  - url: https://www.langchain.com/blog/april-2026-langchain-newsletter
+    title: 'April 2026: LangChain Newsletter'
+    source_id: langchain-blog
+    rejected_at: '2026-05-28'
+  - url: 
+      https://www.langchain.com/blog/lyft-built-a-self-serve-ai-agent-platform-for-customer-support-with-langgraph-and-langsmith
+    title: How Lyft Built a Self-Serve AI Agent Platform with LangGraph and 
+      LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-05-28'
+  - url: 
+      https://www.langchain.com/blog/mission-control-operating-self-hosted-langsmith-on-kubernetes
+    title: Mission Control for Self-Hosted LangSmith on Kubernetes
+    source_id: langchain-blog
+    rejected_at: '2026-05-28'
