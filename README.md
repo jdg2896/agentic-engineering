@@ -105,7 +105,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Portkey AI Gateway](https://portkey.ai/docs/introduction/what-is-portkey) — OSS gateway with guardrails, caching, conditional routing.
 - [OpenRouter docs](https://openrouter.ai/docs/quickstart) — Hosted multi-provider routing.
 - [Anthropic — Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) — Cache-key design, 5-min TTL, 85% latency reduction reference.
-- [OpenAI — Latency optimization](https://platform.openai.com/docs/guides/latency-optimization) — TTFT vs total time; streaming patterns.
+- [OpenAI — Latency optimization](https://developers.openai.com/api/docs/guides/latency-optimization) — TTFT vs total time; streaming patterns.
 
 ## 8. Evaluation — philosophy (read these first)
 
