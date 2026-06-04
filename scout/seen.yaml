@@ -125,3 +125,80 @@ seen:
     title: Tuning Deep Agents to Work Well with Different Models
     source_id: langchain-blog
     rejected_at: '2026-05-21'
+  - url: https://blog.cloudflare.com/voidzero-joins-cloudflare/
+    title: VoidZero is joining Cloudflare
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-06-04'
+  - url: https://blog.cloudflare.com/enforce-first-as-bgp/
+    title: Enforcing the First AS in BGP AS_PATHs
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-06-04'
+  - url: https://blog.cloudflare.com/optimizing-core-unit-boot-time/
+    title: How we reduced core unit boot time from hours to minutes
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-06-04'
+  - url: https://blog.cloudflare.com/our-unified-data-platform/
+    title: How we built Cloudflare's data platform and an AI agent on top of it
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-06-04'
+  - url: https://blog.cloudflare.com/iran-internet-partially-restored-may-2026/
+    title: Iran's Internet is partially restored, Cloudflare Radar data shows
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-06-04'
+  - url: https://www.langchain.com/blog/model-neutrality
+    title: 'Model Neutrality: Why Avoiding AI Vendor Lock-In Matters'
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: https://www.langchain.com/blog/how-to-build-a-custom-agent-harness
+    title: How to Build a Custom Agent Harness
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: 
+      https://www.langchain.com/blog/how-harmonic-rebuilt-scout-on-deep-agents-and-4xd-retention-with-langsmith
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: https://www.langchain.com/blog/introducing-rubrics-for-deepagents
+    title: 'Introducing Rubrics: Build Agents that Evaluate and Correct Their Work'
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: 
+      https://www.langchain.com/blog/designing-efficient-verifiers-for-legal-agents
+    title: Designing Efficient Verifiers for Legal Agents
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: 
+      https://www.langchain.com/blog/how-rippling-went-ai-native-across-every-product-in-6-months-with-deep-agents-and-langsmith
+    title: How Rippling built production AI in 6 months with Deep Agents and 
+      LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: https://www.langchain.com/blog/interpreter-skills
+    title: 'Interpreter Skills: Building Workflows for Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: 
+      https://www.langchain.com/blog/financial-ai-that-investigates-macro-trends-eu-economic-analysis-with-you-com-and-langchain
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: 
+      https://www.langchain.com/blog/mission-control-operating-self-hosted-langsmith-on-kubernetes
+    title: Mission Control for Self-Hosted LangSmith on Kubernetes
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: https://www.langchain.com/blog/may-2026-langchain-newsletter
+    title: 'Fixing agent failures in production: Interrupt 2026 recap | LangChain
+      Newsletter'
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: https://www.langchain.com/blog/april-2026-langchain-newsletter
+    title: 'April 2026: LangChain Newsletter'
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
+  - url: 
+      https://www.langchain.com/blog/lyft-built-a-self-serve-ai-agent-platform-for-customer-support-with-langgraph-and-langsmith
+    title: How Lyft Built a Self-Serve AI Agent Platform with LangGraph and 
+      LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-06-04'
