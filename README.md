@@ -73,6 +73,7 @@ _Backend & infrastructure focus. Agent/language-agnostic. Continuously maintaine
 - [Restate — AI agents](https://docs.restate.dev/use-cases/ai-agents) — Lightweight durable execution; agents as virtual objects.
 - [Hatchet — Durable Tasks](https://docs.hatchet.run/v1/durable-tasks) — Postgres-backed task queue with agent-aware patterns (agentic loops, HITL).
 - [DBOS — Durable Execution for Building Crashproof AI Agents](https://www.dbos.dev/blog/durable-execution-crashproof-ai-agents) — Postgres-as-runtime; smaller-team alternative to Temporal.
+- [Fault Tolerance in LangGraph: Retries, Timeouts and Error Handlers](https://www.langchain.com/blog/fault-tolerance-in-langgraph) — LangChain. Three fault-tolerance primitives inside LangGraph — RetryPolicy (backoff retries), TimeoutPolicy (wall-clock and idle caps), and error_handler (post-retry cleanup) — plus how to compose them and apply the SAGA pattern for multi-step workflows with real-world side effects.
 
 ## 5. Memory systems
 
