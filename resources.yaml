@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-06-08
+    verified_at: &id001 2026-06-15
   - name: Cognition blog
     url: https://cognition.ai/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
