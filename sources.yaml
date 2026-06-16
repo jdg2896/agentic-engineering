@@ -130,3 +130,53 @@ sources:
     last_checked_at: 2026-05-14
     enabled: true
     notes: null
+
+  # ── FE / computer-use feeds ───────────────────────────────────────────────
+
+  - id: vercel-blog
+    type: atom
+    url: https://vercel.com/atom
+    cadence: weekly
+    last_checked_at: 2026-06-16
+    enabled: true
+    notes: null
+
+  - id: openai-news
+    type: rss
+    url: https://openai.com/news/rss.xml
+    cadence: weekly
+    last_checked_at: 2026-06-16
+    enabled: true
+    notes: null
+
+  - id: zed-blog
+    type: rss
+    url: https://zed.dev/blog.rss
+    cadence: weekly
+    last_checked_at: 2026-06-16
+    enabled: true
+    notes: null
+
+  - id: browser-use-releases
+    type: github-releases
+    url: https://github.com/browser-use/browser-use/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-06-16
+    enabled: true
+    notes: null
+
+  - id: playwright-releases
+    type: github-releases
+    url: https://github.com/microsoft/playwright/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-06-16
+    enabled: true
+    notes: null
+
+  - id: stagehand-releases
+    type: github-releases
+    url: https://github.com/browserbase/stagehand/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-06-16
+    enabled: true
+    notes: null
