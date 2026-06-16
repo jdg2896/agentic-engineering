@@ -35,7 +35,7 @@ T3 — DONE (2026-05-19)
     discipline-agnostic-scope.md (intentional historical refs) and the
     progress log; both target files clean. `uv run pytest` 41 passed.
 
-T4 — SHORTLIST PRODUCED & VERIFIED; AWAITING MAINTAINER APPROVAL (2026-05-19)
+T4 — APPROVED: core 6 (chrome-developers dropped) (2026-06-16)
   Proposed FE / computer-use authority feeds (all parse: HTTP 200, bozo=False
   via feedparser; entry counts noted):
     1. vercel-blog          atom            https://vercel.com/atom
@@ -62,8 +62,25 @@ T4 — SHORTLIST PRODUCED & VERIFIED; AWAITING MAINTAINER APPROVAL (2026-05-19)
        confirm include vs. drop.
   Dropped during vetting: anthropic-news (no public RSS — www.anthropic.com/
   rss.xml → 404), cursor-blog (no public RSS — cursor.com/blog/rss.xml → 404).
-  sources.yaml NOT edited (per T4 "Must Not edit yet"). T5 is blocked until
-  the maintainer approves this shortlist (approve-all-7 / approve-core-6 /
-  adjust). Maintainer-approval question was posed but not yet answered.
+  sources.yaml NOT edited (per T4 "Must Not edit yet"). Maintainer approved
+  the core 6 on 2026-06-16; chrome-developers dropped as MARGINAL.
 
-T5 — BLOCKED on T4 maintainer approval
+T5 — DONE (2026-06-16)
+  - sources.yaml: appended the approved core 6 under a new
+    "# ── FE / computer-use feeds ──" banner — vercel-blog, openai-news,
+    zed-blog, browser-use-releases, playwright-releases, stagehand-releases.
+    Each follows the existing entry shape (id/type/url/cadence: weekly/
+    last_checked_at: 2026-06-16/enabled: true/notes: null).
+  - Verify: sources.yaml parses (yaml.safe_load → 22 sources); each new feed
+    `scout.py --dry-run --source <id> --limit 1` fetched & parsed clean
+    (0 new entries since 2026-06-16, no parse error). `uv run pytest` 41 passed.
+
+SECTION-ID RENAME — DONE (2026-06-16)
+  Maintainer-approved. Goal is to drop backend-*specific* framing, not the
+  literal word "backend". Section 14 is genuinely SRE/ops/IaC (it was
+  mislabelled as backend), so its slug shouldn't imply backend: renamed id
+  backend-patterns → sre-ops-patterns (line 105 id + comment + 6 `section:`
+  refs); top_7 unaffected; render output unchanged (id is not rendered).
+  Left untouched: the OpenTelemetry blurb at L1904 ("swap backends") — that
+  genuinely refers to observability backends, so it stays on purpose (and
+  editing it would alter rendered README beyond the allowed deltas anyway).
