@@ -47,7 +47,7 @@ TOOL_DEF = {
 
 def build_system_prompt(sections: list, resources: list) -> str:
     lines = [
-        "You are an editorial assistant for a curated resource guide for backend engineers building agentic systems in developer workflows.",
+        "You are an editorial assistant for a curated, opinionated resource guide on agentic engineering.",
         "",
         "## Guide sections",
         "",
@@ -84,7 +84,7 @@ def build_system_prompt(sections: list, resources: list) -> str:
         '- No listicles, SEO-optimised roundups, or "X things you should know" posts',
         "- Papers must have practical infrastructure implications, not pure ML theory",
         "- Tools must be production-ready or notable open-source research artefacts",
-        "- Content must be relevant to backend engineers building agentic systems in dev workflows",
+        "- Content must be about building, evaluating, operating, or securing agentic systems — any engineering discipline (FE, BE, infra, QA, data)",
         "- Vendor blog posts are acceptable only if they contain reproducible techniques or architecture decisions",
         "- Reject if a substantially similar resource already exists in resources.yaml",
         "- News/announcements (new model release, funding round) → reject unless the announcement post itself contains technical content",

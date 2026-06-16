@@ -1,5 +1,5 @@
-# Agentic Engineering Workflow — A Curated Resource Guide
+# Agentic Engineering — A Curated Resource Guide
 
-_Backend & infrastructure focus. Agent/language-agnostic. Continuously maintained — links verified weekly._
+_Opinionated. No tutorials, no listicles, no marketing. Continuously maintained — links verified weekly._
 
 ---

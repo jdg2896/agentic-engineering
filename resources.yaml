@@ -102,14 +102,14 @@ sections:
       for building and running coding agents — Claude Code best practices, the
       Claude Agent SDK, Cognition's Devin learnings, Aider, Sourcegraph Amp,
       and the Ralph Wiggum loop.
-  - id: backend-patterns
+  - id: sre-ops-patterns
     order: 14
-    title: "Backend-specific agent patterns (SRE, K8s, IaC)"
+    title: "SRE & operations agents (K8s, observability, IaC)"
     description: |
-      Agent applications targeting SRE, Kubernetes, IaC, and incident-response
-      workflows — k8sgpt, HolmesGPT, Datadog Bits AI SRE, Honeycomb's
-      observability agent, Terraform's MCP server, and the canonical
-      multi-agent research-system case study.
+      Agents that operate production systems: SRE, Kubernetes, observability,
+      IaC, and incident response — k8sgpt, HolmesGPT, Datadog Bits AI SRE,
+      Honeycomb's observability agent, Terraform's MCP server, and the
+      canonical multi-agent research-system case study.
 
 top_7:
   - building-effective-agents
@@ -2473,11 +2473,11 @@ resources:
     notes: null
 
   # ----------------------------------------------------------------------
-  # Section 14: backend-patterns
+  # Section 14: sre-ops-patterns
   # (multi-agent-research-system is last — matches original doc order)
   # ----------------------------------------------------------------------
   - id: k8sgpt
-    section: backend-patterns
+    section: sre-ops-patterns
     url: https://docs.k8sgpt.ai/
     title: "k8sgpt"
     author: "CNCF Sandbox"
@@ -2494,7 +2494,7 @@ resources:
     notes: null
 
   - id: holmesgpt
-    section: backend-patterns
+    section: sre-ops-patterns
     url: https://github.com/robusta-dev/holmes-gpt
     title: "HolmesGPT"
     author: "Robusta"
@@ -2514,7 +2514,7 @@ resources:
     quarantined_at: *id003
     quarantine_reason: '404'
   - id: datadog-bits-ai-sre
-    section: backend-patterns
+    section: sre-ops-patterns
     url: https://www.datadoghq.com/blog/bits-ai-sre/
     title: "Datadog — Bits AI SRE"
     author: null
@@ -2531,7 +2531,7 @@ resources:
     notes: null
 
   - id: honeycomb-agent-observability
-    section: backend-patterns
+    section: sre-ops-patterns
     url: https://www.honeycomb.io/blog/ai-agent-observability
     title: "Honeycomb — Building an AI Agent for Observability"
     author: null
@@ -2551,7 +2551,7 @@ resources:
     quarantined_at: *id003
     quarantine_reason: '404'
   - id: terraform-mcp-server
-    section: backend-patterns
+    section: sre-ops-patterns
     url: https://github.com/hashicorp/terraform-mcp-server
     title: "HashiCorp — Terraform MCP server"
     author: null
@@ -2568,7 +2568,7 @@ resources:
     notes: null
 
   - id: multi-agent-research-system
-    section: backend-patterns
+    section: sre-ops-patterns
     url: https://www.anthropic.com/engineering/multi-agent-research-system
     title: "Anthropic — How we built our multi-agent research system"
     author: null

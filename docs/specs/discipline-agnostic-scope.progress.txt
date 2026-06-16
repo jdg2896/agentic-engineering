@@ -1,0 +1,86 @@
+T1 — DONE (2026-05-19)
+  - templates/header.md: H1 → "# Agentic Engineering — A Curated Resource Guide"
+    (dropped "Workflow"); subtitle → "_Opinionated. No tutorials, no listicles,
+    no marketing. Continuously maintained — links verified weekly._".
+  - resources.yaml: Section 14 title → "SRE & operations agents (K8s,
+    observability, IaC)"; description body rewritten (no "backend" framing,
+    same shape/length, all named tools retained).
+  - Re-rendered README.md via `uv run python scripts/render.py`.
+  - Verify: `uv run pytest` 41 passed; README diff confined to H1, subtitle,
+    Section 14 heading; no "Workflow" title match; no "Backend-specific" match.
+
+T2 — DONE (2026-05-19)
+  - scripts/scout.py:50 opener → "You are an editorial assistant for a
+    curated, opinionated resource guide on agentic engineering."
+  - scripts/scout.py:87 inclusion criterion → "Content must be about
+    building, evaluating, operating, or securing agentic systems — any
+    engineering discipline (FE, BE, infra, QA, data)". All other criteria
+    lines left byte-identical.
+  - Verify: grep -ni "backend" scripts/scout.py → no matches;
+    `uv run pytest` 41 passed; build_system_prompt import confirms new
+    opener + criterion; `scout.py --dry-run --limit 3` ran clean
+    (0 new entries this run, no parse error).
+
+T3 — DONE (2026-05-19)
+  - docs/specs/self-maintaining-guide.md:9 → reworded to drop "for backend
+    engineers"; now "for engineers building agentic systems across
+    disciplines (FE, BE, infra, QA, data)".
+  - docs/specs/self-maintaining-guide.md:361 → header.md description now
+    references "the opinionated quality-bar subtitle" with the new subtitle
+    line quoted, no "Backend & infrastructure focus".
+  - docs/specs/readme-as-rendered-output.md:111 → quoted subtitle updated to
+    "_Opinionated. No tutorials, no listicles, no marketing. Continuously
+    maintained — links verified weekly._".
+  - Verify: `grep -rn -i "backend" docs/specs/` → only matches are in
+    discipline-agnostic-scope.md (intentional historical refs) and the
+    progress log; both target files clean. `uv run pytest` 41 passed.
+
+T4 — APPROVED: core 6 (chrome-developers dropped) (2026-06-16)
+  Proposed FE / computer-use authority feeds (all parse: HTTP 200, bozo=False
+  via feedparser; entry counts noted):
+    1. vercel-blog          atom            https://vercel.com/atom
+       (1160 entries) — Vercel maintains the AI SDK, the dominant toolkit for
+       streaming/agentic UIs in FE apps; primary source for FE-agent patterns.
+    2. browser-use-releases github-releases https://github.com/browser-use/browser-use/releases.atom
+       (10 entries) — leading OSS browser-driving agent lib; releases track
+       computer-use capability/API shifts.
+    3. playwright-releases  github-releases https://github.com/microsoft/playwright/releases.atom
+       (10 entries) — MS Playwright, de-facto browser-automation engine under
+       most QA / computer-use agents.
+    4. openai-news          rss             https://openai.com/news/rss.xml
+       (965 entries) — first-party authority for computer-using agents
+       (Operator) and coding agents (Codex).
+    5. zed-blog             rss             https://zed.dev/blog.rss
+       (133 entries) — Zed ships first-class agentic coding in a high-perf
+       editor; primary source for agent-in-editor design.
+    6. stagehand-releases   github-releases https://github.com/browserbase/stagehand/releases.atom
+       (10 entries) — Browserbase Stagehand, authority framework for AI-driven
+       browser automation.
+    7. chrome-developers    rss             https://developer.chrome.com/static/blog/feed.xml
+       (10 entries) — Chrome DevRel, authority on built-in/web AI APIs (Prompt
+       API, on-device models). MARGINAL: broadest of the set; maintainer to
+       confirm include vs. drop.
+  Dropped during vetting: anthropic-news (no public RSS — www.anthropic.com/
+  rss.xml → 404), cursor-blog (no public RSS — cursor.com/blog/rss.xml → 404).
+  sources.yaml NOT edited (per T4 "Must Not edit yet"). Maintainer approved
+  the core 6 on 2026-06-16; chrome-developers dropped as MARGINAL.
+
+T5 — DONE (2026-06-16)
+  - sources.yaml: appended the approved core 6 under a new
+    "# ── FE / computer-use feeds ──" banner — vercel-blog, openai-news,
+    zed-blog, browser-use-releases, playwright-releases, stagehand-releases.
+    Each follows the existing entry shape (id/type/url/cadence: weekly/
+    last_checked_at: 2026-06-16/enabled: true/notes: null).
+  - Verify: sources.yaml parses (yaml.safe_load → 22 sources); each new feed
+    `scout.py --dry-run --source <id> --limit 1` fetched & parsed clean
+    (0 new entries since 2026-06-16, no parse error). `uv run pytest` 41 passed.
+
+SECTION-ID RENAME — DONE (2026-06-16)
+  Maintainer-approved. Goal is to drop backend-*specific* framing, not the
+  literal word "backend". Section 14 is genuinely SRE/ops/IaC (it was
+  mislabelled as backend), so its slug shouldn't imply backend: renamed id
+  backend-patterns → sre-ops-patterns (line 105 id + comment + 6 `section:`
+  refs); top_7 unaffected; render output unchanged (id is not rendered).
+  Left untouched: the OpenTelemetry blurb at L1904 ("swap backends") — that
+  genuinely refers to observability backends, so it stays on purpose (and
+  editing it would alter rendered README beyond the allowed deltas anyway).
