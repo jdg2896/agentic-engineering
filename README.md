@@ -10,7 +10,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 2. [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic. The successor concept to prompt engineering; defines the actual job.
 3. [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy / HumanLayer. Heroku's 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.
 4. [How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) — Anthropic. The best single multi-agent case study, with concrete failure modes.
-5. [Don't Build Multi-Agents](https://cognition.ai/blog/dont-build-multi-agents) — Cognition. Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26.
+5. [Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents) — Cognition. Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26.
 6. [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) — OpenAI. The complementary canonical from the other lab.
 7. [What We Learned From a Year of Building with LLMs](https://applied-llms.org/) — Yan/Bischof/Frye/Husain/Liu/Shankar. Tactical → operational → strategic; the field's distilled playbook.
 
@@ -27,7 +27,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) — OpenAI. Use cases, design foundations, multi-agent, guardrails.
 - [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. Coined "context engineering" in April 2025.
 - [12-Factor Agents talk (YouTube)](https://www.youtube.com/watch?v=8kMaTybvDUw) — Dex Horthy. ~30 min version of the README.
-- [Don't Build Multi-Agents](https://cognition.ai/blog/dont-build-multi-agents) — Cognition. Context fragmentation as the core failure mode.
+- [Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents) — Cognition. Context fragmentation as the core failure mode.
 - [Agentic Engineering Patterns](https://simonw.substack.com/p/agentic-engineering-patterns) — Simon Willison. Living catalog of patterns for code-generating-and-executing agents.
 - [The lethal trifecta for AI agents](https://simonw.substack.com/p/the-lethal-trifecta-for-ai-agents) — Simon Willison. Private data + untrusted content + exfiltration channel = the agent threat model.
 - [Simon Willison's ai-agents tag](https://simonwillison.net/tags/ai-agents/) — Best running curation in the field.
@@ -170,8 +170,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Best Practices for Claude Code](https://code.claude.com/docs/en/best-practices) — Anthropic. CLAUDE.md, tools, harness design.
 - [Claude Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview) — Anthropic. Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP.
 - [anthropics/claude-agent-sdk-python](https://github.com/anthropics/claude-agent-sdk-python) — Source.
-- [Cognition — How Cognition uses Devin to build Devin](https://cognition.ai/blog/how-cognition-uses-devin-to-build-devin) — Internal dogfooding patterns.
-- [Cognition — Multi-Agents: What's Actually Working](https://cognition.ai/blog/multi-agents-working) — The pragmatic update to "Don't Build Multi-Agents."
+- [Cognition — How Cognition uses Devin to build Devin](https://cognition.com/blog/how-cognition-uses-devin-to-build-devin) — Internal dogfooding patterns.
+- [Cognition — Multi-Agents: What's Actually Working](https://cognition.com/blog/multi-agents-working) — The pragmatic update to "Don't Build Multi-Agents."
 - [Aider blog](https://aider.chat/docs/) — Repo-map, edit formats; the leaderboard is one of the best practical evals.
 - [Sourcegraph Amp — engineering posts](https://ampcode.com/chronicle) — Long-form on tool design and oracle patterns.
 - [openai/codex](https://github.com/openai/codex) — Reference open-source coding-agent CLI.
@@ -191,7 +191,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 ## Worth following for ongoing signal
 
 - [Anthropic Engineering](https://www.anthropic.com/engineering) — Engineering posts from the model-maker — agents, tooling, and operational patterns.
-- [Cognition blog](https://cognition.ai/blog) — Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
+- [Cognition blog](https://cognition.com/blog) — Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
 - [Simon Willison](https://simonwillison.net/) — The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
 - [Embrace The Red](https://embracethered.com/blog/) — Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
 - [LangChain blog](https://www.langchain.com/blog) — Framework updates, multi-agent patterns, and ecosystem news.
