@@ -124,9 +124,9 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-06-15
+    verified_at: &id001 2026-06-22
   - name: Cognition blog
-    url: https://cognition.ai/blog
+    url: https://cognition.com/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
     verified_at: *id001
   - name: Simon Willison
@@ -317,7 +317,7 @@ resources:
 
   - id: dont-build-multi-agents
     section: foundations
-    url: https://cognition.ai/blog/dont-build-multi-agents
+    url: https://cognition.com/blog/dont-build-multi-agents
     title: "Don't Build Multi-Agents"
     author: "Cognition"
     type: article
@@ -1909,12 +1909,13 @@ resources:
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: &id004 2026-06-15
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: otel-genai-metrics
     section: observability
     url: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/
@@ -1926,12 +1927,13 @@ resources:
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: *id004
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: openllmetry
     section: observability
     url: https://github.com/traceloop/openllmetry
@@ -2355,7 +2357,7 @@ resources:
 
   - id: cognition-devin-dogfooding
     section: coding-agent-infra
-    url: https://cognition.ai/blog/how-cognition-uses-devin-to-build-devin
+    url: https://cognition.com/blog/how-cognition-uses-devin-to-build-devin
     title: "Cognition — How Cognition uses Devin to build Devin"
     author: null
     type: article
@@ -2372,7 +2374,7 @@ resources:
 
   - id: cognition-multi-agents-working
     section: coding-agent-infra
-    url: https://cognition.ai/blog/multi-agents-working
+    url: https://cognition.com/blog/multi-agents-working
     title: "Cognition — Multi-Agents: What's Actually Working"
     author: null
     type: article
