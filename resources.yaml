@@ -96,7 +96,8 @@ sections:
       and RCE write-ups for agents.
   - id: coding-agent-infra
     order: 13
-    title: "Coding agent infrastructure (read for harness design even if not building one)"
+    title: "Coding agent infrastructure (read for harness design even if not building
+      one)"
     description: |
       Harness design, hook systems, tool allowlists, and operational patterns
       for building and running coding agents — Claude Code best practices, the
@@ -123,19 +124,23 @@ top_7:
 worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
-    blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
+    blurb: Engineering posts from the model-maker — agents, tooling, and 
+      operational patterns.
     verified_at: &id001 2026-06-22
   - name: Cognition blog
     url: https://cognition.com/blog
-    blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
+    blurb: Case studies on building Devin; the productive disagreement to "Don't
+      Build Multi-Agents."
     verified_at: *id001
   - name: Simon Willison
     url: https://simonwillison.net/
-    blurb: The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
+    blurb: The field's running curator — daily-ish takes on LLMs, agents, and 
+      prompt injection.
     verified_at: *id001
   - name: Embrace The Red
     url: https://embracethered.com/blog/
-    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
+    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass
+      techniques.
     verified_at: *id001
   - name: Cloudflare AI agents tag
     url: https://blog.cloudflare.com/tag/ai-agents/
@@ -173,11 +178,13 @@ resources:
     superseded_by: null
     notes: null
     top_7_author: "Anthropic (Schluntz/Zhang)"
-    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds on.'
+    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds
+      on.'
 
   - id: effective-context-engineering
     section: foundations
-    url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+    url: 
+      https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
     title: "Effective context engineering for AI agents"
     author: "Anthropic"
     type: article
@@ -191,7 +198,8 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "The successor concept to prompt engineering; defines the actual job."
+    top_7_blurb: "The successor concept to prompt engineering; defines the actual
+      job."
 
   - id: writing-effective-tools
     section: foundations
@@ -200,7 +208,8 @@ resources:
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement."
+    blurb: "Tools as contracts between deterministic and non-deterministic systems;
+      eval-driven tool refinement."
     cluster: null
     tags: [tools]
     added_at: 2026-05-03
@@ -212,12 +221,14 @@ resources:
 
   - id: effective-harnesses
     section: foundations
-    url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+    url: 
+      https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
     title: "Effective harnesses for long-running agents"
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt + git)."
+    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt
+      + git)."
     cluster: null
     tags: [harness, long-running]
     added_at: 2026-05-03
@@ -263,7 +274,8 @@ resources:
 
   - id: openai-practical-guide
     section: foundations
-    url: https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+    url: 
+      https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
     title: "A practical guide to building agents (PDF)"
     author: "OpenAI"
     type: article
@@ -296,7 +308,8 @@ resources:
     superseded_by: null
     notes: null
     top_7_author: "Dex Horthy / HumanLayer"
-    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.'
+    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents
+      are mostly software" doctrine.'
 
   - id: twelve-factor-agents-talk
     section: foundations
@@ -331,7 +344,8 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26."
+    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of
+      agent architecture in 2025/26."
 
   - id: agentic-engineering-patterns
     section: foundations
@@ -357,7 +371,8 @@ resources:
     author: "Simon Willison"
     type: article
     license: null
-    blurb: "Private data + untrusted content + exfiltration channel = the agent threat model."
+    blurb: "Private data + untrusted content + exfiltration channel = the agent threat
+      model."
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
@@ -457,7 +472,8 @@ resources:
 
   - id: mcp-authorization
     section: tools-mcp
-    url: https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
+    url: 
+      https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
     title: "MCP — Authorization"
     author: null
     type: spec
@@ -559,7 +575,8 @@ resources:
 
   - id: a2a-announcement
     section: tools-mcp
-    url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+    url: 
+      https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
     title: "Announcing the Agent2Agent Protocol (A2A)"
     author: "Google"
     type: article
@@ -608,7 +625,9 @@ resources:
     archived: false
     paywall: false
     superseded_by: null
-    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output round-trips cleanly against the original (original has no section listing for this entry)."
+    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output
+      round-trips cleanly against the original (original has no section listing for
+      this entry)."
     hidden: true
 
   # ----------------------------------------------------------------------
@@ -735,7 +754,8 @@ resources:
 
   - id: autogen-v04
     section: multi-agent-frameworks
-    url: https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
+    url: 
+      https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
     title: "AutoGen v0.4"
     author: null
     type: docs
@@ -891,7 +911,8 @@ resources:
 
   - id: temporal-durable-execution-ai
     section: durable-execution
-    url: https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
+    url: 
+      https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
     title: "Temporal — Durable Execution meets AI"
     author: null
     type: article
@@ -925,7 +946,8 @@ resources:
 
   - id: inngest-durable-execution
     section: durable-execution
-    url: https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
+    url: 
+      https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
     title: "Inngest — Durable Execution: The Key to Harnessing AI Agents in Production"
     author: null
     type: article
@@ -996,7 +1018,8 @@ resources:
   # ----------------------------------------------------------------------
   - id: anthropic-memory-tool
     section: memory-systems
-    url: https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
+    url: 
+      https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
     title: "Anthropic — Memory tool"
     author: null
     type: docs
@@ -1333,7 +1356,8 @@ resources:
     author: null
     type: docs
     license: null
-    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing layer."
+    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing
+      layer."
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
@@ -1577,7 +1601,8 @@ resources:
     author: "UK AISI"
     type: docs
     license: "OS"
-    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support, used by Anthropic/DeepMind."
+    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support,
+      used by Anthropic/DeepMind."
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
@@ -1905,7 +1930,8 @@ resources:
     author: null
     type: spec
     license: null
-    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build to this and swap backends."
+    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build
+      to this and swap backends."
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
@@ -2112,7 +2138,8 @@ resources:
 
   - id: langfuse-cost-tracking
     section: production-testing
-    url: https://langfuse.com/docs/observability/features/token-and-cost-tracking
+    url: 
+      https://langfuse.com/docs/observability/features/token-and-cost-tracking
     title: "Langfuse — Cost tracking"
     author: null
     type: docs
@@ -2286,7 +2313,8 @@ resources:
 
   - id: trailofbits-prompt-injection-rce
     section: security
-    url: https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
+    url: 
+      https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
     title: "Trail of Bits — Prompt injection to RCE in AI agents"
     author: null
     type: article
@@ -2328,7 +2356,8 @@ resources:
     author: "Anthropic"
     type: docs
     license: null
-    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP."
+    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools
+      as in-process MCP."
     cluster: null
     tags: [claude-agent-sdk, harness]
     added_at: 2026-05-03
@@ -2591,12 +2620,15 @@ resources:
     top_7_blurb: "The best single multi-agent case study, with concrete failure modes."
   - id: open-swe-langchain
     section: coding-agent-infra
-    url: https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
+    url: 
+      https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
     title: 'Open SWE: An Open-Source Framework for Internal Coding Agents'
     author: LangChain
     type: article
     license: null
-    blurb: Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
+    blurb: Open-source SWE-agent framework built on LangGraph; covers core 
+      architectural components — task manager, programmer agent, and sandboxed 
+      execution — for deploying internal coding agents at scale.
     cluster: null
     tags:
       - coding-agent
@@ -2617,7 +2649,10 @@ resources:
     author: LangChain
     type: article
     license: null
-    blurb: Embedded interpreter runtimes let agents write code to coordinate tool calls, manage working state between steps, and control what gets surfaced into model context — reducing token pressure and enabling finer-grained orchestration than pure tool-dispatch.
+    blurb: Embedded interpreter runtimes let agents write code to coordinate 
+      tool calls, manage working state between steps, and control what gets 
+      surfaced into model context — reducing token pressure and enabling 
+      finer-grained orchestration than pure tool-dispatch.
     cluster: null
     tags:
       - sandboxing
@@ -2627,6 +2662,344 @@ resources:
       - orchestration
     added_at: '2026-05-21'
     verified_at: *id001
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: cybersecurity-evals-patterns
+    section: eval-frameworks
+    url: https://eugeneyan.com//writing/cybersecurity-evals/
+    title: Patterns for Building Cybersecurity Evals
+    author: Eugene Yan
+    type: article
+    license: null
+    blurb: 'Four-component anatomy for cybersecurity evals: sandboxed target, difficulty-modulating
+      inputs, tools, and a grader. Concrete patterns for structuring offensive-security
+      task suites.'
+    cluster: null
+    tags:
+      - evals
+      - security
+      - sandboxing
+      - cybersecurity
+      - grading
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: cloudflare-workflows-saga-rollbacks
+    section: durable-execution
+    url: https://blog.cloudflare.com/rollbacks-for-workflows/
+    title: How we built saga rollbacks for Cloudflare Workflows
+    author: Cloudflare
+    type: article
+    license: null
+    blurb: 'Saga-pattern rollbacks in Cloudflare Workflows: each `step.do()` accepts
+      a compensating action invoked automatically on failure, giving durable multi-step
+      agents a first-class distributed-transaction abort path.'
+    cluster: null
+    tags:
+      - cloudflare
+      - durable-execution
+      - saga-pattern
+      - rollbacks
+      - workflows
+      - fault-tolerance
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: cloudflare-vulnerability-harness
+    section: coding-agent-infra
+    url: https://blog.cloudflare.com/build-your-own-vulnerability-harness/
+    title: Build your own vulnerability harness
+    author: Cloudflare
+    type: article
+    license: null
+    blurb: 'Multi-stage vulnerability discovery harness with automated triage loop:
+      state control design, adversarial review to suppress false positives, and strategies
+      for routing around LLM context limits.'
+    cluster: null
+    tags:
+      - harness-design
+      - security
+      - triage
+      - context-management
+      - multi-stage
+      - false-positives
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: designing-efficient-verifiers-legal-agents
+    section: eval-philosophy
+    url: 
+      https://www.langchain.com/blog/designing-efficient-verifiers-for-legal-agents
+    title: Designing Efficient Verifiers for Legal Agents
+    author: Harvey & LangChain Labs
+    type: article
+    license: null
+    blurb: Harvey + LangChain Labs study on building cheap, reliable 
+      LLM-as-judge verifiers for legal agents — covering verifier architecture 
+      tradeoffs, cost reduction techniques, and how verifier quality feeds back 
+      into post-training signal.
+    cluster: null
+    tags:
+      - verifiers
+      - llm-as-judge
+      - legal
+      - eval-design
+      - post-training
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: context-management-deep-agents
+    section: memory-systems
+    url: https://www.langchain.com/blog/context-management-for-deepagents
+    title: Context Management for Deep Agents
+    author: LangChain
+    type: article
+    license: null
+    blurb: 'How Deep Agents SDK fights context rot in long-running tasks: offloading,
+      summarization, and filesystem abstraction as first-class context-management
+      primitives.'
+    cluster: null
+    tags:
+      - context-management
+      - long-running-agents
+      - summarization
+      - memory
+      - langchain
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: langchain-evals-deep-agents
+    section: eval-philosophy
+    url: https://www.langchain.com/blog/how-we-build-evals-for-deep-agents
+    title: How we build evals for Deep Agents
+    author: LangChain
+    type: article
+    license: null
+    blurb: Data curation, metrics, and testing strategies for evaluating 
+      deep/long-horizon agents — targeted evals that measure real behaviors 
+      rather than surface proxies.
+    cluster: null
+    tags:
+      - evals
+      - deep-agents
+      - data-curation
+      - metrics
+      - agent-testing
+      - langchain
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: trace-judge-fireworks-langchain
+    section: eval-philosophy
+    url: 
+      https://www.langchain.com/blog/building-a-100x-cheaper-trace-judge-with-fireworks
+    title: Building a 100x Cheaper Trace Judge with Fireworks
+    author: LangChain
+    type: article
+    license: null
+    blurb: Fine-tune a small open model on production trace signals to match 
+      frontier-model judge quality at ~100× lower cost. Covers signal mining, 
+      distillation pipeline, and cost-accuracy trade-offs for LLM-as-judge at 
+      scale.
+    cluster: null
+    tags:
+      - llm-as-judge
+      - fine-tuning
+      - evals
+      - cost-optimization
+      - production-traces
+      - fireworks
+      - langchain
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: iterating-llm-reliability-edd
+    section: eval-philosophy
+    url: 
+      https://www.langchain.com/blog/iterating-towards-llm-reliability-with-evaluation-driven-development
+    title: Iterating Towards LLM Reliability with Evaluation Driven Development
+    author: LangChain / Dosu
+    type: article
+    license: null
+    blurb: "Evaluation-driven development (EDD) as a production engineering discipline:
+      offline eval suites, LangSmith tracing, and the feedback loop from production
+      monitoring back into test coverage — illustrated through Dosu's real deployment."
+    cluster: null
+    tags:
+      - evaluation
+      - eval-driven-development
+      - langsmith
+      - production-monitoring
+      - reliability
+      - feedback-loops
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: langchain-aligning-llm-as-judge
+    section: eval-philosophy
+    url: 
+      https://www.langchain.com/blog/aligning-llm-as-a-judge-with-human-preferences
+    title: Aligning LLM-as-a-Judge with Human Preferences
+    author: LangChain
+    type: article
+    license: null
+    blurb: Calibrating LLM-as-a-Judge evaluators to human preferences via 
+      few-shot examples; covers the self-improving evaluator loop in LangSmith 
+      and the research behind preference alignment for automated scoring.
+    cluster: null
+    tags:
+      - llm-as-judge
+      - eval
+      - human-feedback
+      - few-shot
+      - langsmith
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: building-langgraph-runtime-design
+    section: multi-agent-frameworks
+    url: https://www.langchain.com/blog/building-langgraph
+    title: 'Building LangGraph: Designing an Agent Runtime from First Principles'
+    author: LangChain
+    type: article
+    license: null
+    blurb: 'First-principles design rationale behind LangGraph: why graph-based state
+      machines, how control flow, durability, and persistence were built into the
+      runtime from the ground up.'
+    cluster: null
+    tags:
+      - langgraph
+      - agent-runtime
+      - graph-orchestration
+      - durable-execution
+      - state-management
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: claude-code-domain-specific-agent
+    section: coding-agent-infra
+    url: 
+      https://www.langchain.com/blog/how-to-turn-claude-code-into-a-domain-specific-coding-agent
+    title: How to turn Claude Code into a domain specific coding agent
+    author: LangChain
+    type: article
+    license: null
+    blurb: Context engineering techniques for specialising Claude Code toward a 
+      domain-specific library, with evaluation results comparing approaches.
+    cluster: null
+    tags:
+      - claude-code
+      - context-engineering
+      - coding-agent
+      - evals
+      - customization
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: evaluating-deep-agents-langchain
+    section: eval-philosophy
+    url: https://www.langchain.com/blog/evaluating-deep-agents-our-learnings
+    title: 'Evaluating Deep Agents: Our Learnings'
+    author: LangChain
+    type: article
+    license: null
+    blurb: 'Five evaluation patterns for long-horizon agents: bespoke unit tests,
+      single-step validation, full-turn, multi-turn simulation, and environment setup
+      — grounded in production experience building agentic systems.'
+    cluster: null
+    tags:
+      - evals
+      - deep-agents
+      - multi-turn
+      - simulation
+      - testing
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: langchain-choose-right-sandbox-ai-agents
+    section: sandboxing
+    url: 
+      https://www.langchain.com/blog/how-to-choose-the-right-sandbox-for-your-agent
+    title: How to Choose the Right Sandbox for AI Agents
+    author: LangChain
+    type: article
+    license: null
+    blurb: 'Decision framework for sandbox selection: filesystem isolation, network
+      access controls, resource limits, and microVM-based approaches compared against
+      agent workload requirements.'
+    cluster: null
+    tags:
+      - sandboxing
+      - isolation
+      - microvm
+      - security
+      - code-execution
+    added_at: '2026-06-25'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: langgraph-fault-tolerance
+    section: durable-execution
+    url: https://www.langchain.com/blog/fault-tolerance-in-langgraph
+    title: 'Fault Tolerance in LangGraph: Retries, Timeouts and Error Handlers'
+    author: LangChain
+    type: article
+    license: null
+    blurb: RetryPolicy (backoff), TimeoutPolicy (wall-clock + idle caps), and 
+      error_handler (post-retry cleanup) as first-class LangGraph primitives. 
+      Covers composition and SAGA pattern for multi-step workflows with side 
+      effects.
+    cluster: null
+    tags:
+      - langgraph
+      - fault-tolerance
+      - retries
+      - timeouts
+      - saga
+      - error-handling
+      - workflows
+    added_at: '2026-06-25'
+    verified_at: null
     archived: false
     paywall: false
     superseded_by: null
