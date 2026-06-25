@@ -63,6 +63,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [smolagents](https://huggingface.co/docs/smolagents/index) — Hugging Face. Minimalist code-acting agent library.
 - [Mastra](https://mastra.ai/docs) — TypeScript-first.
 - [Inngest AgentKit](https://agentkit.inngest.com/) — TS framework on top of Inngest's durable runtime.
+- [Building LangGraph: Designing an Agent Runtime from First Principles](https://www.langchain.com/blog/building-langgraph) — LangChain. First-principles design rationale behind LangGraph: why graph-based state machines, how control flow, durability, and persistence were built into the runtime from the ground up.
 
 ## 4. Durable execution for agents
 
@@ -73,6 +74,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Restate — AI agents](https://docs.restate.dev/use-cases/ai-agents) — Lightweight durable execution; agents as virtual objects.
 - [Hatchet — Durable Tasks](https://docs.hatchet.run/v1/durable-tasks) — Postgres-backed task queue with agent-aware patterns (agentic loops, HITL).
 - [DBOS — Durable Execution for Building Crashproof AI Agents](https://www.dbos.dev/blog/durable-execution-crashproof-ai-agents) — Postgres-as-runtime; smaller-team alternative to Temporal.
+- [How we built saga rollbacks for Cloudflare Workflows](https://blog.cloudflare.com/rollbacks-for-workflows/) — Cloudflare. Saga-pattern rollbacks in Cloudflare Workflows: each `step.do()` accepts a compensating action invoked automatically on failure, giving durable multi-step agents a first-class distributed-transaction abort path.
+- [Fault Tolerance in LangGraph: Retries, Timeouts and Error Handlers](https://www.langchain.com/blog/fault-tolerance-in-langgraph) — LangChain. RetryPolicy (backoff), TimeoutPolicy (wall-clock + idle caps), and error_handler (post-retry cleanup) as first-class LangGraph primitives. Covers composition and SAGA pattern for multi-step workflows with side effects.
 
 ## 5. Memory systems
 
@@ -83,6 +86,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [getzep/graphiti](https://github.com/getzep/graphiti) — The temporal-graph engine standalone.
 - [LangMem](https://langchain-ai.github.io/langmem/) — Semantic / episodic / procedural primitives over LangGraph stores.
 - [Generative Agents (Park et al.)](https://arxiv.org/abs/2304.03442) — Reflection + episodic memory; still the best single read.
+- [Context Management for Deep Agents](https://www.langchain.com/blog/context-management-for-deepagents) — LangChain. How Deep Agents SDK fights context rot in long-running tasks: offloading, summarization, and filesystem abstraction as first-class context-management primitives.
 
 ## 6. Sandboxing & code execution
 
@@ -95,6 +99,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [hyperlight-dev/hyperlight](https://github.com/hyperlight-dev/hyperlight) — Microsoft's sub-millisecond WASM/VM micro-sandbox.
 - [gVisor docs](https://gvisor.dev/docs/) — User-space kernel; understand it before trusting "sandboxed" claims.
 - [Interpreters in Deep Agents: Code Between Tool Calls and Sandboxes](https://www.langchain.com/blog/give-your-agents-an-interpreter) — LangChain. Embedded interpreter runtimes let agents write code to coordinate tool calls, manage working state between steps, and control what gets surfaced into model context — reducing token pressure and enabling finer-grained orchestration than pure tool-dispatch.
+- [How to Choose the Right Sandbox for AI Agents](https://www.langchain.com/blog/how-to-choose-the-right-sandbox-for-your-agent) — LangChain. Decision framework for sandbox selection: filesystem isolation, network access controls, resource limits, and microVM-based approaches compared against agent workload requirements.
 
 ## 7. Inference & gateway infrastructure
 
@@ -118,6 +123,12 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Who Validates the Validators? (EvalGen)](https://arxiv.org/abs/2404.12272) — Shankar et al. Critical paper on grader drift.
 - [Judging LLM-as-a-Judge (MT-Bench)](https://arxiv.org/abs/2306.05685) — The original position/verbosity/self-preference bias paper.
 - [Low-Hanging Fruit for RAG Search](https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/) — Jason Liu. Retrieval-side instrumentation.
+- [Designing Efficient Verifiers for Legal Agents](https://www.langchain.com/blog/designing-efficient-verifiers-for-legal-agents) — Harvey & LangChain Labs. Harvey + LangChain Labs study on building cheap, reliable LLM-as-judge verifiers for legal agents — covering verifier architecture tradeoffs, cost reduction techniques, and how verifier quality feeds back into post-training signal.
+- [How we build evals for Deep Agents](https://www.langchain.com/blog/how-we-build-evals-for-deep-agents) — LangChain. Data curation, metrics, and testing strategies for evaluating deep/long-horizon agents — targeted evals that measure real behaviors rather than surface proxies.
+- [Building a 100x Cheaper Trace Judge with Fireworks](https://www.langchain.com/blog/building-a-100x-cheaper-trace-judge-with-fireworks) — LangChain. Fine-tune a small open model on production trace signals to match frontier-model judge quality at ~100× lower cost. Covers signal mining, distillation pipeline, and cost-accuracy trade-offs for LLM-as-judge at scale.
+- [Iterating Towards LLM Reliability with Evaluation Driven Development](https://www.langchain.com/blog/iterating-towards-llm-reliability-with-evaluation-driven-development) — LangChain / Dosu. Evaluation-driven development (EDD) as a production engineering discipline: offline eval suites, LangSmith tracing, and the feedback loop from production monitoring back into test coverage — illustrated through Dosu's real deployment.
+- [Aligning LLM-as-a-Judge with Human Preferences](https://www.langchain.com/blog/aligning-llm-as-a-judge-with-human-preferences) — LangChain. Calibrating LLM-as-a-Judge evaluators to human preferences via few-shot examples; covers the self-improving evaluator loop in LangSmith and the research behind preference alignment for automated scoring.
+- [Evaluating Deep Agents: Our Learnings](https://www.langchain.com/blog/evaluating-deep-agents-our-learnings) — LangChain. Five evaluation patterns for long-horizon agents: bespoke unit tests, single-step validation, full-turn, multi-turn simulation, and environment setup — grounded in production experience building agentic systems.
 
 ## 9. Evaluation — frameworks & benchmarks
 
@@ -133,6 +144,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Langfuse Evaluations](https://langfuse.com/docs/evaluation/overview) — **OS + SaaS.**
 - [Patronus AI](https://docs.patronus.ai:443/docs) — **SaaS.** Managed judge models (Lynx for hallucination).
 - **Benchmarks:** [SWE-bench](https://www.swebench.com/), [SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/), [GAIA](https://arxiv.org/abs/2311.12983), [τ-bench](https://github.com/sierra-research/tau-bench), [WebArena](https://webarena.dev/), [OSWorld](https://os-world.github.io/), [MLE-bench](https://github.com/openai/mle-bench), [SWE-Lancer](https://arxiv.org/abs/2502.12115).
+- [Patterns for Building Cybersecurity Evals](https://eugeneyan.com//writing/cybersecurity-evals/) — Eugene Yan. Four-component anatomy for cybersecurity evals: sandboxed target, difficulty-modulating inputs, tools, and a grader. Concrete patterns for structuring offensive-security task suites.
 
 ## 10. Observability & tracing
 
@@ -178,6 +190,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Geoffrey Huntley — how to build a coding agent (workshop)](https://ghuntley.com/agent/) — Free workshop on building one from scratch.
 - [Geoffrey Huntley — Ralph Wiggum loop](https://ghuntley.com/ralph/) — The brute-force feedback-loop pattern essay.
 - [Open SWE: An Open-Source Framework for Internal Coding Agents](https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents) — LangChain. Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
+- [Build your own vulnerability harness](https://blog.cloudflare.com/build-your-own-vulnerability-harness/) — Cloudflare. Multi-stage vulnerability discovery harness with automated triage loop: state control design, adversarial review to suppress false positives, and strategies for routing around LLM context limits.
+- [How to turn Claude Code into a domain specific coding agent](https://www.langchain.com/blog/how-to-turn-claude-code-into-a-domain-specific-coding-agent) — LangChain. Context engineering techniques for specialising Claude Code toward a domain-specific library, with evaluation results comparing approaches.
 
 ## 14. SRE & operations agents (K8s, observability, IaC)
 
