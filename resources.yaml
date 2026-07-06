@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-06-29
+    verified_at: &id001 2026-07-06
   - name: Cognition blog
     url: https://cognition.com/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
@@ -1846,7 +1846,7 @@ resources:
 
   - id: benchmark-osworld
     section: eval-frameworks
-    url: https://os-world.github.io/
+    url: http://osworld-v1.xlang.ai/
     title: "OSWorld"
     author: null
     type: article
@@ -2415,12 +2415,13 @@ resources:
     cluster: null
     tags: [coding-agent]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: 2026-06-29
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: openai-codex-repo
     section: coding-agent-infra
     url: https://github.com/openai/codex
