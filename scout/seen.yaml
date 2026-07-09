@@ -153,3 +153,509 @@ seen:
     title: Mission Control for Self-Hosted LangSmith on Kubernetes
     source_id: langchain-blog
     rejected_at: '2026-05-28'
+  - url: https://blog.cloudflare.com/ml-dsa-will-have-to-do/
+    title: Why we cannot wait for better post-quantum signature algorithms
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/meerkat-introduction/
+    title: 'Introducing Meerkat: an experiment in global consensus'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: 
+      https://blog.cloudflare.com/cloudflare-joins-uk-cyber-resilience-pledge/
+    title: Cloudflare proudly joins the UK government's Cyber Resilience Pledge
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/workers-cache/
+    title: Your Worker can now have its own cache in front of it
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/monetization-gateway/
+    title: 'Announcing the Monetization Gateway: charge for any resource behind Cloudflare
+      via x402'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/agentic-internet-bot-report/
+    title: 'Content Independence Day, one year on: building the business model for
+      the agentic Internet'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/making-ai-search-smarter/
+    title: Making AI search smarter
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/content-independence-day-ai-options/
+    title: 'Your site, your rules: new AI traffic options for all customers'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/attribution-business-insights/
+    title: Unmasking the crawls with Attribution Business Insights
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/oauth-for-all/
+    title: Unlocking the Cloudflare app ecosystem with OAuth for all
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/post-quantum-eo-2026/
+    title: The White House's post-quantum executive order is an important 
+      milestone. It’s time to get to work
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/hyper-bug/
+    title: How we found a bug in the hyper HTTP library
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/temporary-accounts/
+    title: Temporary Cloudflare Accounts for AI agents
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/celebrating-12-years-of-project-galileo/
+    title: Celebrating 12 years of Project Galileo
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/agents-platform-flue-sdk/
+    title: Bringing more agent harnesses and frameworks to Cloudflare, starting 
+      with Flue
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/cloudflare-one-stack/
+    title: 'Introducing the Cloudflare One stack: agent-powered deployment'
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/dmarc-management-ga/
+    title: Cloudflare DMARC Management is now generally available
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: https://blog.cloudflare.com/ensemble-ai-talent-joins-cloudflare/
+    title: Growing the Cloudflare AI team with talent from Ensemble AI
+    source_id: cloudflare-ai-agents
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/deep-agents-code-on-nemoclaw-a-governed-blueprint-for-your-most-sensitive-code
+    title: Deep Agents Code on NVIDIA NemoClaw
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/langchain-and-nvidia-launch-the-nemoclaw-deep-agents-blueprint
+    title: LangChain and NVIDIA Launch NemoClaw Deep Agents Blueprint
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-schneider-electric-built-their-llmops-foundations-at-enterprise-scale-with-langsmith
+    title: How Schneider Electric Built Their LLMOps Foundations With LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/fix-your-coding-agent-bill
+    title: Your coding agent bill doubled. Here’s how to fix it.
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/introducing-openwiki-an-open-source-agent-for-repo-documentation
+    title: 'OpenWiki: Open Source Repo Documentation for Coding Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-pendo-used-langsmith-to-trace-novus-from-user-behavior-to-code-fixes
+    title: How Pendo uses LangSmith to trace Novus from user behavior to code 
+      fixes
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/wiki-memory
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/unified-stack-for-evaluating-agents
+    title: 'Harbor x LangChain: A Unified Stack for Evaluating Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-rippling-went-ai-native-across-every-product-in-6-months-with-deep-agents-and-langsmith
+    title: How Rippling built production AI in 6 months with Deep Agents and 
+      LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/production-monitoring
+    title: 'Agent Observability: How to Monitor and Evaluate LLM Agents in Production'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/extraction-benchmarking
+    title: Extraction Benchmarking
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/benchmarking-agent-tool-use
+    title: Benchmarking Agent Tool Use
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/high-cardinality
+    title: Benchmarking Query Analysis in High Cardinality Situations
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/pairwise-evaluations-with-langsmith
+    title: Pairwise Evaluations with LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/agent-observability-powers-agent-evaluation
+    title: How to Debug & Evaluate AI Agents with Observability — LangChain 
+      Guide
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/evaluating-skills
+    title: Evaluating Skills
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/agent-evaluation-readiness-checklist
+    title: Agent Evaluation Readiness Checklist
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/introducing-dynamic-subagents-in-deep-agents
+    title: Introducing Dynamic Subagents in Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-candidly-built-state-aware-agent-harnesses-with-langsmith
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/deep-agents-prompt-caching
+    title: Prompt Caching with Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/june-2026-langchain-newsletter
+    title: 'June 2026: LangChain Newsletter — Fleet On-Call Copilot, Deep Agents Rubrics,
+      and More'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/full-text-search-in-smithdb-constructing-and-querying-our-inverted-index-pt-2
+    title: How we built SmithDB’s inverted index for full-text search
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/why-the-best-agents-are-simpler-than-you-think-sierra-max-agency-podcast
+    title: 'Why the Best AI Agents Are Simple: Sierra’s Zack Reneau-Wedeen on the
+      Max Agency Podcast'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/the-art-of-loop-engineering
+    title: The Art of Loop Engineering
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/give-your-ai-agent-its-own-computer
+    title: Give your agent its own computer
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/introducing-rubrics-for-deepagents
+    title: 'Introducing Rubrics: Build Agents that Evaluate and Correct Their Work'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/langsmith-langchain-oss-eu-ai-act
+    title: How LangSmith and LangChain OSS Help You Meet EU AI Act Requirements
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/agentic-engineering-redefining-software-engineering
+    title: 'Agentic Engineering: How Swarms of AI Agents Are Redefining Software Engineering'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/customers-klarna
+    title: How Klarna's AI assistant redefined customer support at scale for 85 
+      million active users
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/how-to-give-your-agent-memory
+    title: How to Build Memory into AI Agents
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/langsmith-agent-builder
+    title: Introducing LangSmith’s No Code Agent Builder
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/why-fleet-has-both-general-purpose-chat-and-specialized-agents
+    title: Why Fleet Has General Purpose Chat and Specialized Agents
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/reusable-langsmith-evaluator-templates
+    title: Reusable Evaluators and Evaluator Templates in LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/human-judgment-in-the-agent-improvement-loop
+    title: Human judgment in the agent improvement loop
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/testing-fine-tuned-open-source-models-in-langsmith
+    title: Testing Fine Tuned Open Source Models in LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/public-langsmith-benchmarks
+    title: Sharing LangSmith Benchmarks
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/customers-factory
+    title: How Factory used LangSmith to automate their feedback loop and 
+      improve iteration speed by 2x
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/langsmith-homepage-redesign-and-resource-tags
+    title: 'LangSmith: Redesigned product homepage and Resource Tags for better organization'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/introducing-open-swe-an-open-source-asynchronous-coding-agent
+    title: 'Introducing Open SWE: An Open-Source Asynchronous Coding Agent'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/customers-monte-carlo
+    title: 'Monte Carlo: Building Data + AI Observability Agents with LangGraph and
+      LangSmith'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/agent-engineering-a-new-discipline
+    title: 'Agent Engineering: A New Discipline'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-we-made-coding-agent-spend-predictable
+    title: How LangChain Made Coding Agent Spend Predictable
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/pinecone-serverless
+    title: Build and deploy a RAG app with Pinecone Serverless
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/test-run-comparisons
+    title: Test Run Comparisons
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/announcing-langsmith-is-now-a-transactable-offering-in-the-azure-marketplace
+    title: Announcing LangSmith is now a transactable offering in the Azure 
+      Marketplace
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/regression-testing
+    title: Regression Testing with LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/what-is-an-agent
+    title: What is an AI agent?
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/customers-new-computer
+    title: 'Improving Memory Retrieval: How New Computer achieved 50% higher recall
+      with LangSmith'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/customers-replit
+    title: Pushing LangSmith to new limits with Replit Agent's complex workflows
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/promptim
+    title: 'Promptim: an experimental library for prompt optimization'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/opentelemetry-langsmith
+    title: Introducing OpenTelemetry support for LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/end-to-end-opentelemetry-langsmith
+    title: Introducing End-to-End OpenTelemetry Support in LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/how-to-think-about-agent-frameworks
+    title: How to think about agent frameworks
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/interrupt-2025-recap
+    title: 'Recap of Interrupt 2025: The AI Agent Conference by LangChain'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-and-when-to-build-multi-agent-systems
+    title: How and when to build multi-agent systems
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/introducing-align-evals
+    title: 'Introducing Align Evals: Streamlining LLM Application Evaluation'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/on-agent-frameworks-and-agent-observability
+    title: On Agent Frameworks and Agent Observability
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/customers-monday
+    title: 'monday Service + LangSmith: Building a Code-First Evaluation Strategy
+      from Day 1'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/how-we-built-langchains-gtm-agent
+    title: How we built LangChain’s GTM Agent
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-to-choose-the-right-sandbox-for-your-agent
+    title: How to Choose the Right Sandbox for AI Agents
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/building-box-ai-how-an-enterprise-content-platform-went-ai-native-with-deep-agents
+    title: How Box AI built enterprise content agents with Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/benchling-max-agency-podcast
+    title: How Benchling builds agents when the smartest AI isn't smart enough
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/agents-and-applications
+    title: The Missing Link Between Agents and Applications
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/full-text-search-in-smithdb-designing-an-inverted-index-for-object-storage
+    title: 'Full Text Search in SmithDB: Designing an Inverted Index for Object Storage'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/model-neutrality
+    title: 'Model Neutrality: Why Avoiding AI Vendor Lock-In Matters'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/how-to-build-a-custom-agent-harness
+    title: How to Build a Custom Agent Harness
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/how-harmonic-rebuilt-scout-on-deep-agents-and-4xd-retention-with-langsmith
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://www.langchain.com/blog/interpreter-skills
+    title: 'Interpreter Skills: Building Workflows for Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: 
+      https://www.langchain.com/blog/financial-ai-that-investigates-macro-trends-eu-economic-analysis-with-you-com-and-langchain
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/government-national-security-partnerships
+    title: Our approach to government and national security partnerships
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: 
+      https://openai.com/index/separating-signal-from-noise-coding-evaluations
+    title: Separating signal from noise in coding evaluations
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/k-12-educators-practical-skills
+    title: Helping K–12 educators build practical AI skills
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/introducing-gpt-live
+    title: Introducing GPT-Live
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/australian-payments-plus
+    title: Australian Payments Plus moves faster with ChatGPT and Codex
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/mufg
+    title: MUFG aims to become AI-native with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/how-chatgpt-adoption-has-expanded
+    title: How ChatGPT adoption has expanded
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug
+    title: 'Core dump epidemiology: fixing an 18-year-old bug'
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/genebench-pro/case-studies
+    title: Inside Genebench-Pro
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/introducing-genebench-pro
+    title: Introducing GeneBench-Pro
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/mapping-ai-jobs-transition-eu
+    title: Mapping Europe’s AI Workforce Opportunity
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/hp-frontier-partnership
+    title: HP Inc. launches Frontier strategic partnership with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/previewing-gpt-5-6-sol
+    title: 'Previewing GPT-5.6 Sol: a next-generation model'
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/how-agents-are-transforming-work
+    title: How agents are transforming work
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/openai-broadcom-jalapeno-inference-chip
+    title: OpenAI and Broadcom unveil LLM-optimized inference chip
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/helping-build-shared-standards-for-advanced-ai
+    title: Helping build shared standards for advanced AI
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/gpt-5-immunology-mystery
+    title: How GPT-5 helped immunologist Derya Unutmaz solve a 3-year-old 
+      mystery
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/omio
+    title: How Omio is building the future of conversational travel
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/daybreak-securing-the-world
+    title: 'Daybreak: Tools for securing every organization in the world'
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/patch-the-planet
+    title: 'Patch the Planet: a Daybreak initiative to support open source maintainers'
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/codex-maxxing-long-running-work
+    title: Codex-maxxing for long-running work
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/samsung-electronics-chatgpt-codex-deployment
+    title: Samsung Electronics brings ChatGPT and Codex to employees
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/chatgpt-enterprise-spend-controls
+    title: New usage analytics and updated spend controls for enterprises
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/improving-health-intelligence-in-chatgpt
+    title: Improving health intelligence in ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/diagnose-rare-childhood-diseases
+    title: Using AI to help physicians diagnose rare genetic diseases affecting 
+      children
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/ai-chemist-improves-reaction
+    title: A near-autonomous AI chemist improves a challenging reaction in 
+      medicinal chemistry
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://openai.com/index/introducing-life-sci-bench
+    title: Introducing LifeSciBench
+    source_id: openai-news
+    rejected_at: '2026-07-09'
+  - url: https://zed.dev/blog/hidden-gems-part-4
+    title: 'Hidden Gems: Part 4'
+    source_id: zed-blog
+    rejected_at: '2026-07-09'
