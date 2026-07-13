@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-07-06
+    verified_at: &id001 2026-07-13
   - name: Cognition blog
     url: https://cognition.com/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
@@ -1909,12 +1909,13 @@ resources:
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: 2026-07-06
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: otel-genai-metrics
     section: observability
     url: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/
@@ -2415,13 +2416,12 @@ resources:
     cluster: null
     tags: [coding-agent]
     added_at: 2026-05-03
-    verified_at: 2026-06-29
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
-    first_dead_at: *id001
   - id: openai-codex-repo
     section: coding-agent-infra
     url: https://github.com/openai/codex
