@@ -153,3 +153,30 @@ seen:
     title: Mission Control for Self-Hosted LangSmith on Kubernetes
     source_id: langchain-blog
     rejected_at: '2026-05-28'
+  - url: https://hamel.dev/
+    title: Do Automated Evals Work?
+    source_id: hamel-husain
+    rejected_at: '2026-07-23'
+  - url: 
+      https://www.langchain.com/blog/how-schneider-electric-built-their-llmops-foundations-at-enterprise-scale-with-langsmith
+    title: How Schneider Electric Built Their LLMOps Foundations With LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-07-23'
+  - url: https://www.langchain.com/blog/towards-automating-eval-engineering
+    title: 'Eval Engineering Skill: Build Evals From Repo Context and Traces'
+    source_id: langchain-blog
+    rejected_at: '2026-07-23'
+  - url: 
+      https://www.langchain.com/blog/3-years-of-graph-engineering-with-langgraph
+    title: 3 Years of Graph Engineering with LangGraph
+    source_id: langchain-blog
+    rejected_at: '2026-07-23'
+  - url: 
+      https://www.langchain.com/blog/how-apollo-rebuilt-its-ai-assistant-on-deep-agents-to-power-the-full-gtm-loop
+    title: How Apollo Uses Deep Agents and LangSmith for GTM AI
+    source_id: langchain-blog
+    rejected_at: '2026-07-23'
+  - url: https://www.langchain.com/blog/agents-need-their-own-computer
+    title: Agents need their own computer. Here's how to give them one safely.
+    source_id: langchain-blog
+    rejected_at: '2026-07-23'

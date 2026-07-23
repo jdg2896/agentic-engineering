@@ -118,6 +118,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Who Validates the Validators? (EvalGen)](https://arxiv.org/abs/2404.12272) — Shankar et al. Critical paper on grader drift.
 - [Judging LLM-as-a-Judge (MT-Bench)](https://arxiv.org/abs/2306.05685) — The original position/verbosity/self-preference bias paper.
 - [Low-Hanging Fruit for RAG Search](https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/) — Jason Liu. Retrieval-side instrumentation.
+- ["It's Hard to Eval" Is a Product Smell](https://hamel.dev/blog/posts/eval-smell/) — Hamel Husain. Difficulty evaluating an AI product is a signal the product is hard for users to verify too. Reframes eval design as a product design problem: surface provenance, expose intermediate steps, decompose into checkable units. Three concrete case studies (data agent, PE lesson planner, workers-comp report) show before/after interfaces and how verification-friendly design makes evals tractable.
 
 ## 9. Evaluation — frameworks & benchmarks
 
@@ -133,6 +134,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Langfuse Evaluations](https://langfuse.com/docs/evaluation/overview) — **OS + SaaS.**
 - [Patronus AI](https://docs.patronus.ai:443/docs) — **SaaS.** Managed judge models (Lynx for hallucination).
 - **Benchmarks:** [SWE-bench](https://www.swebench.com/), [SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/), [GAIA](https://arxiv.org/abs/2311.12983), [τ-bench](https://github.com/sierra-research/tau-bench), [WebArena](https://webarena.dev/), [OSWorld](http://osworld-v1.xlang.ai/), [MLE-bench](https://github.com/openai/mle-bench), [SWE-Lancer](https://arxiv.org/abs/2502.12115).
+- [Patterns for Building Cybersecurity Evals](https://eugeneyan.com//writing/cybersecurity-evals/) — Eugene Yan. Four-component pattern for cybersecurity evals: sandboxed target, difficulty-modulating inputs, tools, and a grader. Concrete architecture for evaluating agents on offensive/defensive security tasks without conflating capability measurement with deployment safety.
 
 ## 10. Observability & tracing
 
@@ -164,6 +166,9 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [NIST AI RMF + Generative AI Profile](https://www.nist.gov/itl/ai-risk-management-framework) — Risk-management vocabulary auditors will use.
 - [MITRE ATLAS](https://atlas.mitre.org/) — ATT&CK-style matrix for ML/agent threats.
 - [Trail of Bits — Prompt injection to RCE in AI agents](https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/) — Recent, concrete RCE chain.
+- [Autonomous AI Intrusions Are Here: Lessons from the Hugging Face Compromise](https://embracethered.com/blog/posts/2026/ai-intrusion-are-now-real/) — embrace-the-red. Real-world autonomous AI agent intrusion dissected via the Hugging Face disclosure: covers autonomous attack chains, defensive asymmetry, and the IOC gap that makes agent-driven intrusions hard to detect and attribute.
+- [From Indirect Prompt Injection to DNS Exfiltration in macOS Terminal](https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/) — Wunderwuzzi (Embrace the Red). End-to-end attack chain: indirect prompt injection in a coding agent triggers ANSI escape sequences in macOS Terminal, issuing DNS requests that exfiltrate data. Covers the original discovery, the exploit path through an LLM-powered tool, and Apple's fix.
+- [Computer-Use and TOCTOU: What You Click Is Not What You Get!](https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/) — Johann Rehberger (Embrace the Red). TOCTOU race condition attack on computer-use agents: the UI state observed by the agent at decision time differs from the state at action time, enabling an attacker to swap content between screenshot and click. Reproduces the ChatGPT Operator vulnerability (GHSA-mp56-7vrw-qxvf) and generalises the attack pattern.
 
 ## 13. Coding agent infrastructure (read for harness design even if not building one)
 
