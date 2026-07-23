@@ -96,7 +96,8 @@ sections:
       and RCE write-ups for agents.
   - id: coding-agent-infra
     order: 13
-    title: "Coding agent infrastructure (read for harness design even if not building one)"
+    title: "Coding agent infrastructure (read for harness design even if not building
+      one)"
     description: |
       Harness design, hook systems, tool allowlists, and operational patterns
       for building and running coding agents — Claude Code best practices, the
@@ -123,19 +124,23 @@ top_7:
 worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
-    blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
+    blurb: Engineering posts from the model-maker — agents, tooling, and 
+      operational patterns.
     verified_at: &id001 2026-07-20
   - name: Cognition blog
     url: https://cognition.com/blog
-    blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
+    blurb: Case studies on building Devin; the productive disagreement to "Don't
+      Build Multi-Agents."
     verified_at: *id001
   - name: Simon Willison
     url: https://simonwillison.net/
-    blurb: The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
+    blurb: The field's running curator — daily-ish takes on LLMs, agents, and 
+      prompt injection.
     verified_at: *id001
   - name: Embrace The Red
     url: https://embracethered.com/blog/
-    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
+    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass
+      techniques.
     verified_at: *id001
   - name: Cloudflare AI agents tag
     url: https://blog.cloudflare.com/tag/ai-agents/
@@ -173,11 +178,13 @@ resources:
     superseded_by: null
     notes: null
     top_7_author: "Anthropic (Schluntz/Zhang)"
-    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds on.'
+    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds
+      on.'
 
   - id: effective-context-engineering
     section: foundations
-    url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+    url: 
+      https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
     title: "Effective context engineering for AI agents"
     author: "Anthropic"
     type: article
@@ -191,7 +198,8 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "The successor concept to prompt engineering; defines the actual job."
+    top_7_blurb: "The successor concept to prompt engineering; defines the actual
+      job."
 
   - id: writing-effective-tools
     section: foundations
@@ -200,7 +208,8 @@ resources:
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement."
+    blurb: "Tools as contracts between deterministic and non-deterministic systems;
+      eval-driven tool refinement."
     cluster: null
     tags: [tools]
     added_at: 2026-05-03
@@ -212,12 +221,14 @@ resources:
 
   - id: effective-harnesses
     section: foundations
-    url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+    url: 
+      https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
     title: "Effective harnesses for long-running agents"
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt + git)."
+    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt
+      + git)."
     cluster: null
     tags: [harness, long-running]
     added_at: 2026-05-03
@@ -263,7 +274,8 @@ resources:
 
   - id: openai-practical-guide
     section: foundations
-    url: https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+    url: 
+      https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
     title: "A practical guide to building agents (PDF)"
     author: "OpenAI"
     type: article
@@ -296,7 +308,8 @@ resources:
     superseded_by: null
     notes: null
     top_7_author: "Dex Horthy / HumanLayer"
-    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.'
+    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents
+      are mostly software" doctrine.'
 
   - id: twelve-factor-agents-talk
     section: foundations
@@ -331,7 +344,8 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26."
+    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of
+      agent architecture in 2025/26."
 
   - id: agentic-engineering-patterns
     section: foundations
@@ -357,7 +371,8 @@ resources:
     author: "Simon Willison"
     type: article
     license: null
-    blurb: "Private data + untrusted content + exfiltration channel = the agent threat model."
+    blurb: "Private data + untrusted content + exfiltration channel = the agent threat
+      model."
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
@@ -457,7 +472,8 @@ resources:
 
   - id: mcp-authorization
     section: tools-mcp
-    url: https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
+    url: 
+      https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
     title: "MCP — Authorization"
     author: null
     type: spec
@@ -559,7 +575,8 @@ resources:
 
   - id: a2a-announcement
     section: tools-mcp
-    url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+    url: 
+      https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
     title: "Announcing the Agent2Agent Protocol (A2A)"
     author: "Google"
     type: article
@@ -608,7 +625,9 @@ resources:
     archived: false
     paywall: false
     superseded_by: null
-    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output round-trips cleanly against the original (original has no section listing for this entry)."
+    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output
+      round-trips cleanly against the original (original has no section listing for
+      this entry)."
     hidden: true
 
   # ----------------------------------------------------------------------
@@ -735,7 +754,8 @@ resources:
 
   - id: autogen-v04
     section: multi-agent-frameworks
-    url: https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
+    url: 
+      https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
     title: "AutoGen v0.4"
     author: null
     type: docs
@@ -891,7 +911,8 @@ resources:
 
   - id: temporal-durable-execution-ai
     section: durable-execution
-    url: https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
+    url: 
+      https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
     title: "Temporal — Durable Execution meets AI"
     author: null
     type: article
@@ -925,7 +946,8 @@ resources:
 
   - id: inngest-durable-execution
     section: durable-execution
-    url: https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
+    url: 
+      https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
     title: "Inngest — Durable Execution: The Key to Harnessing AI Agents in Production"
     author: null
     type: article
@@ -996,7 +1018,8 @@ resources:
   # ----------------------------------------------------------------------
   - id: anthropic-memory-tool
     section: memory-systems
-    url: https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
+    url: 
+      https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
     title: "Anthropic — Memory tool"
     author: null
     type: docs
@@ -1333,7 +1356,8 @@ resources:
     author: null
     type: docs
     license: null
-    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing layer."
+    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing
+      layer."
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
@@ -1577,7 +1601,8 @@ resources:
     author: "UK AISI"
     type: docs
     license: "OS"
-    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support, used by Anthropic/DeepMind."
+    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support,
+      used by Anthropic/DeepMind."
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
@@ -1905,7 +1930,8 @@ resources:
     author: null
     type: spec
     license: null
-    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build to this and swap backends."
+    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build
+      to this and swap backends."
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
@@ -2110,7 +2136,8 @@ resources:
 
   - id: langfuse-cost-tracking
     section: production-testing
-    url: https://langfuse.com/docs/observability/features/token-and-cost-tracking
+    url: 
+      https://langfuse.com/docs/observability/features/token-and-cost-tracking
     title: "Langfuse — Cost tracking"
     author: null
     type: docs
@@ -2284,7 +2311,8 @@ resources:
 
   - id: trailofbits-prompt-injection-rce
     section: security
-    url: https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
+    url: 
+      https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
     title: "Trail of Bits — Prompt injection to RCE in AI agents"
     author: null
     type: article
@@ -2326,7 +2354,8 @@ resources:
     author: "Anthropic"
     type: docs
     license: null
-    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP."
+    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools
+      as in-process MCP."
     cluster: null
     tags: [claude-agent-sdk, harness]
     added_at: 2026-05-03
@@ -2589,12 +2618,15 @@ resources:
     top_7_blurb: "The best single multi-agent case study, with concrete failure modes."
   - id: open-swe-langchain
     section: coding-agent-infra
-    url: https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
+    url: 
+      https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
     title: 'Open SWE: An Open-Source Framework for Internal Coding Agents'
     author: LangChain
     type: article
     license: null
-    blurb: Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
+    blurb: Open-source SWE-agent framework built on LangGraph; covers core 
+      architectural components — task manager, programmer agent, and sandboxed 
+      execution — for deploying internal coding agents at scale.
     cluster: null
     tags:
       - coding-agent
@@ -2615,7 +2647,10 @@ resources:
     author: LangChain
     type: article
     license: null
-    blurb: Embedded interpreter runtimes let agents write code to coordinate tool calls, manage working state between steps, and control what gets surfaced into model context — reducing token pressure and enabling finer-grained orchestration than pure tool-dispatch.
+    blurb: Embedded interpreter runtimes let agents write code to coordinate 
+      tool calls, manage working state between steps, and control what gets 
+      surfaced into model context — reducing token pressure and enabling 
+      finer-grained orchestration than pure tool-dispatch.
     cluster: null
     tags:
       - sandboxing
@@ -2625,6 +2660,132 @@ resources:
       - orchestration
     added_at: '2026-05-21'
     verified_at: *id001
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: eval-smell-product-design
+    section: eval-philosophy
+    url: https://hamel.dev/blog/posts/eval-smell/
+    title: "\"It's Hard to Eval\" Is a Product Smell"
+    author: Hamel Husain
+    type: article
+    license: null
+    blurb: 'Difficulty evaluating an AI product is a signal the product is hard for
+      users to verify too. Reframes eval design as a product design problem: surface
+      provenance, expose intermediate steps, decompose into checkable units. Three
+      concrete case studies (data agent, PE lesson planner, workers-comp report) show
+      before/after interfaces and how verification-friendly design makes evals tractable.'
+    cluster: null
+    tags:
+      - evals
+      - product-design
+      - verification
+      - provenance
+      - ux
+      - data-agents
+    added_at: '2026-07-23'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: cybersecurity-evals-patterns
+    section: eval-frameworks
+    url: https://eugeneyan.com//writing/cybersecurity-evals/
+    title: Patterns for Building Cybersecurity Evals
+    author: Eugene Yan
+    type: article
+    license: null
+    blurb: 'Four-component pattern for cybersecurity evals: sandboxed target, difficulty-modulating
+      inputs, tools, and a grader. Concrete architecture for evaluating agents on
+      offensive/defensive security tasks without conflating capability measurement
+      with deployment safety.'
+    cluster: null
+    tags:
+      - evals
+      - security
+      - sandboxing
+      - cybersecurity
+      - grading
+    added_at: '2026-07-23'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: ai-intrusion-hugging-face-lessons
+    section: security
+    url: https://embracethered.com/blog/posts/2026/ai-intrusion-are-now-real/
+    title: 'Autonomous AI Intrusions Are Here: Lessons from the Hugging Face Compromise'
+    author: embrace-the-red
+    type: article
+    license: null
+    blurb: 'Real-world autonomous AI agent intrusion dissected via the Hugging Face
+      disclosure: covers autonomous attack chains, defensive asymmetry, and the IOC
+      gap that makes agent-driven intrusions hard to detect and attribute.'
+    cluster: null
+    tags:
+      - security
+      - threat-model
+      - autonomous-agents
+      - incident-response
+      - agentic-attacks
+    added_at: '2026-07-23'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: macos-terminal-dns-exfil-ansi-escape
+    section: security
+    url: 
+      https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/
+    title: From Indirect Prompt Injection to DNS Exfiltration in macOS Terminal
+    author: Wunderwuzzi (Embrace the Red)
+    type: article
+    license: null
+    blurb: "End-to-end attack chain: indirect prompt injection in a coding agent triggers
+      ANSI escape sequences in macOS Terminal, issuing DNS requests that exfiltrate
+      data. Covers the original discovery, the exploit path through an LLM-powered
+      tool, and Apple's fix."
+    cluster: null
+    tags:
+      - security
+      - prompt-injection
+      - indirect-prompt-injection
+      - data-exfiltration
+      - coding-agent-infra
+      - ansi-escape
+    added_at: '2026-07-23'
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: toctou-agent-computer-use
+    section: security
+    url: 
+      https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/
+    title: 'Computer-Use and TOCTOU: What You Click Is Not What You Get!'
+    author: Johann Rehberger (Embrace the Red)
+    type: article
+    license: null
+    blurb: 'TOCTOU race condition attack on computer-use agents: the UI state observed
+      by the agent at decision time differs from the state at action time, enabling
+      an attacker to swap content between screenshot and click. Reproduces the ChatGPT
+      Operator vulnerability (GHSA-mp56-7vrw-qxvf) and generalises the attack pattern.'
+    cluster: null
+    tags:
+      - security
+      - computer-use
+      - toctou
+      - race-condition
+      - prompt-injection
+      - computer-use-agents
+      - attack-surface
+    added_at: '2026-07-23'
+    verified_at: null
     archived: false
     paywall: false
     superseded_by: null
