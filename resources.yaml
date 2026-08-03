@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-07-27
+    verified_at: &id001 2026-08-03
   - name: Cognition blog
     url: https://cognition.com/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
@@ -440,7 +440,7 @@ resources:
 
   - id: mcp-architecture
     section: tools-mcp
-    url: https://modelcontextprotocol.io/docs/learn/architecture
+    url: https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture
     title: "MCP — Architecture overview"
     author: null
     type: docs
