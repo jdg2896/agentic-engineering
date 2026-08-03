@@ -37,7 +37,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 ## 2. Tool integration & MCP
 
 - [Model Context Protocol — Specification](https://modelcontextprotocol.io/specification/2025-11-25) — Latest spec; JSON-RPC 2.0; tools/resources/prompts primitives.
-- [MCP — Architecture overview](https://modelcontextprotocol.io/docs/learn/architecture) — Mental model.
+- [MCP — Architecture overview](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture) — Mental model.
 - [MCP — Authorization](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) — OAuth flow; required reading before exposing MCP servers.
 - [The 2026 MCP Roadmap](https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/) — Where the protocol is headed.
 - [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) — Official reference implementations.
