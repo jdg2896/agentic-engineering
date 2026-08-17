@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-08-10
+    verified_at: &id001 2026-08-17
   - name: Cognition blog
     url: https://cognition.com/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
@@ -1138,7 +1138,7 @@ resources:
   # ----------------------------------------------------------------------
   - id: e2b-docs
     section: sandboxing
-    url: https://e2b.dev/docs
+    url: https://docs.e2b.dev
     title: "E2B docs"
     author: null
     type: docs
@@ -2173,12 +2173,13 @@ resources:
     cluster: null
     tags: [security, prompt-injection]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: 2026-08-10
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: simon-willison-prompt-injection
     section: security
     url: https://simonwillison.net/tags/prompt-injection/
