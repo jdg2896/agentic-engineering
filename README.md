@@ -86,7 +86,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## 6. Sandboxing & code execution
 
-- [E2B docs](https://e2b.dev/docs) — Firecracker microVM sandboxes; the de-facto hosted choice.
+- [E2B docs](https://docs.e2b.dev) — Firecracker microVM sandboxes; the de-facto hosted choice.
 - [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) — gVisor + filesystem snapshots; good for batch fleets.
 - [Daytona docs](https://www.daytona.io/docs) — OSS sandbox repurposed for agents; sub-200ms cold start claims.
 - [Cloudflare — Containers for Agents](https://developers.cloudflare.com/containers/) — Per-agent containers tied to Durable Objects.
