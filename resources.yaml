@@ -124,7 +124,7 @@ worth_following:
   - name: Anthropic Engineering
     url: https://www.anthropic.com/engineering
     blurb: Engineering posts from the model-maker — agents, tooling, and operational patterns.
-    verified_at: &id001 2026-08-24
+    verified_at: &id001 2026-08-31
   - name: Cognition blog
     url: https://cognition.com/blog
     blurb: Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
@@ -1425,13 +1425,12 @@ resources:
     cluster: null
     tags: [evals, canonical]
     added_at: 2026-05-03
-    verified_at: 2026-08-17
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
-    first_dead_at: *id001
   - id: field-guide-hamel
     section: eval-philosophy
     url: https://hamel.dev/blog/posts/field-guide/
