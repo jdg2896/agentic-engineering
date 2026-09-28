@@ -29,8 +29,9 @@ Do **not** write design specs under `docs/specs/` any more. That directory
 was archived to `docs/archive/specs/` on 2026-09-28 and is kept for
 historical reference only.
 
-Plan and execute work with the `mattpocock-skills` plugin (enabled for this
-repo in `.claude/settings.json`):
+Plan and execute work with the Matt Pocock skills vendored in
+`.claude/skills/` (installed from `mattpocock/skills` via `npx skills add`;
+`skills-lock.json` pins them, `npx skills update` refreshes them):
 
 1. `/grill-with-docs` — align on the change; updates `CONTEXT.md` / ADRs inline.
 2. `/to-spec` — publish the aligned spec as a GitHub issue.
