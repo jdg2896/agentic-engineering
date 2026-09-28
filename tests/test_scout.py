@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -439,8 +440,38 @@ def test_safe_url_rejects_ip_literal_and_internal_hosts() -> None:
         "http://printer.local/",
         "http://metadata.google.internal/",
         "http://LOCALHOST./",
+        "http://router.home.arpa/",
+        "http://nas.lan/",
+        "http://lan/",
     ):
         assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_hosts_that_only_normalise_to_internal_ones() -> None:
+    for url in (
+        "https://%6c%6fcalhost/admin",
+        "https://127%2E0%2E0%2E1/",
+        "https://127。0。0。1/",
+        "https://ｌｏｃａｌｈｏｓｔ/",
+        "https://ⓛⓞⓒⓐⓛⓗⓞⓢⓣ/",
+        "https://localhost。/",
+    ):
+        assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_empty_and_hyphen_only_labels() -> None:
+    for url in ("https://-/", "https://a..b/", "https://-.example.com/"):
+        assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_invisible_format_characters() -> None:
+    for ch in ("​", "‎", "‮", "﻿"):
+        assert not scout.is_safe_url(f"https://example.com/a{ch}b"), repr(ch)
+
+
+def test_safe_url_accepts_internationalised_domains() -> None:
+    assert scout.is_safe_url("https://bücher.example/katalog")
+    assert scout.is_safe_url("https://xn--bcher-kva.example/katalog")
 
 
 def test_safe_url_rejects_non_strings() -> None:
@@ -522,3 +553,71 @@ def test_same_slug_three_times_in_one_run_gets_unique_ids() -> None:
     )
 
     assert [c["slug"] for c in run.candidates] == ["dup", "dup-3", "dup-4"]
+
+
+# --- Gate reasons and the Scout PR body carry model text, so must stay inert ---
+
+HOSTILE_SECTION = "nope`\n\n## INJECTED heading\n[Download SDK](https://evil.example/pay)\n::warning::x"
+
+
+def test_gate_reason_for_a_hostile_section_is_single_line_and_escaped() -> None:
+    bad = {**_candidate(section=HOSTILE_SECTION, type_="po`d\ncast", slug="bad`\nslug"), "url": "https://x/bad"}
+
+    reasons = scout.evaluate_scout_automerge([bad], SECTIONS, TYPES).reasons
+
+    assert reasons == [
+        "candidate `bad' slug` has unknown section "
+        "`nope' ## INJECTED heading \\[Download SDK\\](https://evil.example/pay) ::warning::x`",
+        "candidate `bad' slug` has unknown type `po'd cast`",
+    ]
+
+
+def _full_candidate(**overrides) -> dict:
+    c = {
+        "slug": "good", "source_id": "src-a", "url": "https://ok.example/p", "title": "Good",
+        "author": "A", "section": "patterns", "type": "article", "license": None,
+        "blurb": "b", "tags": [], "rationale": "r",
+    }
+    c.update(overrides)
+    return c
+
+
+def test_pr_body_lists_candidates_under_an_auto_merge_banner() -> None:
+    body = scout.pr_body([_full_candidate()], {"auto_merge_ok": True, "reasons": [], "labels": []})
+
+    assert body == (
+        "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
+        "\n"
+        "## Candidates (1)\n"
+        "\n"
+        "- [ ] **[Good](https://ok.example/p)** — `patterns` · `article`\n"
+        "      Source: `src-a` | Proposed slug: `good`\n"
+        "      Blurb: _b_\n"
+        "      Rationale: _r_"
+    )
+
+
+def test_pr_body_with_no_candidates_is_bookkeeping() -> None:
+    body = scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []})
+
+    assert body.startswith("> **Auto-merge enabled**")
+    assert "_No new candidates this week." in body
+    assert "## Candidates" not in body
+
+
+def test_pr_body_withholds_unsafe_urls_and_neutralises_hostile_fields() -> None:
+    bad = _full_candidate(slug="bad", url=INJECTED_URL, section=HOSTILE_SECTION, type="x`\ny")
+    decision = scout.evaluate_scout_automerge([bad], SECTIONS, TYPES)._asdict()
+    decision["reasons"].append("smuggled\n## heading\n::error::x")
+
+    body = scout.pr_body([bad], decision)
+
+    # No live link at all: the only `](` left are backslash-escaped model text.
+    assert not re.search(r"(?<!\\)\]\(", body)
+    assert "**Good (unsafe url withheld)** — " in body
+    assert not any(line.startswith(("## INJECTED", "## heading", "::", "[")) for line in body.splitlines())
+    banner, blank, *_ = body.splitlines()
+    assert banner.startswith("> **Auto-merge skipped:** candidate `bad` has unknown section `nope' ## INJECTED")
+    assert banner.endswith("; smuggled ## heading ::error::x.")
+    assert blank == ""
+    assert "`x' y`" in body

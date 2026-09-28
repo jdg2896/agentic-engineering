@@ -130,32 +130,11 @@ jobs:
 
               with open("resources.yaml", "w") as f:
                   ryaml.dump(res_data, f)
-
-              # Title, blurb and rationale were sanitized and the url validated in
-              # judge_sources. Re-check the url anyway (an unsafe one also holds the
-              # PR via the gate) and sanitize section/type, which the gate only flags.
-              rows = []
-              for c in candidates:
-                  link = f"[{c['title']}]({c['url']})" if scout.is_safe_url(c.get("url")) else f"{c['title']} (unsafe url withheld)"
-                  section = scout.sanitize_text(str(c["section"]).replace("`", "'"), 80)
-                  type_ = scout.sanitize_text(str(c["type"]).replace("`", "'"), 80)
-                  rows.append(
-                      f"- [ ] **{link}** — `{section}` · `{type_}`\n"
-                      f"      Source: `{c['source_id']}` | Proposed slug: `{c['slug']}`\n"
-                      f"      Blurb: _{c['blurb']}_\n"
-                      f"      Rationale: _{c['rationale']}_"
-                  )
-
-              body = f"## Candidates ({n})\n\n" + "\n\n".join(rows)
           else:
               title = f"Scout bookkeeping — {year_week} (no candidates)"
-              body = "_No new candidates this week. seen.yaml records the rejects; last\\_checked\\_at is bumped only on Sources whose feed was fetched and whose new entries were all judged._"
 
-          if decision["auto_merge_ok"]:
-              prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
-          else:
-              prefix = "> **Auto-merge skipped:** " + "; ".join(decision["reasons"]) + ".\n"
-          body = prefix + "\n" + body
+          # Pure and tested in scout.py: withholds unsafe urls, neutralises model text.
+          body = scout.pr_body(candidates, decision)
 
           env_file = os.environ["GITHUB_ENV"]
           # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).
