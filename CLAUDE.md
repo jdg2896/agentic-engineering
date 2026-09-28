@@ -23,6 +23,32 @@ Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
 
 Example: `feat(renderer): add cluster bullet support`
 
-## Writing specs
+## Planning work
 
-Design specs live under `docs/specs/`. Before writing one, read [`docs/specs/TEMPLATE.md`](docs/specs/TEMPLATE.md) and follow its structure (Why / What / Constraints / Current State / Tasks / Validation). Keep tasks small enough to execute in a fresh session — each one should touch ≤3 files and have a concrete `Verify` step.
+Do **not** write design specs under `docs/specs/` any more. That directory
+was archived to `docs/archive/specs/` on 2026-09-28 and is kept for
+historical reference only.
+
+Plan and execute work with the `mattpocock-skills` plugin (enabled for this
+repo in `.claude/settings.json`):
+
+1. `/grill-with-docs` — align on the change; updates `CONTEXT.md` / ADRs inline.
+2. `/to-spec` — publish the aligned spec as a GitHub issue.
+3. `/to-tickets` — break it into tracer-bullet tickets with blocking edges.
+4. `/implement` — build from the tickets (TDD + code review built in).
+
+Run `/ask-matt` if unsure which skill fits.
+
+## Agent skills
+
+### Issue tracker
+
+Issues, specs and tickets live in this repo's GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` at the repo root plus `docs/adr/`, created lazily by `/domain-modeling`. See `docs/agents/domain.md`.
