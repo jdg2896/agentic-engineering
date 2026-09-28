@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""Scout new resources from RSS/Atom feeds and evaluate candidates via Claude."""
+"""Scout new resources from RSS/Atom feeds and evaluate candidates via Claude Code headless."""
 
 from __future__ import annotations
 
 import argparse
+import functools
+import json
 import os
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+from typing import NamedTuple
 
-import anthropic
 import feedparser
 import yaml as pyyaml
 from ruamel.yaml import YAML
+
+import judge
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_PATH = ROOT / "sources.yaml"
@@ -24,28 +28,6 @@ CANDIDATES_PATH = ROOT / "candidates.yaml"
 
 _REPO = os.environ.get("GITHUB_REPOSITORY", "jdg2896/agentic-engineering")
 USER_AGENT = f"agentic-engineering-bot (+https://github.com/{_REPO})"
-
-TOOL_DEF = {
-    "name": "judge_candidate",
-    "description": "Editorial judgment on a candidate resource.",
-    "input_schema": {
-        "type": "object",
-        "required": ["decision", "section", "slug", "title", "author", "type", "blurb", "tags", "rationale"],
-        "properties": {
-            "decision": {"type": "string", "enum": ["include", "reject"]},
-            "section": {"type": "string"},
-            "slug": {"type": "string"},
-            "title": {"type": "string"},
-            "author": {"type": "string"},
-            "type": {"type": "string", "enum": ["article", "paper", "docs", "repo", "video", "spec", "course", "book"]},
-            "license": {"type": ["string", "null"]},
-            "blurb": {"type": "string"},
-            "tags": {"type": "array", "items": {"type": "string"}},
-            "rationale": {"type": "string"},
-        },
-    },
-}
-
 
 def build_system_prompt(sections: list, resources: list) -> str:
     lines = [
@@ -93,36 +75,10 @@ def build_system_prompt(sections: list, resources: list) -> str:
         "- GitHub release notes → include only if the release introduces a meaningful new capability (not just patch/bugfix)",
         "- Security content → include only if it covers agent-specific attack surface (prompt injection, indirect injection, tool misuse)",
         "",
-        "Call `judge_candidate` with your decision.",
+        "Return your editorial judgment as structured output matching the provided JSON schema.",
     ]
 
     return "\n".join(lines)
-
-
-def judge_entry(
-    client: anthropic.Anthropic,
-    system: list,
-    title: str,
-    url: str,
-    summary: str,
-    source_id: str,
-) -> dict:
-    user_prompt = (
-        f"Evaluate this candidate resource for inclusion.\n\n"
-        f"Title: {title}\n"
-        f"URL: {url}\n"
-        f"Source feed: {source_id}\n"
-        f"Summary/description:\n{summary or '(no summary available)'}"
-    )
-    resp = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=512,
-        system=system,
-        tools=[TOOL_DEF],
-        tool_choice={"type": "tool", "name": "judge_candidate"},
-        messages=[{"role": "user", "content": user_prompt}],
-    )
-    return next(b.input for b in resp.content if b.type == "tool_use")
 
 
 def safe_slug(base: str, existing: set[str]) -> str:
@@ -184,25 +140,25 @@ def judge_sources(
                 return run
             run.evaluated += 1
             if result["decision"] == "include":
-                slug = safe_slug(result.get("slug", ""), slugs)
+                slug = safe_slug(result["slug"], slugs)
                 slugs.add(slug)
                 run.candidates.append({
                     "slug": slug,
                     "source_id": source_id,
                     "url": url,
-                    "title": result.get("title", title),
-                    "author": result.get("author", ""),
-                    "section": result.get("section", ""),
-                    "type": result.get("type", "article"),
+                    "title": result["title"],
+                    "author": result["author"],
+                    "section": result["section"],
+                    "type": result["type"],
                     "license": result.get("license"),
-                    "blurb": result.get("blurb", ""),
-                    "tags": result.get("tags", []),
-                    "rationale": result.get("rationale", ""),
+                    "blurb": result["blurb"],
+                    "tags": result["tags"],
+                    "rationale": result["rationale"],
                 })
                 print(f"    [include] {title}")
                 print(f"              {url}")
-                print(f"              section={result.get('section')}  type={result.get('type')}")
-                print(f"              blurb: {result.get('blurb')}")
+                print(f"              section={result['section']}  type={result['type']}")
+                print(f"              blurb: {result['blurb']}")
             else:
                 run.rejected.append({
                     "url": url,
@@ -211,17 +167,109 @@ def judge_sources(
                     "rejected_at": str(date.today()),
                 })
                 print(f"    [reject]  {title}")
-                print(f"              {result.get('rationale')}")
+                print(f"              {result['rationale']}")
         run.fully_judged.add(source_id)
     return run
 
 
+CANDIDATE_CAP = 8
+BASE_LABELS = ["automated", "scout"]
+SKIPPED_LABEL = "auto-merge-skipped"
+VALID_TYPES = tuple(judge.JUDGMENT_SCHEMA["properties"]["type"]["enum"])
+
+
+class Decision(NamedTuple):
+    """Whether a Scout PR may auto-merge, why not, and the labels to apply."""
+
+    auto_merge_ok: bool
+    reasons: list[str]
+    labels: list[str]
+
+
+def evaluate_scout_automerge(
+    candidates: list[dict],
+    valid_section_ids: Iterable[str],
+    valid_types: Iterable[str] = VALID_TYPES,
+    cap: int = CANDIDATE_CAP,
+) -> Decision:
+    """Circuit-breaker gate for Scout PRs (ADR-0002); pure, anomalies only."""
+    reasons: list[str] = []
+    if len(candidates) > cap:
+        reasons.append(f"{len(candidates)} candidates exceed cap of {cap}")
+    sections = set(valid_section_ids)
+    types = set(valid_types)
+    for c in candidates:
+        if c.get("section") not in sections:
+            reasons.append(f"candidate `{c.get('slug')}` has unknown section `{c.get('section')}`")
+        if c.get("type") not in types:
+            reasons.append(f"candidate `{c.get('slug')}` has unknown type `{c.get('type')}`")
+    labels = list(BASE_LABELS) if not reasons else [*BASE_LABELS, SKIPPED_LABEL]
+    return Decision(not reasons, reasons, labels)
+
+
+def load_candidates(path: Path) -> list[dict]:
+    """Read candidates.yaml; a missing or empty file means zero Candidates."""
+    if not path.exists():
+        return []
+    return (pyyaml.safe_load(path.read_text()) or {}).get("candidates") or []
+
+
+def automerge_decision(candidates_path: Path, resources_path: Path, cap: int = CANDIDATE_CAP) -> dict:
+    """Gate the Candidates in `candidates_path` against the sections in `resources_path`."""
+    sections = pyyaml.safe_load(resources_path.read_text()).get("sections") or []
+    decision = evaluate_scout_automerge(
+        load_candidates(candidates_path), [s["id"] for s in sections], cap=cap
+    )
+    return decision._asdict()
+
+
+def append_candidates(resources_data: dict, candidates: list[dict], today: str) -> None:
+    """Append Candidates to `resources_data["resources"]` as new Resources.
+
+    Only the `resources` list is written: Scout never adds to or edits `top_7`,
+    which stays hand-curated (ADR-0002).
+    """
+    for c in candidates:
+        resources_data["resources"].append({
+            "id": c["slug"],
+            "section": c["section"],
+            "url": c["url"],
+            "title": c["title"],
+            "author": c["author"],
+            "type": c["type"],
+            "license": c.get("license"),
+            "blurb": c["blurb"],
+            "cluster": None,
+            "tags": c.get("tags", []),
+            "added_at": today,
+            "verified_at": None,
+            "archived": False,
+            "paywall": False,
+            "superseded_by": None,
+            "notes": None,
+        })
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scout new resources from RSS/Atom feeds")
-    parser.add_argument("--dry-run", action="store_true", help="Make API calls but skip all writes")
+    parser.add_argument("--dry-run", action="store_true", help="Run the judge but skip all writes")
     parser.add_argument("--limit", type=int, default=None, metavar="N", help="Process only first N candidates")
     parser.add_argument("--source", default=None, metavar="ID", help="Restrict to one source ID")
+    parser.add_argument(
+        "--automerge-decision", type=Path, default=None, metavar="CANDIDATES_YAML",
+        help="Print the auto-merge gate decision for a candidates file as JSON, then exit",
+    )
+    parser.add_argument(
+        "--cap", type=int, default=CANDIDATE_CAP, metavar="N",
+        help=f"Candidate cap for --automerge-decision (default {CANDIDATE_CAP})",
+    )
     args = parser.parse_args()
+
+    if args.automerge_decision is not None:
+        if args.cap < 0:
+            parser.error("--cap must be a non-negative integer")
+        print(json.dumps(automerge_decision(args.automerge_decision, RESOURCES_PATH, args.cap)))
+        return
 
     ryaml = YAML()
     ryaml.preserve_quotes = True
@@ -250,13 +298,7 @@ def main() -> None:
     existing_urls = {r["url"] for r in resources_data["resources"]}
     existing_slugs = {r["id"] for r in resources_data["resources"]}
 
-    client = anthropic.Anthropic()
-    system_text = build_system_prompt(resources_data["sections"], resources_data["resources"])
-    # Build system once; first call pays cache-write cost, subsequent calls hit cache
-    system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
-
-    def judge(title: str, url: str, summary: str, source_id: str) -> dict:
-        return judge_entry(client, system, title, url, summary, source_id)
+    system = build_system_prompt(resources_data["sections"], resources_data["resources"])
 
     enabled = [s for s in sources if s.get("enabled", True)]
     print(f"Processing {len(enabled)} source(s)...")
@@ -279,7 +321,7 @@ def main() -> None:
 
     run = judge_sources(
         new_entries,
-        judge,
+        functools.partial(judge.judge_entry, system),
         known_urls=seen_urls | existing_urls,
         existing_slugs=existing_slugs,
         limit=args.limit,

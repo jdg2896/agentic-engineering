@@ -121,3 +121,115 @@ def test_known_urls_are_skipped_without_blocking_the_bump() -> None:
 
     assert run.evaluated == 1
     assert run.fully_judged == {"src-a", "src-b"}
+
+
+# --- Scout auto-merge gate -------------------------------------------------
+
+SECTIONS = {"patterns", "foundations"}
+TYPES = {"article", "paper"}
+
+
+def _candidate(section: str = "patterns", type_: str = "article", slug: str = "c") -> dict:
+    return {"slug": slug, "section": section, "type": type_, "url": f"https://x/{slug}"}
+
+
+def test_gate_passes_clean_candidates() -> None:
+    decision = scout.evaluate_scout_automerge(
+        [_candidate(slug="a"), _candidate("foundations", "paper", "b")], SECTIONS, TYPES
+    )
+
+    assert decision.auto_merge_ok is True
+    assert decision.reasons == []
+    assert decision.labels == ["automated", "scout"]
+
+
+def test_gate_holds_when_candidate_count_exceeds_default_cap_of_8() -> None:
+    candidates = [_candidate(slug=str(i)) for i in range(9)]
+
+    decision = scout.evaluate_scout_automerge(candidates, SECTIONS, TYPES)
+
+    assert decision.auto_merge_ok is False
+    assert decision.reasons == ["9 candidates exceed cap of 8"]
+    assert decision.labels == ["automated", "scout", "auto-merge-skipped"]
+
+
+def test_gate_passes_exactly_at_cap() -> None:
+    candidates = [_candidate(slug=str(i)) for i in range(8)]
+
+    assert scout.evaluate_scout_automerge(candidates, SECTIONS, TYPES).auto_merge_ok is True
+
+
+def test_gate_cap_override_raises_the_limit_for_one_run() -> None:
+    candidates = [_candidate(slug=str(i)) for i in range(20)]
+
+    assert scout.evaluate_scout_automerge(candidates, SECTIONS, TYPES, cap=20).auto_merge_ok is True
+    assert scout.evaluate_scout_automerge(candidates, SECTIONS, TYPES, cap=19).reasons == [
+        "20 candidates exceed cap of 19"
+    ]
+
+
+def test_gate_passes_zero_candidates_even_with_a_zero_cap() -> None:
+    decision = scout.evaluate_scout_automerge([], SECTIONS, TYPES, cap=0)
+
+    assert decision == (True, [], ["automated", "scout"])
+
+
+def test_gate_holds_when_a_candidate_section_is_not_a_known_section_id() -> None:
+    decision = scout.evaluate_scout_automerge(
+        [_candidate(slug="ok"), _candidate("hallucinated", slug="bad")], SECTIONS, TYPES
+    )
+
+    assert decision.auto_merge_ok is False
+    assert decision.reasons == ["candidate `bad` has unknown section `hallucinated`"]
+    assert decision.labels == ["automated", "scout", "auto-merge-skipped"]
+
+
+def test_gate_holds_when_a_candidate_type_is_outside_the_enum() -> None:
+    decision = scout.evaluate_scout_automerge([_candidate(type_="podcast", slug="pod")], SECTIONS, TYPES)
+
+    assert decision.auto_merge_ok is False
+    assert decision.reasons == ["candidate `pod` has unknown type `podcast`"]
+    assert decision.labels == ["automated", "scout", "auto-merge-skipped"]
+
+
+def test_gate_default_types_are_the_judgment_schema_enum() -> None:
+    known = scout.evaluate_scout_automerge([_candidate(type_="repo")], SECTIONS)
+    unknown = scout.evaluate_scout_automerge([_candidate(type_="tweet")], SECTIONS)
+
+    assert known.auto_merge_ok is True
+    assert unknown.auto_merge_ok is False
+
+
+def test_appending_candidates_never_touches_top_7() -> None:
+    data = {"top_7": ["keep-me"], "resources": [{"id": "keep-me"}]}
+    candidate = {**_candidate(slug="new"), "title": "T", "author": "A", "blurb": "b", "tags": ["x"]}
+
+    scout.append_candidates(data, [candidate], "2026-09-28")
+
+    assert data["top_7"] == ["keep-me"]
+    assert [r["id"] for r in data["resources"]] == ["keep-me", "new"]
+    assert not any(k.startswith("top_7") for k in data["resources"][1])
+    assert data["resources"][1]["added_at"] == "2026-09-28"
+
+
+def test_automerge_decision_reads_candidates_file_and_section_ids(tmp_path) -> None:
+    resources = tmp_path / "resources.yaml"
+    resources.write_text("sections:\n  - id: patterns\ntop_7: []\nresources: []\n")
+    candidates = tmp_path / "candidates.yaml"
+    candidates.write_text(
+        "candidates:\n"
+        "  - {slug: a, section: patterns, type: article}\n"
+        "  - {slug: b, section: nope, type: article}\n"
+    )
+
+    held = scout.automerge_decision(candidates, resources, cap=8)
+    over_cap = scout.automerge_decision(candidates, resources, cap=1)
+    bookkeeping = scout.automerge_decision(tmp_path / "missing.yaml", resources, cap=0)
+
+    assert held == {
+        "auto_merge_ok": False,
+        "reasons": ["candidate `b` has unknown section `nope`"],
+        "labels": ["automated", "scout", "auto-merge-skipped"],
+    }
+    assert over_cap["reasons"][0] == "2 candidates exceed cap of 1"
+    assert bookkeeping["auto_merge_ok"] is True
