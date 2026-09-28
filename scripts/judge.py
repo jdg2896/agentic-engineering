@@ -60,6 +60,9 @@ def _check(value: object, schema: dict, path: str) -> None:
     allowed = schema.get("type")
     if allowed is not None:
         names = allowed if isinstance(allowed, list) else [allowed]
+        unknown = [n for n in names if n not in _JSON_TYPES]
+        if unknown:
+            raise JudgeError(f"judgment schema for '{path}' uses unsupported JSON type(s): {unknown}")
         if not any(isinstance(value, _JSON_TYPES[n]) for n in names):
             raise JudgeError(f"judgment field '{path}' must be {' or '.join(names)}, got {value!r}")
     if "enum" in schema and value not in schema["enum"]:
@@ -121,6 +124,9 @@ def run_claude(prompt: str, system: str) -> str:
         # Feed content is untrusted: give the judge no tools to act with.
         "--tools", "",
         "--no-session-persistence",
+        # Load no user/project/local settings (so no hooks) and no MCP servers.
+        "--setting-sources", "",
+        "--strict-mcp-config",
     ]
     try:
         # Run from an empty directory so the repo's CLAUDE.md and skills are not loaded.
