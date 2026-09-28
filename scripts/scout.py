@@ -7,7 +7,9 @@ import argparse
 import functools
 import json
 import os
+import re
 import sys
+import unicodedata
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import date
@@ -88,6 +90,24 @@ def safe_slug(base: str, existing: set[str]) -> str:
     return base + "-2"
 
 
+_WHITESPACE_RE = re.compile(r"\s+")
+_MARKDOWN_SIGNIFICANT = str.maketrans({c: "\\" + c for c in "\\[]<>`"})
+_SLUG_RE = re.compile(r"^[a-z0-9-]+$")
+
+
+def sanitize_text(value: str, max_len: int = 500) -> str:
+    """Neutralise judge free-text before it reaches resources.yaml, the README or a PR body.
+
+    Collapses whitespace (newlines included) to single spaces, drops control
+    characters, truncates to `max_len`, then backslash-escapes backslashes and
+    Markdown link / HTML characters, and strips. Truncating first means no escape is
+    ever split, so the result may exceed `max_len` by its escapes. Pure.
+    """
+    text = _WHITESPACE_RE.sub(" ", str(value))
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Cc")
+    return text.strip()[:max_len].strip().translate(_MARKDOWN_SIGNIFICANT)
+
+
 @dataclass
 class ScoutRun:
     """Outcome of judging one run's new entries."""
@@ -135,7 +155,7 @@ def judge_sources(
             if not url:
                 continue
             if url in known_urls:
-                print(f"    skip (known): {url}")
+                print(f"    skip (known): {sanitize_text(url)}")
                 continue
             if limit is not None and run.evaluated >= limit:
                 print(f"\n  --limit {limit} reached, stopping early.")
@@ -154,25 +174,33 @@ def judge_sources(
                 return run
             run.evaluated += 1
             if result["decision"] == "include":
+                if not _SLUG_RE.fullmatch(str(result["slug"])):
+                    # Fail closed like any other judge error: the slug becomes an id and anchor.
+                    run.errors.append(
+                        f"source {source_id}: judge returned invalid slug {sanitize_text(result['slug'], 80)!r}"
+                        f" for {sanitize_text(url)}"
+                    )
+                    return run
                 slug = safe_slug(result["slug"], slugs)
                 slugs.add(slug)
                 run.candidates.append({
                     "slug": slug,
                     "source_id": source_id,
                     "url": url,
-                    "title": result["title"],
-                    "author": result["author"],
+                    "title": sanitize_text(result["title"]),
+                    "author": sanitize_text(result["author"]),
                     "section": result["section"],
                     "type": result["type"],
-                    "license": result.get("license"),
-                    "blurb": result["blurb"],
-                    "tags": result["tags"],
-                    "rationale": result["rationale"],
+                    "license": sanitize_text(result["license"]) if result.get("license") is not None else None,
+                    "blurb": sanitize_text(result["blurb"]),
+                    "tags": [sanitize_text(t) for t in result["tags"]],
+                    "rationale": sanitize_text(result["rationale"]),
                 })
-                print(f"    [include] {title}")
-                print(f"              {url}")
-                print(f"              section={result['section']}  type={result['type']}")
-                print(f"              blurb: {result['blurb']}")
+                # Log only sanitized text so feed/model output cannot emit `::` workflow commands.
+                print(f"    [include] {sanitize_text(title)}")
+                print(f"              {sanitize_text(url)}")
+                print(f"              section={sanitize_text(result['section'])}  type={sanitize_text(result['type'])}")
+                print(f"              blurb: {run.candidates[-1]['blurb']}")
             else:
                 run.rejected.append({
                     "url": url,
@@ -180,8 +208,8 @@ def judge_sources(
                     "source_id": source_id,
                     "rejected_at": str(date.today()),
                 })
-                print(f"    [reject]  {title}")
-                print(f"              {result['rationale']}")
+                print(f"    [reject]  {sanitize_text(title)}")
+                print(f"              {sanitize_text(result['rationale'])}")
         run.fully_judged.add(source_id)
     return run
 

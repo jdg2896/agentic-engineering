@@ -14,7 +14,9 @@ trips, via the existing `auto-merge-skipped` label + review path.
   - **Scout:** hold if candidate count > cap (default 8; mass-include), or on structural
     errors: any candidate's `section` is not an existing section id, or its `type` is outside
     the schema enum (hallucinated / malformed output).
-  - **Verify:** hold only on mass quarantine (more than 5 newly quarantined in one run).
+  - **Verify:** hold on mass quarantine (more than 5 newly quarantined in one run), or on
+    any cross-host migration (a redirect to a different host, ignoring `www.`, which could
+    be an expired domain now pointing elsewhere).
     Recoveries and top-7 quarantines auto-merge and are called out in the PR body for
     post-hoc review.
 - Source-discovery is deferred to a separate spec; its breakers will be decided there.

@@ -334,3 +334,29 @@ def test_automerge_decision_cli_prints_gate_json_without_verifying(tmp_path, cap
         "reasons": ["7 quarantines exceed cap of 5"],
         "labels": ["auto-merge-skipped"],
     }
+
+
+def _migrated(url: str, final_url: str) -> dict:
+    return {"id": "m", "kind": "resource", "url": url, "status_code": 200,
+            "final_url": final_url, "error": None, "outcome": "migrated"}
+
+
+def test_verify_gate_passes_same_host_migrations() -> None:
+    report = _gate_report()
+    report["migrated"] = [
+        _migrated("http://example.com/post", "https://example.com/blog/post"),
+        _migrated("https://example.com/a", "https://www.example.com/b"),
+    ]
+    assert verify_links.evaluate_verify_automerge(report) == (True, [], [])
+
+
+def test_verify_gate_holds_cross_host_migration() -> None:
+    report = _gate_report()
+    report["migrated"] = [
+        _migrated("https://expired.example/post", "https://parked-domains.example/"),
+        _migrated("http://example.com/a", "https://example.com/b"),
+    ]
+    decision = verify_links.evaluate_verify_automerge(report)
+    assert decision.auto_merge_ok is False
+    assert decision.labels == ["auto-merge-skipped"]
+    assert decision.reasons == ["1 cross-host migration(s) need review"]
