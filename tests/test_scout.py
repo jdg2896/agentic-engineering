@@ -91,6 +91,33 @@ def test_first_judge_error_stops_judging_and_blocks_every_later_bump() -> None:
     assert run.fully_judged == {"src-z"}
 
 
+def test_non_auth_judge_error_hints_at_a_rerun_not_the_credential() -> None:
+    run = scout.judge_sources(
+        {"src-a": [_entry("https://a/1")]},
+        _stub_judge({"https://a/1": scout.judge.JudgeError("Claude Code CLI timed out after 300s")}),
+        known_urls=set(),
+        existing_slugs=set(),
+    )
+
+    assert len(run.errors) == 1
+    assert run.auth_failed is False
+    hint = scout.judge_failure_hint(run)
+    assert "re-run" in hint
+    assert "0001-oauth-token-for-ci" not in hint
+
+
+def test_judge_auth_error_hints_at_the_credential() -> None:
+    run = scout.judge_sources(
+        {"src-a": [_entry("https://a/1")]},
+        _stub_judge({"https://a/1": scout.judge.JudgeAuthError("401 OAuth access token is invalid.")}),
+        known_urls=set(),
+        existing_slugs=set(),
+    )
+
+    assert run.auth_failed is True
+    assert "docs/adr/0001-oauth-token-for-ci.md" in scout.judge_failure_hint(run)
+
+
 def test_limit_leaves_unfinished_sources_unbumped() -> None:
     judge = _stub_judge({url: _judgment("reject") for url in ("https://a/1", "https://b/1", "https://b/2", "https://c/1")})
     run = scout.judge_sources(

@@ -1,8 +1,9 @@
 """Scout's editorial judge, run through the Claude Code CLI in headless mode.
 
 Authenticates with `CLAUDE_CODE_OAUTH_TOKEN` per docs/adr/0001-oauth-token-for-ci.md.
-`judge_entry` is the whole interface: it hides the CLI invocation, JSON parsing and
-schema validation, and raises `JudgeError` instead of returning a partial judgment.
+`judge_entry` is the whole interface: it hides the CLI invocation, retries, JSON
+parsing and schema validation, and raises `JudgeError` instead of returning a
+partial judgment.
 """
 
 from __future__ import annotations
@@ -10,10 +11,14 @@ from __future__ import annotations
 import json
 import subprocess
 import tempfile
+import time
 from collections.abc import Callable
 
 MODEL = "claude-sonnet-4-6"
 CLI_TIMEOUT_SECONDS = 300
+# Attempts per entry, including the first; the backoff before attempt n+1 is n * this.
+MAX_ATTEMPTS = 3
+RETRY_BACKOFF_SECONDS = 10
 
 # The judge_candidate schema, passed to the CLI as --json-schema and re-checked here.
 JUDGMENT_SCHEMA = {
@@ -84,11 +89,15 @@ def _validate(judgment: object) -> dict:
     return judgment
 
 
+def _mentions_auth_failure(text: str) -> bool:
+    text = text.lower()
+    return any(s in text for s in ("failed to authenticate", "invalid api key", "oauth token", "/login"))
+
+
 def _is_auth_failure(envelope: dict) -> bool:
     if envelope.get("api_error_status") in (401, 403):
         return True
-    text = str(envelope.get("result", "")).lower()
-    return any(s in text for s in ("failed to authenticate", "invalid api key", "oauth token", "/login"))
+    return _mentions_auth_failure(str(envelope.get("result", "")))
 
 
 def parse_judgment(stdout: str) -> dict:
@@ -140,7 +149,10 @@ def run_claude(prompt: str, system: str) -> str:
         raise JudgeError(f"Claude Code CLI timed out after {CLI_TIMEOUT_SECONDS}s") from exc
     # On API errors the CLI exits non-zero but still prints the JSON envelope; parse that.
     if proc.returncode != 0 and not proc.stdout.strip():
-        raise JudgeError(f"Claude Code CLI exited {proc.returncode}: {proc.stderr.strip()[:500]}")
+        message = f"Claude Code CLI exited {proc.returncode}: {proc.stderr.strip()[:500]}"
+        if _mentions_auth_failure(proc.stderr):
+            raise JudgeAuthError(f"{message} {AUTH_HINT}")
+        raise JudgeError(message)
     return proc.stdout
 
 
@@ -151,8 +163,16 @@ def judge_entry(
     summary: str,
     source_id: str,
     run: Callable[[str, str], str] = run_claude,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> dict:
-    """Judge one candidate entry; return a validated judgment dict or raise JudgeError."""
+    """Judge one candidate entry; return a validated judgment dict or raise JudgeError.
+
+    Any `JudgeError` is retried, up to `MAX_ATTEMPTS` attempts in all: CLI timeouts
+    and errors are usually transient, and malformed or off-schema output is a
+    nondeterministic model slip worth another draw. `JudgeAuthError` is raised at
+    once, since a bad token will not fix itself. Once attempts run out, the last
+    error is raised.
+    """
     prompt = (
         f"Evaluate this candidate resource for inclusion.\n\n"
         f"Title: {title}\n"
@@ -160,4 +180,19 @@ def judge_entry(
         f"Source feed: {source_id}\n"
         f"Summary/description:\n{summary or '(no summary available)'}"
     )
-    return parse_judgment(run(prompt, system))
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            return parse_judgment(run(prompt, system))
+        except JudgeAuthError:
+            raise
+        except JudgeError as exc:
+            if attempt == MAX_ATTEMPTS:
+                raise
+            delay = attempt * RETRY_BACKOFF_SECONDS
+            print(
+                f"::warning::judge attempt {attempt}/{MAX_ATTEMPTS} failed for {url}: {exc}; "
+                f"retrying in {delay}s",
+                flush=True,
+            )
+            sleep(delay)
+    raise AssertionError("unreachable")
