@@ -7,15 +7,18 @@ trips, via the existing `auto-merge-skipped` label + review path.
 
 ## Why this is safe enough
 
-- Auto-merge still produces a real PR that runs required checks (notably the **render gate**,
-  which blocks any out-of-sync `README.md`) before merging — "auto-merge" ≠ "no PR".
+- The render runs inside each bot job before the PR opens, and the job fails if `README.md`
+  is dirty afterwards, so an out-of-sync README is never committed. The pull-request **render
+  gate** is not a required check: PRs opened with the Actions token never trigger it, and a
+  required check that never runs would block auto-merge forever.
 - Breakers catch *anomalies*, not steady-state misjudgment, which is accepted as delegated:
-  - **Scout:** hold if candidate count > 8 (mass-include), any candidate's `section` is not
-    an existing section id (structural / hallucinated output), or judge `confidence` is `low`.
-  - **Source-discovery:** hold if the proposed feed fails to parse or has no recent entry,
-    fails dedup, or the run exceeds 5 new sources.
-- A borderline *Source* is self-correcting: Scout still judges each of its posts against the
-  unchanged inclusion bar, so off-topic posts never reach the guide.
+  - **Scout:** hold if candidate count > cap (default 8; mass-include), or on structural
+    errors: any candidate's `section` is not an existing section id, or its `type` is outside
+    the schema enum (hallucinated / malformed output).
+  - **Verify:** hold only on mass quarantine (more than 5 newly quarantined in one run).
+    Recoveries and top-7 quarantines auto-merge and are called out in the PR body for
+    post-hoc review.
+- Source-discovery is deferred to a separate spec; its breakers will be decided there.
 - `top_7` ("if you only read 7 things") is never touched by automation — it stays
   hand-curated.
 
@@ -23,4 +26,4 @@ trips, via the existing `auto-merge-skipped` label + review path.
 
 Keeping a human review gate on scout (the status quo) was rejected: the owner wants the loop
 fully automated and accepts PR history as the backstop. Recoveries in link-verification
-remain human-reviewed (that gate predates this decision and is unchanged).
+are no longer human-reviewed either: they auto-merge and are listed in the PR body.
