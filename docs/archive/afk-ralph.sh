@@ -1,4 +1,5 @@
 #!/bin/bash
+# ARCHIVED: runner for the retired spec workflow (see docs/archive/README.md); not maintained.
 set -euo pipefail
 
 # Usage: afk-ralph.sh <spec-file> [max-iterations] [branch-name]
