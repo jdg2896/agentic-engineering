@@ -70,8 +70,10 @@ jobs:
       # job goes red and no PR opens. The Claude usage limit is the exception:
       # it stops judging but keeps the partial progress (only fully judged
       # Sources are bumped) and marks candidates.yaml incomplete, so a backlog
-      # larger than one quota window drains over several runs. Unbuffered so
-      # progress logs stream live.
+      # larger than one quota window drains over several runs. That only works
+      # if each partial PR merges before the next run, which starts from main;
+      # a limit hit before any judgment still fails. Unbuffered so progress
+      # logs stream live.
       - name: Run scout
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -117,7 +119,7 @@ jobs:
           n = len(candidates)
 
           if n > 0:
-              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}"
+              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}{' (partial run)' if incomplete else ''}"
 
               # Append candidates to resources.yaml (never touches top_7)
               ryaml = YAML()
@@ -159,6 +161,9 @@ jobs:
               prefix += (
                   "\n> **Partial run:** the judge hit the Claude usage limit, so some entries "
                   f"were left for the next run. {incomplete}\n"
+                  "> Merge this PR before the next scheduled run: that run starts from main, "
+                  "so until this lands it re-judges the same entries. For a large backlog, "
+                  "re-dispatch the workflow with a higher `candidate_cap`.\n"
               )
           body = prefix + "\n" + body
 

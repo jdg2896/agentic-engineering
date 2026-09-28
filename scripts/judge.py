@@ -100,10 +100,16 @@ def _mentions_auth_failure(text: str) -> bool:
 
 
 # The CLI's subscription limit messages ("You've hit your session limit · resets 3pm
-# (UTC)", "... usage limit", "... weekly limit"). These reset in hours, not seconds.
-# A bare HTTP 429 / "rate limit" is deliberately not matched: short rate limits clear
+# (UTC)", "5-hour limit reached ∙ resets 3pm", "Weekly limit reached ∙ resets Mon",
+# "... usage limit"). These reset in hours, not seconds. A bare HTTP 429 / "rate
+# limit" or "limit reached" is deliberately not matched: short rate limits clear
 # within the retry backoff.
-_QUOTA_RE = re.compile(r"\bhit your\b[^.\n]{0,40}?\blimit\b|\busage limit\b", re.IGNORECASE)
+_QUOTA_RE = re.compile(
+    r"\bhit your\b[^.\n]{0,40}?\blimit\b"
+    r"|\busage limit\b"
+    r"|\b(?:session|weekly|5-hour|opus|sonnet)\s+limit\b",
+    re.IGNORECASE,
+)
 
 
 def _mentions_quota_exhausted(text: str) -> bool:

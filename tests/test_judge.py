@@ -231,6 +231,11 @@ def test_usage_limit_envelope_raises_quota_error() -> None:
     "You've hit your weekly limit · resets Mon 9am",
     "Claude usage limit reached. Your limit will reset at 5pm.",
     "YOU'VE HIT YOUR OPUS LIMIT",
+    "5-hour limit reached ∙ resets 3pm",
+    "Weekly limit reached ∙ resets Mon",
+    "Session limit reached ∙ resets 3pm (UTC)",
+    "Opus limit reached ∙ resets Thu",
+    "Sonnet limit reached ∙ resets Thu",
 ])
 def test_other_usage_limit_messages_raise_quota_error(message: str) -> None:
     with pytest.raises(judge.JudgeQuotaError):
@@ -240,6 +245,8 @@ def test_other_usage_limit_messages_raise_quota_error(message: str) -> None:
 @pytest.mark.parametrize("status, message", [
     (429, "API Error: 429 rate limit exceeded"),
     (429, "API Error: 429 Too Many Requests"),
+    (429, "Rate limit reached"),
+    (None, "Limit reached, try again shortly"),
 ])
 def test_short_rate_limit_is_a_plain_judge_error(status: int, message: str) -> None:
     stdout = _envelope(is_error=True, api_error_status=status, result=message, structured_output=None)

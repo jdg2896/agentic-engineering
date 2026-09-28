@@ -408,6 +408,18 @@ def main() -> None:
         )
         sys.exit(1)
 
+    if run.quota_exhausted is not None and run.evaluated == 0:
+        # No progress at all: nothing to keep, and a green run would hide that the
+        # quota (shared with interactive use, ADR-0001) is gone.
+        print(
+            f"::error::The Claude usage limit is exhausted and nothing was judged "
+            f"({sanitize_text(run.quota_exhausted)}); no files written. The subscription "
+            "quota is shared with interactive use (docs/adr/0001-oauth-token-for-ci.md); "
+            "re-run once it resets.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     if run.quota_exhausted is not None:
         # Unlike an error, a usage limit leaves every judgment made so far real, so
         # keep them: rejects go to seen.yaml, includes become Resources, and only fully
