@@ -42,6 +42,15 @@ jobs:
       - name: Re-render guide
         run: uv run python scripts/render.py
 
+      # Auto-merge gate lives in scripts/verify_links.py (evaluate_verify_automerge).
+      # Only a mass quarantine (> 5 newly quarantined) holds the PR.
+      - name: Evaluate auto-merge gate
+        id: gate
+        run: |
+          # Written outside the checkout so create-pull-request never commits it.
+          uv run python scripts/verify_links.py --automerge-decision > "$RUNNER_TEMP/automerge_decision.json"
+          cat "$RUNNER_TEMP/automerge_decision.json"
+
       - name: Compute week tag and PR metadata
         id: meta
         run: |
@@ -49,9 +58,11 @@ jobs:
           echo "YEAR_WEEK=$YEAR_WEEK" >> "$GITHUB_ENV"
 
           python3 - <<'EOF'
-          import json, os, textwrap
+          import json, os
           from pathlib import Path
 
+          decision = json.loads((Path(os.environ["RUNNER_TEMP"]) / "automerge_decision.json").read_text())
+          auto_merge_ok = decision["auto_merge_ok"]
           report = json.loads(Path("verification_report.json").read_text())
           counts = report["counts"]
 
@@ -67,19 +78,7 @@ jobs:
           recovered_count = len(recovered)
           accumulating_count = len(accumulating)
 
-          # Auto-merge gate: routine PRs only.
-          # - No recoveries (humans should eyeball revivals).
-          # - No top-7 quarantines (editorially significant).
-          # - Quarantines this run capped at 5 (catches mass false-positives
-          #   from a domain-wide outage during the verify window).
-          # Migration listings do NOT block auto-merge — they don't modify YAML.
-          QUARANTINE_CAP = 5
-          has_top_7_quarantine = any(q.get("top_7") for q in newly_quarantined)
-          auto_merge_ok = (
-              recovered_count == 0
-              and not has_top_7_quarantine
-              and quarantined_count <= QUARANTINE_CAP
-          )
+          top_7_count = sum(1 for q in newly_quarantined if q.get("top_7"))
 
           def row(r):
               code = r.get("status_code") or r.get("error", "?")
@@ -109,13 +108,16 @@ jobs:
 
           sections = []
 
-          if newly_quarantined:
-              q_rows = "\n".join(quarantine_row(q) for q in newly_quarantined)
-              sections.append(f"## Quarantined ({quarantined_count})\n\n{q_rows}")
-
+          # Recoveries and top-7 quarantines no longer hold the PR; they lead the
+          # body under their own headings so they can be reviewed post-hoc.
           if recovered:
               r_rows = "\n".join(recovered_row(r) for r in recovered)
               sections.append(f"## Recovered ({recovered_count})\n\n{r_rows}")
+
+          if newly_quarantined:
+              q_rows = "\n".join(quarantine_row(q) for q in newly_quarantined)
+              top_7_note = f" — 🚩 {top_7_count} top-7" if top_7_count else ""
+              sections.append(f"## Quarantined ({quarantined_count}){top_7_note}\n\n{q_rows}")
 
           if accumulating:
               a_rows = "\n".join(accumulating_row(a) for a in accumulating)
@@ -126,18 +128,7 @@ jobs:
           sections.append(f"## Migrated ({migrated_count})\n\n{migrated_rows}")
 
           if not auto_merge_ok:
-              reasons = []
-              if recovered_count > 0:
-                  reasons.append(f"{recovered_count} recovery (recoveries always require review)")
-              if has_top_7_quarantine:
-                  reasons.append("top-7 quarantine (editorially significant)")
-              if quarantined_count > QUARANTINE_CAP:
-                  reasons.append(f"{quarantined_count} quarantines exceed cap of {QUARANTINE_CAP}")
-              prefix = (
-                  "> **Auto-merge skipped:** "
-                  + "; ".join(reasons)
-                  + ".\n"
-              )
+              prefix = "> **Auto-merge skipped:** " + "; ".join(decision["reasons"]) + ".\n"
           else:
               prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
 
@@ -151,6 +142,7 @@ jobs:
               f.write(f"VERIFY_QUARANTINED={quarantined_count}\n")
               f.write(f"VERIFY_RECOVERED={recovered_count}\n")
               f.write(f"AUTO_MERGE_OK={'true' if auto_merge_ok else 'false'}\n")
+              f.write(f"GATE_LABELS={','.join(['automated', 'link-health', *decision['labels']])}\n")
               f.write("PR_BODY<<__EOF__\n")
               f.write(body + "\n")
               f.write("__EOF__\n")
@@ -164,11 +156,26 @@ jobs:
           title: "Weekly verification ${{ env.YEAR_WEEK }} — ${{ env.VERIFY_OK }} ok / ${{ env.VERIFY_QUARANTINED }} quarantined / ${{ env.VERIFY_RECOVERED }} recovered / ${{ env.VERIFY_DEAD }} dead / ${{ env.VERIFY_MIGRATED }} migrated"
           body: ${{ env.PR_BODY }}
           commit-message: "chore(verify): weekly link verification ${{ env.YEAR_WEEK }}"
-          labels: ${{ env.AUTO_MERGE_OK == 'true' && 'automated,link-health' || 'automated,link-health,auto-merge-skipped' }}
+          labels: ${{ env.GATE_LABELS }}
 
-      - name: Enable auto-merge on routine PR
+      # The branch is fixed, so gate state can carry over from an earlier run on
+      # the same PR: clear a stale hold before arming, disarm a stale arm on hold.
+      - name: Enable auto-merge (gate passed)
         if: env.AUTO_MERGE_OK == 'true' && steps.cpr.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash
+          gh pr edit "$PR" --remove-label auto-merge-skipped || true
+          gh pr merge "$PR" --auto --squash
+
+      - name: Hold for review (gate failed)
+        if: env.AUTO_MERGE_OK != 'true' && steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
+        # The label also arrives via GATE_LABELS on create-pull-request; adding it
+        # here too is idempotent and keeps the hold explicit beside --disable-auto.
+        run: |
+          gh pr edit "$PR" --add-label auto-merge-skipped || true
+          gh pr merge "$PR" --disable-auto || true
