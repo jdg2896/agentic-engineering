@@ -21,6 +21,7 @@ import yaml as pyyaml
 from ruamel.yaml import YAML
 
 import judge
+from judge import JudgeAuthError  # judge_sources' `judge` parameter shadows the module
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_PATH = ROOT / "sources.yaml"
@@ -117,6 +118,18 @@ class ScoutRun:
     evaluated: int = 0
     # Sources whose every new entry was judged; only these may bump last_checked_at.
     fully_judged: set[str] = field(default_factory=set)
+    # The judge error was an authentication failure, so the credential needs fixing.
+    auth_failed: bool = False
+
+
+def judge_failure_hint(run: ScoutRun) -> str:
+    """What to do about a run that failed on a judge error."""
+    if run.auth_failed:
+        return "Check the judge credential (see docs/adr/0001-oauth-token-for-ci.md)."
+    return (
+        "The judge failed after retries (e.g. a CLI timeout or API error); "
+        "a re-run of the workflow usually fixes it."
+    )
 
 
 def judge_sources(
@@ -157,6 +170,7 @@ def judge_sources(
             except Exception as exc:
                 # Any error fails the run, so further judge calls would only burn quota.
                 run.errors.append(f"source {source_id}: judge error for '{title}' ({url}): {exc}")
+                run.auth_failed = isinstance(exc, JudgeAuthError)
                 return run
             run.evaluated += 1
             if result["decision"] == "include":
@@ -365,8 +379,7 @@ def main() -> None:
         for err in run.errors:
             print(f"::error::{err}", file=sys.stderr)
         print(
-            f"::error::{len(run.errors)} judge error(s); no files written. "
-            "Check the judge credential (see docs/adr/0001-oauth-token-for-ci.md).",
+            f"::error::{len(run.errors)} judge error(s); no files written. {judge_failure_hint(run)}",
             file=sys.stderr,
         )
         sys.exit(1)
