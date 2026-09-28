@@ -5,12 +5,14 @@ from __future__ import annotations
 
 import argparse
 import functools
+import json
 import os
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+from typing import NamedTuple
 
 import feedparser
 import yaml as pyyaml
@@ -170,12 +172,104 @@ def judge_sources(
     return run
 
 
+CANDIDATE_CAP = 8
+BASE_LABELS = ["automated", "scout"]
+SKIPPED_LABEL = "auto-merge-skipped"
+VALID_TYPES = tuple(judge.JUDGMENT_SCHEMA["properties"]["type"]["enum"])
+
+
+class Decision(NamedTuple):
+    """Whether a Scout PR may auto-merge, why not, and the labels to apply."""
+
+    auto_merge_ok: bool
+    reasons: list[str]
+    labels: list[str]
+
+
+def evaluate_scout_automerge(
+    candidates: list[dict],
+    valid_section_ids: Iterable[str],
+    valid_types: Iterable[str] = VALID_TYPES,
+    cap: int = CANDIDATE_CAP,
+) -> Decision:
+    """Circuit-breaker gate for Scout PRs (ADR-0002); pure, anomalies only."""
+    reasons: list[str] = []
+    if len(candidates) > cap:
+        reasons.append(f"{len(candidates)} candidates exceed cap of {cap}")
+    sections = set(valid_section_ids)
+    types = set(valid_types)
+    for c in candidates:
+        if c.get("section") not in sections:
+            reasons.append(f"candidate `{c.get('slug')}` has unknown section `{c.get('section')}`")
+        if c.get("type") not in types:
+            reasons.append(f"candidate `{c.get('slug')}` has unknown type `{c.get('type')}`")
+    labels = list(BASE_LABELS) if not reasons else [*BASE_LABELS, SKIPPED_LABEL]
+    return Decision(not reasons, reasons, labels)
+
+
+def load_candidates(path: Path) -> list[dict]:
+    """Read candidates.yaml; a missing or empty file means zero Candidates."""
+    if not path.exists():
+        return []
+    return (pyyaml.safe_load(path.read_text()) or {}).get("candidates") or []
+
+
+def automerge_decision(candidates_path: Path, resources_path: Path, cap: int = CANDIDATE_CAP) -> dict:
+    """Gate the Candidates in `candidates_path` against the sections in `resources_path`."""
+    sections = pyyaml.safe_load(resources_path.read_text()).get("sections") or []
+    decision = evaluate_scout_automerge(
+        load_candidates(candidates_path), [s["id"] for s in sections], cap=cap
+    )
+    return decision._asdict()
+
+
+def append_candidates(resources_data: dict, candidates: list[dict], today: str) -> None:
+    """Append Candidates to `resources_data["resources"]` as new Resources.
+
+    Only the `resources` list is written: Scout never adds to or edits `top_7`,
+    which stays hand-curated (ADR-0002).
+    """
+    for c in candidates:
+        resources_data["resources"].append({
+            "id": c["slug"],
+            "section": c["section"],
+            "url": c["url"],
+            "title": c["title"],
+            "author": c["author"],
+            "type": c["type"],
+            "license": c.get("license"),
+            "blurb": c["blurb"],
+            "cluster": None,
+            "tags": c.get("tags", []),
+            "added_at": today,
+            "verified_at": None,
+            "archived": False,
+            "paywall": False,
+            "superseded_by": None,
+            "notes": None,
+        })
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scout new resources from RSS/Atom feeds")
     parser.add_argument("--dry-run", action="store_true", help="Run the judge but skip all writes")
     parser.add_argument("--limit", type=int, default=None, metavar="N", help="Process only first N candidates")
     parser.add_argument("--source", default=None, metavar="ID", help="Restrict to one source ID")
+    parser.add_argument(
+        "--automerge-decision", type=Path, default=None, metavar="CANDIDATES_YAML",
+        help="Print the auto-merge gate decision for a candidates file as JSON, then exit",
+    )
+    parser.add_argument(
+        "--cap", type=int, default=CANDIDATE_CAP, metavar="N",
+        help=f"Candidate cap for --automerge-decision (default {CANDIDATE_CAP})",
+    )
     args = parser.parse_args()
+
+    if args.automerge_decision is not None:
+        if args.cap < 0:
+            parser.error("--cap must be a non-negative integer")
+        print(json.dumps(automerge_decision(args.automerge_decision, RESOURCES_PATH, args.cap)))
+        return
 
     ryaml = YAML()
     ryaml.preserve_quotes = True

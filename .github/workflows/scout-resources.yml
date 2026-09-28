@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 13 * * 4'   # Thursdays 13:00 UTC
   workflow_dispatch:
+    inputs:
+      candidate_cap:
+        description: 'Auto-merge candidate cap for this run only (e.g. raise it for a catch-up run)'
+        type: number
+        default: 8
 
 permissions:
   contents: write
@@ -60,32 +65,45 @@ jobs:
       - name: Run scout
         run: uv run python scripts/scout.py
 
+      # Auto-merge gate (ADR-0002): pure circuit-breakers in scout.py. Runs
+      # before candidates are appended so it sees the pre-run section ids.
+      # A dispatched candidate_cap (default 8) is passed through as given, 0
+      # included. Scheduled runs have no inputs, so --cap is omitted and
+      # scout.py's own default of 8 applies.
+      - name: Evaluate auto-merge gate
+        env:
+          CANDIDATE_CAP: ${{ inputs.candidate_cap }}
+        run: |
+          uv run python scripts/scout.py --automerge-decision candidates.yaml \
+            ${CANDIDATE_CAP:+--cap "$CANDIDATE_CAP"} \
+            > "$RUNNER_TEMP/automerge_decision.json"
+          cat "$RUNNER_TEMP/automerge_decision.json"
+
       - name: Compute metadata and append candidates
         id: meta
         run: |
           uv run python3 - <<'EOF'
+          import json
           import os
+          import sys
           from datetime import datetime, date, timezone
           from pathlib import Path
 
-          import yaml as pyyaml
           from ruamel.yaml import YAML
 
-          year_week = datetime.now(timezone.utc).strftime("%Y-W%V")
+          sys.path.insert(0, "scripts")
+          import scout
 
-          candidates_path = Path("candidates.yaml")
-          if candidates_path.exists():
-              raw = pyyaml.safe_load(candidates_path.read_text())
-              candidates = (raw or {}).get("candidates") or []
-          else:
-              candidates = []
+          year_week = datetime.now(timezone.utc).strftime("%Y-W%V")
+          decision = json.loads(Path(os.environ["RUNNER_TEMP"], "automerge_decision.json").read_text())
+          candidates = scout.load_candidates(Path("candidates.yaml"))
 
           n = len(candidates)
 
           if n > 0:
               title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}"
 
-              # Append candidates to resources.yaml
+              # Append candidates to resources.yaml (never touches top_7)
               ryaml = YAML()
               ryaml.preserve_quotes = True
               ryaml.default_flow_style = False
@@ -98,26 +116,7 @@ jobs:
               with open("resources.yaml") as f:
                   res_data = ryaml.load(f)
 
-              today = date.today().isoformat()
-              for c in candidates:
-                  res_data["resources"].append({
-                      "id": c["slug"],
-                      "section": c["section"],
-                      "url": c["url"],
-                      "title": c["title"],
-                      "author": c["author"],
-                      "type": c["type"],
-                      "license": c.get("license"),
-                      "blurb": c["blurb"],
-                      "cluster": None,
-                      "tags": c.get("tags", []),
-                      "added_at": today,
-                      "verified_at": None,
-                      "archived": False,
-                      "paywall": False,
-                      "superseded_by": None,
-                      "notes": None,
-                  })
+              scout.append_candidates(res_data, candidates, date.today().isoformat())
 
               with open("resources.yaml", "w") as f:
                   ryaml.dump(res_data, f)
@@ -136,11 +135,19 @@ jobs:
               title = f"Scout bookkeeping — {year_week} (no candidates)"
               body = "_No new candidates this week. seen.yaml records the rejects; last\\_checked\\_at is bumped only on Sources whose feed was fetched and whose new entries were all judged._"
 
+          if decision["auto_merge_ok"]:
+              prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
+          else:
+              prefix = "> **Auto-merge skipped:** " + "; ".join(decision["reasons"]) + ".\n"
+          body = prefix + "\n" + body
+
           env_file = os.environ["GITHUB_ENV"]
           with open(env_file, "a") as f:
               f.write(f"YEAR_WEEK={year_week}\n")
               f.write(f"SCOUT_N={n}\n")
               f.write(f"SCOUT_TITLE={title}\n")
+              f.write(f"AUTO_MERGE_OK={'true' if decision['auto_merge_ok'] else 'false'}\n")
+              f.write(f"SCOUT_LABELS={','.join(decision['labels'])}\n")
               f.write("SCOUT_PR_BODY<<__EOF__\n")
               f.write(body + "\n")
               f.write("__EOF__\n")
@@ -151,10 +158,30 @@ jobs:
         run: uv run python scripts/render.py
 
       # Fixed branch: an open Scout PR is updated in place instead of stacking.
-      - uses: peter-evans/create-pull-request@v8
+      - id: cpr
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: bot/scout
           title: ${{ env.SCOUT_TITLE }}
           body: ${{ env.SCOUT_PR_BODY }}
           commit-message: "chore(scout): weekly resource scout ${{ env.YEAR_WEEK }}"
-          labels: automated,scout
+          labels: ${{ env.SCOUT_LABELS }}
+
+      # Labels are additive on an updated PR, so clear a hold left by an earlier run.
+      - name: Enable auto-merge on routine PR
+        if: env.AUTO_MERGE_OK == 'true' && steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit "${{ steps.cpr.outputs.pull-request-number }}" --remove-label auto-merge-skipped || true
+          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash
+
+      # The auto-merge-skipped label comes from the gate's labels above; also turn
+      # off auto-merge an earlier clean run may have enabled on this same PR.
+      - name: Hold PR for review
+        if: env.AUTO_MERGE_OK != 'true' && steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit "${{ steps.cpr.outputs.pull-request-number }}" --add-label auto-merge-skipped || true
+          gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --disable-auto || true
