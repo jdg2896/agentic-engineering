@@ -131,10 +131,16 @@ jobs:
               with open("resources.yaml", "w") as f:
                   ryaml.dump(res_data, f)
 
+              # Title, blurb and rationale were sanitized and the url validated in
+              # judge_sources. Re-check the url anyway (an unsafe one also holds the
+              # PR via the gate) and sanitize section/type, which the gate only flags.
               rows = []
               for c in candidates:
+                  link = f"[{c['title']}]({c['url']})" if scout.is_safe_url(c.get("url")) else f"{c['title']} (unsafe url withheld)"
+                  section = scout.sanitize_text(str(c["section"]).replace("`", "'"), 80)
+                  type_ = scout.sanitize_text(str(c["type"]).replace("`", "'"), 80)
                   rows.append(
-                      f"- [ ] **[{c['title']}]({c['url']})** — `{c['section']}` · `{c['type']}`\n"
+                      f"- [ ] **{link}** — `{section}` · `{type_}`\n"
                       f"      Source: `{c['source_id']}` | Proposed slug: `{c['slug']}`\n"
                       f"      Blurb: _{c['blurb']}_\n"
                       f"      Rationale: _{c['rationale']}_"
