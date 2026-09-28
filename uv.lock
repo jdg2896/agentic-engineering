@@ -8,6 +8,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "feedparser" },
+    { name = "idna" },
     { name = "jinja2" },
     { name = "pyyaml" },
     { name = "requests" },
@@ -23,6 +24,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "feedparser" },
+    { name = "idna", specifier = ">=3.15" },
     { name = "jinja2" },
     { name = "pyyaml" },
     { name = "requests" },
