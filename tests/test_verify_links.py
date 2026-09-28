@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from datetime import date
 from pathlib import Path
@@ -261,3 +262,75 @@ def test_compute_state_changes_skips_results_with_no_yaml_match() -> None:
     data = _yaml(resources=[{"id": "exists", "url": "https://e/"}])
     results = [_result(id="ghost", url="https://g/", outcome="dead", status_code=404)]
     assert verify_links.compute_state_changes(data, results, TODAY) == []
+
+
+# --- Verify auto-merge gate ---
+
+
+def _gate_report(*, quarantined=0, top_7_quarantined=0, recovered=0) -> dict:
+    newly_quarantined = [
+        {"id": f"q{i}", "kind": "resource", "url": f"https://q{i}.example/", "quarantine_reason": "404",
+         "top_7": False, "first_dead_at": "2026-01-01"}
+        for i in range(quarantined)
+    ] + [
+        {"id": f"t{i}", "kind": "resource", "url": f"https://t{i}.example/", "quarantine_reason": "404",
+         "top_7": True, "first_dead_at": "2026-01-01"}
+        for i in range(top_7_quarantined)
+    ]
+    return {
+        "counts": {"ok": 10, "dead": 0, "migrated": 0, "paywall_skipped": 0},
+        "newly_quarantined": newly_quarantined,
+        "recovered": [
+            {"id": f"r{i}", "kind": "resource", "url": f"https://r{i}.example/"} for i in range(recovered)
+        ],
+        "accumulating_dead": [],
+    }
+
+
+def test_verify_gate_holds_when_quarantines_exceed_cap() -> None:
+    decision = verify_links.evaluate_verify_automerge(_gate_report(quarantined=6), cap=5)
+    assert decision.auto_merge_ok is False
+    assert decision.labels == ["auto-merge-skipped"]
+    assert decision.reasons == ["6 quarantines exceed cap of 5"]
+
+
+def test_verify_gate_passes_routine_run() -> None:
+    decision = verify_links.evaluate_verify_automerge(_gate_report(quarantined=1), cap=5)
+    assert decision == (True, [], [])
+
+
+def test_verify_gate_passes_recovery_only_run() -> None:
+    decision = verify_links.evaluate_verify_automerge(_gate_report(recovered=3), cap=5)
+    assert decision.auto_merge_ok is True
+    assert decision.labels == []
+
+
+def test_verify_gate_passes_top_7_quarantine() -> None:
+    decision = verify_links.evaluate_verify_automerge(_gate_report(top_7_quarantined=1), cap=5)
+    assert decision.auto_merge_ok is True
+    assert decision.reasons == []
+
+
+def test_verify_gate_passes_at_exactly_cap() -> None:
+    decision = verify_links.evaluate_verify_automerge(
+        _gate_report(quarantined=4, top_7_quarantined=1), cap=5
+    )
+    assert decision.auto_merge_ok is True
+
+
+def test_verify_gate_defaults_cap_to_five() -> None:
+    assert verify_links.evaluate_verify_automerge(_gate_report(quarantined=5)).auto_merge_ok is True
+    assert verify_links.evaluate_verify_automerge(_gate_report(quarantined=6)).auto_merge_ok is False
+
+
+def test_automerge_decision_cli_prints_gate_json_without_verifying(tmp_path, capsys) -> None:
+    report_path = tmp_path / "verification_report.json"
+    report_path.write_text(json.dumps(_gate_report(quarantined=7, recovered=1)))
+
+    verify_links.main(["--automerge-decision", "--report", str(report_path), "--cap", "5"])
+
+    assert json.loads(capsys.readouterr().out) == {
+        "auto_merge_ok": False,
+        "reasons": ["7 quarantines exceed cap of 5"],
+        "labels": ["auto-merge-skipped"],
+    }
