@@ -38,6 +38,8 @@ jobs:
 
       - run: uv sync --frozen
 
+      # Fails closed: any judge error exits non-zero with no files written,
+      # so the job goes red and no PR opens.
       - name: Run scout
         run: uv run python scripts/scout.py
 
@@ -64,8 +66,7 @@ jobs:
           n = len(candidates)
 
           if n > 0:
-              branch = f"bot/scout-{year_week}"
-              title = f"Scout — {n} candidate{'s' if n != 1 else ''}"
+              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}"
 
               # Append candidates to resources.yaml
               ryaml = YAML()
@@ -114,32 +115,28 @@ jobs:
                   )
 
               body = f"## Candidates ({n})\n\n" + "\n\n".join(rows)
-              has_candidates = "true"
           else:
-              branch = f"bot/scout-bookkeeping-{year_week}"
               title = f"Scout bookkeeping — {year_week} (no candidates)"
-              body = "_No new candidates this week. last\\_checked\\_at bumped and seen.yaml updated._"
-              has_candidates = "false"
+              body = "_No new candidates this week. seen.yaml records the rejects; last\\_checked\\_at is bumped only on Sources whose feed was fetched and whose new entries were all judged._"
 
           env_file = os.environ["GITHUB_ENV"]
           with open(env_file, "a") as f:
               f.write(f"YEAR_WEEK={year_week}\n")
               f.write(f"SCOUT_N={n}\n")
-              f.write(f"SCOUT_BRANCH={branch}\n")
               f.write(f"SCOUT_TITLE={title}\n")
-              f.write(f"SCOUT_HAS_CANDIDATES={has_candidates}\n")
               f.write("SCOUT_PR_BODY<<__EOF__\n")
               f.write(body + "\n")
               f.write("__EOF__\n")
           EOF
 
+      # Always re-render: bot PRs never trigger the render gate, so this keeps README.md in sync.
       - name: Re-render guide
-        if: env.SCOUT_HAS_CANDIDATES == 'true'
         run: uv run python scripts/render.py
 
+      # Fixed branch: an open Scout PR is updated in place instead of stacking.
       - uses: peter-evans/create-pull-request@v8
         with:
-          branch: ${{ env.SCOUT_BRANCH }}
+          branch: bot/scout
           title: ${{ env.SCOUT_TITLE }}
           body: ${{ env.SCOUT_PR_BODY }}
           commit-message: "chore(scout): weekly resource scout ${{ env.YEAR_WEEK }}"

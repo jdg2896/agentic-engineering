@@ -6,6 +6,8 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
@@ -129,6 +131,91 @@ def safe_slug(base: str, existing: set[str]) -> str:
     return base + "-2"
 
 
+@dataclass
+class ScoutRun:
+    """Outcome of judging one run's new entries."""
+
+    candidates: list[dict] = field(default_factory=list)
+    rejected: list[dict] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    evaluated: int = 0
+    # Sources whose every new entry was judged; only these may bump last_checked_at.
+    fully_judged: set[str] = field(default_factory=set)
+
+
+def judge_sources(
+    new_entries: dict[str, list],
+    judge: Callable[[str, str, str, str], dict],
+    known_urls: set[str],
+    existing_slugs: set[str],
+    limit: int | None = None,
+) -> ScoutRun:
+    """Judge each Source's new entries and record which Sources were fully judged.
+
+    `judge(title, url, summary, source_id)` returns the judgment dict or raises;
+    the first raise is recorded in `errors` and stops judging, since any error
+    fails the run. Entries in `known_urls` are skipped. Judging also stops once
+    `limit` entries are judged. Sources left unfinished by either stop are not
+    in `fully_judged`.
+    """
+    run = ScoutRun()
+    slugs = set(existing_slugs)
+    for source_id, entries in new_entries.items():
+        for entry in entries:
+            url = entry.get("link", "")
+            if not url:
+                continue
+            if url in known_urls:
+                print(f"    skip (known): {url}")
+                continue
+            if limit is not None and run.evaluated >= limit:
+                print(f"\n  --limit {limit} reached, stopping early.")
+                return run
+            title = entry.get("title", "(untitled)")
+            content_list = entry.get("content", [])
+            content_val = content_list[0].get("value", "") if content_list else ""
+            summary = entry.get("summary", "") or content_val
+
+            try:
+                result = judge(title, url, summary, source_id)
+            except Exception as exc:
+                # Any error fails the run, so further judge calls would only burn quota.
+                run.errors.append(f"source {source_id}: judge error for '{title}' ({url}): {exc}")
+                return run
+            run.evaluated += 1
+            if result["decision"] == "include":
+                slug = safe_slug(result.get("slug", ""), slugs)
+                slugs.add(slug)
+                run.candidates.append({
+                    "slug": slug,
+                    "source_id": source_id,
+                    "url": url,
+                    "title": result.get("title", title),
+                    "author": result.get("author", ""),
+                    "section": result.get("section", ""),
+                    "type": result.get("type", "article"),
+                    "license": result.get("license"),
+                    "blurb": result.get("blurb", ""),
+                    "tags": result.get("tags", []),
+                    "rationale": result.get("rationale", ""),
+                })
+                print(f"    [include] {title}")
+                print(f"              {url}")
+                print(f"              section={result.get('section')}  type={result.get('type')}")
+                print(f"              blurb: {result.get('blurb')}")
+            else:
+                run.rejected.append({
+                    "url": url,
+                    "title": title,
+                    "source_id": source_id,
+                    "rejected_at": str(date.today()),
+                })
+                print(f"    [reject]  {title}")
+                print(f"              {result.get('rationale')}")
+        run.fully_judged.add(source_id)
+    return run
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scout new resources from RSS/Atom feeds")
     parser.add_argument("--dry-run", action="store_true", help="Make API calls but skip all writes")
@@ -168,93 +255,51 @@ def main() -> None:
     # Build system once; first call pays cache-write cost, subsequent calls hit cache
     system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
 
-    candidates: list[dict] = []
-    new_seen: list[dict] = []
-    evaluated = 0
-    limit_reached = False
+    def judge(title: str, url: str, summary: str, source_id: str) -> dict:
+        return judge_entry(client, system, title, url, summary, source_id)
 
     enabled = [s for s in sources if s.get("enabled", True)]
     print(f"Processing {len(enabled)} source(s)...")
 
+    # Fetch every feed first; a Source whose feed fails is left out, so it is not bumped.
+    new_entries: dict[str, list] = {}
     for source in enabled:
-        if limit_reached:
-            break
         source_id = source["id"]
         try:
             feed = feedparser.parse(source["url"], agent=USER_AGENT)
             cutoff = date.fromisoformat(str(source["last_checked_at"]))
-
-            new_entries = [
+            new_entries[source_id] = [
                 e for e in feed.entries
                 if e.get("published_parsed")
                 and date(*e.published_parsed[:3]) > cutoff
             ]
-            print(f"  [{source_id}] {len(new_entries)} new entry/entries since {cutoff}")
-
-            for entry in new_entries:
-                if limit_reached:
-                    break
-                url = entry.get("link", "")
-                if not url:
-                    continue
-                if url in seen_urls or url in existing_urls:
-                    print(f"    skip (known): {url}")
-                    continue
-
-                title = entry.get("title", "(untitled)")
-                content_list = entry.get("content", [])
-                content_val = content_list[0].get("value", "") if content_list else ""
-                summary = entry.get("summary", "") or content_val
-
-                try:
-                    result = judge_entry(client, system, title, url, summary, source_id)
-                except Exception as exc:
-                    print(f"::error::source {source_id}: API error for '{title}': {exc}", file=sys.stderr)
-                    continue
-
-                decision = result["decision"]
-                if decision == "include":
-                    raw_slug = result.get("slug", "")
-                    slug = safe_slug(raw_slug, existing_slugs)
-                    existing_slugs.add(slug)
-                    candidates.append({
-                        "slug": slug,
-                        "source_id": source_id,
-                        "url": url,
-                        "title": result.get("title", title),
-                        "author": result.get("author", ""),
-                        "section": result.get("section", ""),
-                        "type": result.get("type", "article"),
-                        "license": result.get("license"),
-                        "blurb": result.get("blurb", ""),
-                        "tags": result.get("tags", []),
-                        "rationale": result.get("rationale", ""),
-                    })
-                    print(f"    [include] {title}")
-                    print(f"              {url}")
-                    print(f"              section={result.get('section')}  type={result.get('type')}")
-                    print(f"              blurb: {result.get('blurb')}")
-                else:
-                    new_seen.append({
-                        "url": url,
-                        "title": title,
-                        "source_id": source_id,
-                        "rejected_at": str(date.today()),
-                    })
-                    print(f"    [reject]  {title}")
-                    print(f"              {result.get('rationale')}")
-
-                evaluated += 1
-                if args.limit is not None and evaluated >= args.limit:
-                    limit_reached = True
-                    print(f"\n  --limit {args.limit} reached, stopping early.")
-                    break
-
+            print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {cutoff}")
         except Exception as exc:
             print(f"::error::source {source_id}: {exc}", file=sys.stderr)
-            continue
 
-    print(f"\nSummary: {len(candidates)} included / {len(new_seen)} rejected / {evaluated} evaluated")
+    run = judge_sources(
+        new_entries,
+        judge,
+        known_urls=seen_urls | existing_urls,
+        existing_slugs=existing_slugs,
+        limit=args.limit,
+    )
+
+    print(
+        f"\nSummary: {len(run.candidates)} included / {len(run.rejected)} rejected / "
+        f"{run.evaluated} evaluated / {len(run.errors)} judge error(s)"
+    )
+
+    if run.errors:
+        # Fail closed: a dead judge must never advance last_checked_at or record rejects.
+        for err in run.errors:
+            print(f"::error::{err}", file=sys.stderr)
+        print(
+            f"::error::{len(run.errors)} judge error(s); no files written. "
+            "Check the judge credential (see docs/adr/0001-oauth-token-for-ci.md).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     if args.dry_run:
         print("Dry run — no files written.")
@@ -262,26 +307,27 @@ def main() -> None:
 
     # candidates.yaml — plain yaml, new file each run
     CANDIDATES_PATH.write_text(
-        pyyaml.dump({"candidates": candidates}, sort_keys=False, allow_unicode=True)
+        pyyaml.dump({"candidates": run.candidates}, sort_keys=False, allow_unicode=True)
     )
     print(f"Wrote {CANDIDATES_PATH}")
 
     # seen.yaml — append rejects
-    if new_seen:
+    if run.rejected:
         if seen_data["seen"] is None:
             seen_data["seen"] = []
-        seen_data["seen"].extend(new_seen)
+        seen_data["seen"].extend(run.rejected)
         with open(SEEN_PATH, "w") as f:
             ryaml.dump(seen_data, f)
-        print(f"Updated {SEEN_PATH} (+{len(new_seen)} rejected)")
+        print(f"Updated {SEEN_PATH} (+{len(run.rejected)} rejected)")
 
-    # sources.yaml — bump last_checked_at on every processed source
+    # sources.yaml — bump last_checked_at only on Sources whose every new entry was judged
     today = date.today()
-    for source in enabled:
+    bumped = [s for s in enabled if s["id"] in run.fully_judged]
+    for source in bumped:
         source["last_checked_at"] = date(today.year, today.month, today.day)
     with open(SOURCES_PATH, "w") as f:
         ryaml.dump(sources_data, f)
-    print(f"Updated {SOURCES_PATH} (last_checked_at → {today})")
+    print(f"Updated {SOURCES_PATH} (last_checked_at → {today} on {len(bumped)}/{len(enabled)} source(s))")
 
 
 if __name__ == "__main__":

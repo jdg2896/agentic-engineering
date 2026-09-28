@@ -38,6 +38,7 @@ jobs:
       - name: Run link verifier
         run: uv run python scripts/verify_links.py
 
+      # Always re-render: bot PRs never trigger the render gate, so this keeps README.md in sync.
       - name: Re-render guide
         run: uv run python scripts/render.py
 
@@ -155,11 +156,12 @@ jobs:
               f.write("__EOF__\n")
           EOF
 
+      # Fixed branch: an open Verify PR is updated in place instead of stacking.
       - id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
-          branch: bot/verify-${{ env.YEAR_WEEK }}
-          title: "Weekly verification — ${{ env.VERIFY_OK }} ok / ${{ env.VERIFY_QUARANTINED }} quarantined / ${{ env.VERIFY_RECOVERED }} recovered / ${{ env.VERIFY_DEAD }} dead / ${{ env.VERIFY_MIGRATED }} migrated"
+          branch: bot/verify
+          title: "Weekly verification ${{ env.YEAR_WEEK }} — ${{ env.VERIFY_OK }} ok / ${{ env.VERIFY_QUARANTINED }} quarantined / ${{ env.VERIFY_RECOVERED }} recovered / ${{ env.VERIFY_DEAD }} dead / ${{ env.VERIFY_MIGRATED }} migrated"
           body: ${{ env.PR_BODY }}
           commit-message: "chore(verify): weekly link verification ${{ env.YEAR_WEEK }}"
           labels: ${{ env.AUTO_MERGE_OK == 'true' && 'automated,link-health' || 'automated,link-health,auto-merge-skipped' }}
