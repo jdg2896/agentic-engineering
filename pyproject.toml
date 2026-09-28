@@ -6,7 +6,6 @@ dependencies = [
     "pyyaml",
     "requests",
     "feedparser",
-    "anthropic>=0.50.0",
     "jinja2",
     "ruamel.yaml",
 ]

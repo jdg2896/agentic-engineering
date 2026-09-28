@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scout new resources from RSS/Atom feeds and evaluate candidates via Claude."""
+"""Scout new resources from RSS/Atom feeds and evaluate candidates via Claude Code headless."""
 
 from __future__ import annotations
 
@@ -11,10 +11,11 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
-import anthropic
 import feedparser
 import yaml as pyyaml
 from ruamel.yaml import YAML
+
+import judge as judge_runner
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_PATH = ROOT / "sources.yaml"
@@ -24,28 +25,6 @@ CANDIDATES_PATH = ROOT / "candidates.yaml"
 
 _REPO = os.environ.get("GITHUB_REPOSITORY", "jdg2896/agentic-engineering")
 USER_AGENT = f"agentic-engineering-bot (+https://github.com/{_REPO})"
-
-TOOL_DEF = {
-    "name": "judge_candidate",
-    "description": "Editorial judgment on a candidate resource.",
-    "input_schema": {
-        "type": "object",
-        "required": ["decision", "section", "slug", "title", "author", "type", "blurb", "tags", "rationale"],
-        "properties": {
-            "decision": {"type": "string", "enum": ["include", "reject"]},
-            "section": {"type": "string"},
-            "slug": {"type": "string"},
-            "title": {"type": "string"},
-            "author": {"type": "string"},
-            "type": {"type": "string", "enum": ["article", "paper", "docs", "repo", "video", "spec", "course", "book"]},
-            "license": {"type": ["string", "null"]},
-            "blurb": {"type": "string"},
-            "tags": {"type": "array", "items": {"type": "string"}},
-            "rationale": {"type": "string"},
-        },
-    },
-}
-
 
 def build_system_prompt(sections: list, resources: list) -> str:
     lines = [
@@ -93,36 +72,10 @@ def build_system_prompt(sections: list, resources: list) -> str:
         "- GitHub release notes → include only if the release introduces a meaningful new capability (not just patch/bugfix)",
         "- Security content → include only if it covers agent-specific attack surface (prompt injection, indirect injection, tool misuse)",
         "",
-        "Call `judge_candidate` with your decision.",
+        "Return your editorial judgment as structured output matching the provided JSON schema.",
     ]
 
     return "\n".join(lines)
-
-
-def judge_entry(
-    client: anthropic.Anthropic,
-    system: list,
-    title: str,
-    url: str,
-    summary: str,
-    source_id: str,
-) -> dict:
-    user_prompt = (
-        f"Evaluate this candidate resource for inclusion.\n\n"
-        f"Title: {title}\n"
-        f"URL: {url}\n"
-        f"Source feed: {source_id}\n"
-        f"Summary/description:\n{summary or '(no summary available)'}"
-    )
-    resp = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=512,
-        system=system,
-        tools=[TOOL_DEF],
-        tool_choice={"type": "tool", "name": "judge_candidate"},
-        messages=[{"role": "user", "content": user_prompt}],
-    )
-    return next(b.input for b in resp.content if b.type == "tool_use")
 
 
 def safe_slug(base: str, existing: set[str]) -> str:
@@ -210,7 +163,7 @@ def judge_sources(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scout new resources from RSS/Atom feeds")
-    parser.add_argument("--dry-run", action="store_true", help="Make API calls but skip all writes")
+    parser.add_argument("--dry-run", action="store_true", help="Run the judge but skip all writes")
     parser.add_argument("--limit", type=int, default=None, metavar="N", help="Process only first N candidates")
     parser.add_argument("--source", default=None, metavar="ID", help="Restrict to one source ID")
     args = parser.parse_args()
@@ -242,13 +195,18 @@ def main() -> None:
     existing_urls = {r["url"] for r in resources_data["resources"]}
     existing_slugs = {r["id"] for r in resources_data["resources"]}
 
-    client = anthropic.Anthropic()
-    system_text = build_system_prompt(resources_data["sections"], resources_data["resources"])
-    # Build system once; first call pays cache-write cost, subsequent calls hit cache
-    system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
+    system = build_system_prompt(resources_data["sections"], resources_data["resources"])
+    auth_failure: list[judge_runner.JudgeAuthError] = []
 
     def judge(title: str, url: str, summary: str, source_id: str) -> dict:
-        return judge_entry(client, system, title, url, summary, source_id)
+        # A failed login fails every call the same way; stop invoking the CLI after the first.
+        if auth_failure:
+            raise auth_failure[0]
+        try:
+            return judge_runner.judge_entry(system, title, url, summary, source_id)
+        except judge_runner.JudgeAuthError as exc:
+            auth_failure.append(exc)
+            raise
 
     enabled = [s for s in sources if s.get("enabled", True)]
     print(f"Processing {len(enabled)} source(s)...")
@@ -292,6 +250,8 @@ def main() -> None:
 
     if run.errors:
         # Fail closed: a dead judge must never advance last_checked_at or record rejects.
+        if auth_failure:
+            print(f"::error::Claude Code authentication failed. {judge_runner.AUTH_HINT}", file=sys.stderr)
         for err in run.errors:
             print(f"::error::{err}", file=sys.stderr)
         print(
