@@ -106,21 +106,24 @@ def judge_sources(
     """Judge each Source's new entries and record which Sources were fully judged.
 
     `judge(title, url, summary, source_id)` returns the judgment dict or raises;
-    a raise is recorded in `errors` and keeps that Source out of `fully_judged`.
-    Entries in `known_urls` are skipped. Once `limit` entries are judged, the
-    remaining entries are left unjudged and their Sources are not fully judged.
+    the first raise is recorded in `errors` and stops judging, since any error
+    fails the run. Entries in `known_urls` are skipped. Judging also stops once
+    `limit` entries are judged. Sources left unfinished by either stop are not
+    in `fully_judged`.
     """
     run = ScoutRun()
     slugs = set(existing_slugs)
     for source_id, entries in new_entries.items():
-        complete = True
         for entry in entries:
             url = entry.get("link", "")
-            if not url or url in known_urls:
+            if not url:
+                continue
+            if url in known_urls:
+                print(f"    skip (known): {url}")
                 continue
             if limit is not None and run.evaluated >= limit:
-                complete = False
-                break
+                print(f"\n  --limit {limit} reached, stopping early.")
+                return run
             title = entry.get("title", "(untitled)")
             content_list = entry.get("content", [])
             content_val = content_list[0].get("value", "") if content_list else ""
@@ -129,9 +132,9 @@ def judge_sources(
             try:
                 result = judge(title, url, summary, source_id)
             except Exception as exc:
+                # Any error fails the run, so further judge calls would only burn quota.
                 run.errors.append(f"source {source_id}: judge error for '{title}' ({url}): {exc}")
-                complete = False
-                continue
+                return run
             run.evaluated += 1
             if result["decision"] == "include":
                 slug = safe_slug(result.get("slug", ""), slugs)
@@ -149,6 +152,10 @@ def judge_sources(
                     "tags": result.get("tags", []),
                     "rationale": result.get("rationale", ""),
                 })
+                print(f"    [include] {title}")
+                print(f"              {url}")
+                print(f"              section={result.get('section')}  type={result.get('type')}")
+                print(f"              blurb: {result.get('blurb')}")
             else:
                 run.rejected.append({
                     "url": url,
@@ -156,8 +163,9 @@ def judge_sources(
                     "source_id": source_id,
                     "rejected_at": str(date.today()),
                 })
-        if complete:
-            run.fully_judged.add(source_id)
+                print(f"    [reject]  {title}")
+                print(f"              {result.get('rationale')}")
+        run.fully_judged.add(source_id)
     return run
 
 
@@ -234,14 +242,6 @@ def main() -> None:
         existing_slugs=existing_slugs,
         limit=args.limit,
     )
-
-    for c in run.candidates:
-        print(f"    [include] {c['title']}")
-        print(f"              {c['url']}")
-        print(f"              section={c['section']}  type={c['type']}")
-        print(f"              blurb: {c['blurb']}")
-    for r in run.rejected:
-        print(f"    [reject]  {r['title']}")
 
     print(
         f"\nSummary: {len(run.candidates)} included / {len(run.rejected)} rejected / "

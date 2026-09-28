@@ -38,17 +38,9 @@ jobs:
       - name: Run link verifier
         run: uv run python scripts/verify_links.py
 
+      # Always re-render: bot PRs never trigger the render gate, so this keeps README.md in sync.
       - name: Re-render guide
         run: uv run python scripts/render.py
-
-      # Bot PRs opened with GITHUB_TOKEN never trigger the pull_request render
-      # gate, so check here: stage the render, re-render, and require no diff,
-      # proving the committed README.md matches the committed resources.yaml.
-      - name: Fail if rendered README is out of sync
-        run: |
-          git add README.md
-          uv run python scripts/render.py
-          git diff --exit-code README.md
 
       - name: Compute week tag and PR metadata
         id: meta
