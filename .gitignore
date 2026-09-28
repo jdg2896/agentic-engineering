@@ -7,3 +7,4 @@ dist/
 .env.local
 verification_report.json
 candidates.yaml
+.claude/worktrees/
