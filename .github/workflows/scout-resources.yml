@@ -38,6 +38,8 @@ jobs:
     needs: check-pause
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
+    # Normal runs take ~1.5 min; this bounds a run stuck in judge retries.
+    timeout-minutes: 90
     steps:
       - name: Check Claude Code OAuth token
         run: |
@@ -60,9 +62,12 @@ jobs:
         # Pinned: scripts/judge.py's CLI flags and JSON envelope were verified against 2.1.283.
         run: npm install -g @anthropic-ai/claude-code@2.1.283
 
-      # Fails closed: any judge error exits non-zero with no files written,
-      # so the job goes red and no PR opens.
+      # Fails closed: a judge error that survives judge.py's retries (auth
+      # errors are never retried) exits non-zero with no files written, so the
+      # job goes red and no PR opens. Unbuffered so progress logs stream live.
       - name: Run scout
+        env:
+          PYTHONUNBUFFERED: '1'
         run: uv run python scripts/scout.py
 
       # Auto-merge gate (ADR-0002): pure circuit-breakers in scout.py. Runs

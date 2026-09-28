@@ -1,8 +1,9 @@
-"""Unit tests for scripts/judge.py: parsing and validating Claude Code CLI output."""
+"""Unit tests for scripts/judge.py: parsing, validating and retrying Claude Code CLI output."""
 
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -110,3 +111,105 @@ def test_judge_entry_sends_the_entry_and_system_prompt_to_the_cli() -> None:
     assert system == "SYSTEM"
     assert "https://example.com/a" in prompt
     assert "A title" in prompt
+
+
+def _scripted_run(*outcomes):
+    """A fake CLI runner returning (or raising) each outcome in turn, recording calls."""
+    calls: list[str] = []
+    queue = list(outcomes)
+
+    def run(prompt: str, system: str) -> str:
+        calls.append(prompt)
+        outcome = queue.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    return run, calls
+
+
+def _judge(run, sleeps: list[float]) -> dict:
+    return judge.judge_entry("SYSTEM", "A title", "https://example.com/a", "s", "src", run=run, sleep=sleeps.append)
+
+
+def test_judge_entry_retries_a_timed_out_cli_call_and_returns_the_judgment(capsys) -> None:
+    run, calls = _scripted_run(judge.JudgeError("Claude Code CLI timed out after 300s"), _envelope())
+    sleeps: list[float] = []
+
+    assert _judge(run, sleeps) == VALID_JUDGMENT
+    assert len(calls) == 2
+    assert len(sleeps) == 1
+    assert "timed out" in capsys.readouterr().out
+
+
+def test_judge_entry_retries_a_transient_cli_error_envelope() -> None:
+    overloaded = _envelope(is_error=True, api_error_status=529, result="API Error: 529 Overloaded", structured_output=None)
+    run, calls = _scripted_run(overloaded, _envelope())
+
+    assert _judge(run, []) == VALID_JUDGMENT
+    assert len(calls) == 2
+
+
+def test_judge_entry_retries_malformed_model_output() -> None:
+    bad = _envelope(structured_output={**VALID_JUDGMENT, "decision": "maybe"})
+    run, calls = _scripted_run(bad, _envelope())
+
+    assert _judge(run, []) == VALID_JUDGMENT
+    assert len(calls) == 2
+
+
+def test_judge_entry_raises_the_last_error_once_attempts_are_exhausted() -> None:
+    run, calls = _scripted_run(*(judge.JudgeError(f"timed out #{i}") for i in range(judge.MAX_ATTEMPTS)))
+    sleeps: list[float] = []
+
+    with pytest.raises(judge.JudgeError, match=f"timed out #{judge.MAX_ATTEMPTS - 1}"):
+        _judge(run, sleeps)
+    assert len(calls) == judge.MAX_ATTEMPTS == 3
+    # No sleep after the final attempt.
+    assert len(sleeps) == judge.MAX_ATTEMPTS - 1
+
+
+def test_judge_entry_does_not_retry_an_auth_failure() -> None:
+    unauthorized = _envelope(
+        is_error=True,
+        api_error_status=401,
+        result="Failed to authenticate. API Error: 401 OAuth access token is invalid.",
+        structured_output=None,
+    )
+    run, calls = _scripted_run(unauthorized, _envelope())
+    sleeps: list[float] = []
+
+    with pytest.raises(judge.JudgeAuthError):
+        _judge(run, sleeps)
+    assert len(calls) == 1
+    assert sleeps == []
+
+
+def _fake_cli(monkeypatch, returncode: int, stdout: str, stderr: str) -> list:
+    """Stub subprocess.run inside judge so run_claude sees a canned CLI exit."""
+    calls: list = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, returncode, stdout=stdout, stderr=stderr)
+
+    monkeypatch.setattr(judge.subprocess, "run", fake_run)
+    return calls
+
+
+def test_cli_exit_with_auth_failure_on_stderr_raises_auth_error_without_retry(monkeypatch) -> None:
+    calls = _fake_cli(monkeypatch, 1, "", "Error: Failed to authenticate. OAuth token has expired.")
+    sleeps: list[float] = []
+
+    with pytest.raises(judge.JudgeAuthError, match="claude setup-token"):
+        judge.judge_entry("SYSTEM", "A title", "https://example.com/a", "s", "src", sleep=sleeps.append)
+    assert len(calls) == 1
+    assert sleeps == []
+
+
+def test_cli_exit_with_other_stderr_raises_plain_judge_error(monkeypatch) -> None:
+    _fake_cli(monkeypatch, 1, "", "Error: something broke")
+
+    with pytest.raises(judge.JudgeError, match="exited 1: Error: something broke") as exc_info:
+        judge.run_claude("prompt", "SYSTEM")
+    assert not isinstance(exc_info.value, judge.JudgeAuthError)
