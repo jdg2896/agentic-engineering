@@ -213,3 +213,80 @@ def test_cli_exit_with_other_stderr_raises_plain_judge_error(monkeypatch) -> Non
     with pytest.raises(judge.JudgeError, match="exited 1: Error: something broke") as exc_info:
         judge.run_claude("prompt", "SYSTEM")
     assert not isinstance(exc_info.value, judge.JudgeAuthError)
+
+
+SESSION_LIMIT = "You've hit your session limit · resets 3pm (UTC)"
+
+
+def test_usage_limit_envelope_raises_quota_error() -> None:
+    # The message the CLI printed when the subscription's session limit ran out.
+    stdout = _envelope(is_error=True, result=SESSION_LIMIT, structured_output=None)
+
+    with pytest.raises(judge.JudgeQuotaError, match="session limit"):
+        judge.parse_judgment(stdout)
+
+
+@pytest.mark.parametrize("message", [
+    "You've hit your usage limit",
+    "You've hit your weekly limit · resets Mon 9am",
+    "Claude usage limit reached. Your limit will reset at 5pm.",
+    "YOU'VE HIT YOUR OPUS LIMIT",
+])
+def test_other_usage_limit_messages_raise_quota_error(message: str) -> None:
+    with pytest.raises(judge.JudgeQuotaError):
+        judge.parse_judgment(_envelope(is_error=True, result=message, structured_output=None))
+
+
+@pytest.mark.parametrize("status, message", [
+    (429, "API Error: 429 rate limit exceeded"),
+    (429, "API Error: 429 Too Many Requests"),
+])
+def test_short_rate_limit_is_a_plain_judge_error(status: int, message: str) -> None:
+    stdout = _envelope(is_error=True, api_error_status=status, result=message, structured_output=None)
+
+    with pytest.raises(judge.JudgeError) as exc_info:
+        judge.parse_judgment(stdout)
+    assert not isinstance(exc_info.value, judge.JudgeQuotaError)
+
+
+def test_auth_failure_takes_precedence_over_quota() -> None:
+    stdout = _envelope(
+        is_error=True,
+        api_error_status=401,
+        result="Failed to authenticate. You've hit your usage limit.",
+        structured_output=None,
+    )
+
+    with pytest.raises(judge.JudgeAuthError):
+        judge.parse_judgment(stdout)
+
+
+def test_judge_entry_does_not_retry_a_usage_limit() -> None:
+    limited = _envelope(is_error=True, result=SESSION_LIMIT, structured_output=None)
+    run, calls = _scripted_run(limited, _envelope())
+    sleeps: list[float] = []
+
+    with pytest.raises(judge.JudgeQuotaError):
+        _judge(run, sleeps)
+    assert len(calls) == 1
+    assert sleeps == []
+
+
+def test_judge_entry_still_retries_a_short_rate_limit() -> None:
+    rate_limited = _envelope(
+        is_error=True, api_error_status=429, result="API Error: 429 rate limit exceeded", structured_output=None
+    )
+    run, calls = _scripted_run(rate_limited, _envelope())
+
+    assert _judge(run, []) == VALID_JUDGMENT
+    assert len(calls) == 2
+
+
+def test_cli_exit_with_usage_limit_on_stderr_raises_quota_error_without_retry(monkeypatch) -> None:
+    calls = _fake_cli(monkeypatch, 1, "", f"Error: {SESSION_LIMIT}")
+    sleeps: list[float] = []
+
+    with pytest.raises(judge.JudgeQuotaError, match="session limit"):
+        judge.judge_entry("SYSTEM", "A title", "https://example.com/a", "s", "src", sleep=sleeps.append)
+    assert len(calls) == 1
+    assert sleeps == []

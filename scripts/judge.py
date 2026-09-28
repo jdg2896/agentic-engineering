@@ -9,6 +9,7 @@ partial judgment.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import tempfile
 import time
@@ -53,6 +54,10 @@ class JudgeAuthError(JudgeError):
     """The Claude Code CLI could not authenticate."""
 
 
+class JudgeQuotaError(JudgeError):
+    """The Claude subscription usage limit is exhausted."""
+
+
 _JSON_TYPES = {
     "string": str,
     "array": list,
@@ -94,6 +99,17 @@ def _mentions_auth_failure(text: str) -> bool:
     return any(s in text for s in ("failed to authenticate", "invalid api key", "oauth token", "/login"))
 
 
+# The CLI's subscription limit messages ("You've hit your session limit · resets 3pm
+# (UTC)", "... usage limit", "... weekly limit"). These reset in hours, not seconds.
+# A bare HTTP 429 / "rate limit" is deliberately not matched: short rate limits clear
+# within the retry backoff.
+_QUOTA_RE = re.compile(r"\bhit your\b[^.\n]{0,40}?\blimit\b|\busage limit\b", re.IGNORECASE)
+
+
+def _mentions_quota_exhausted(text: str) -> bool:
+    return _QUOTA_RE.search(text) is not None
+
+
 def _is_auth_failure(envelope: dict) -> bool:
     if envelope.get("api_error_status") in (401, 403):
         return True
@@ -103,8 +119,8 @@ def _is_auth_failure(envelope: dict) -> bool:
 def parse_judgment(stdout: str) -> dict:
     """Parse `claude -p --output-format json` stdout into a validated judgment.
 
-    Raises JudgeAuthError on an authentication failure and JudgeError on any other
-    CLI error, malformed JSON, missing structured output, or schema violation.
+    Raises JudgeAuthError on an authentication failure, JudgeQuotaError when the
+    subscription usage limit is exhausted, and JudgeError on any other CLI error, malformed JSON, missing structured output, or schema violation.
     """
     try:
         envelope = json.loads(stdout)
@@ -115,6 +131,8 @@ def parse_judgment(stdout: str) -> dict:
     if envelope.get("is_error"):
         if _is_auth_failure(envelope):
             raise JudgeAuthError(f"{envelope.get('result')} {AUTH_HINT}")
+        if _mentions_quota_exhausted(str(envelope.get("result", ""))):
+            raise JudgeQuotaError(f"Claude Code CLI error: {envelope.get('result')}")
         raise JudgeError(f"Claude Code CLI error: {envelope.get('result') or envelope.get('subtype')}")
     judgment = envelope.get("structured_output")
     if judgment is None:
@@ -152,6 +170,8 @@ def run_claude(prompt: str, system: str) -> str:
         message = f"Claude Code CLI exited {proc.returncode}: {proc.stderr.strip()[:500]}"
         if _mentions_auth_failure(proc.stderr):
             raise JudgeAuthError(f"{message} {AUTH_HINT}")
+        if _mentions_quota_exhausted(proc.stderr):
+            raise JudgeQuotaError(message)
         raise JudgeError(message)
     return proc.stdout
 
@@ -170,8 +190,9 @@ def judge_entry(
     Any `JudgeError` is retried, up to `MAX_ATTEMPTS` attempts in all: CLI timeouts
     and errors are usually transient, and malformed or off-schema output is a
     nondeterministic model slip worth another draw. `JudgeAuthError` is raised at
-    once, since a bad token will not fix itself. Once attempts run out, the last
-    error is raised.
+    once, since a bad token will not fix itself, and so is `JudgeQuotaError`, since
+    a usage limit resets in hours, not within the backoff. Once attempts run out,
+    the last error is raised.
     """
     prompt = (
         f"Evaluate this candidate resource for inclusion.\n\n"
@@ -183,7 +204,7 @@ def judge_entry(
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             return parse_judgment(run(prompt, system))
-        except JudgeAuthError:
+        except (JudgeAuthError, JudgeQuotaError):
             raise
         except JudgeError as exc:
             if attempt == MAX_ATTEMPTS:
