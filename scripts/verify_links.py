@@ -390,14 +390,23 @@ class Decision(NamedTuple):
 def evaluate_verify_automerge(report: dict, cap: int = QUARANTINE_CAP) -> Decision:
     """Decide whether a Verify PR may auto-merge. Pure.
 
-    The only breaker is a mass quarantine (newly-quarantined count > cap), which usually
-    means a domain-wide outage during the verify window rather than real link rot.
-    Recoveries and top-7 quarantines do not block; the PR body calls them out instead.
+    Breakers: a mass quarantine (newly-quarantined count > cap), which usually means a
+    domain-wide outage during the verify window rather than real link rot; and any
+    cross-host migration, since a redirect to another host (e.g. an expired domain now
+    pointing elsewhere) would silently rewrite the entry's url. Recoveries and top-7
+    quarantines do not block; the PR body calls them out instead.
     """
     quarantined = len(report.get("newly_quarantined") or [])
+    cross_host = sum(
+        1
+        for r in report.get("migrated") or []
+        if r.get("final_url") and _normalize(r["url"])[0] != _normalize(r["final_url"])[0]
+    )
     reasons: list[str] = []
     if quarantined > cap:
         reasons.append(f"{quarantined} quarantines exceed cap of {cap}")
+    if cross_host:
+        reasons.append(f"{cross_host} cross-host migration(s) need review")
     if reasons:
         return Decision(False, reasons, [AUTO_MERGE_SKIPPED_LABEL])
     return Decision(True, [], [])

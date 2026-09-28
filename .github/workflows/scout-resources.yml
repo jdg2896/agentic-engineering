@@ -14,11 +14,6 @@ permissions:
   contents: write
   pull-requests: write
 
-# Scout's judge runs on Claude Code headless with the subscription OAuth token
-# (docs/adr/0001-oauth-token-for-ci.md).
-env:
-  CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-
 jobs:
   check-pause:
     runs-on: ubuntu-latest
@@ -39,20 +34,28 @@ jobs:
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
     steps:
+      # Scout's judge runs on Claude Code headless with the subscription OAuth token
+      # (docs/adr/0001-oauth-token-for-ci.md). The token is scoped to the steps that
+      # need it so third-party actions in this job never see it.
       - name: Check Claude Code OAuth token
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
           if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
             echo "::error::CLAUDE_CODE_OAUTH_TOKEN secret is empty or missing. Run \`claude setup-token\` locally and save the token as the CLAUDE_CODE_OAUTH_TOKEN repo secret. The token expires after one year and must be rotated (docs/adr/0001-oauth-token-for-ci.md)."
             exit 1
           fi
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - uses: astral-sh/setup-uv@v7
+      # No cache: a privileged job must not restore a cache writable by less-trusted runs.
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          enable-cache: false
 
       - run: uv sync --frozen
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22'
 
@@ -63,6 +66,8 @@ jobs:
       # Fails closed: any judge error exits non-zero with no files written,
       # so the job goes red and no PR opens.
       - name: Run scout
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: uv run python scripts/scout.py
 
       # Auto-merge gate (ADR-0002): pure circuit-breakers in scout.py. Runs
@@ -85,6 +90,7 @@ jobs:
           uv run python3 - <<'EOF'
           import json
           import os
+          import secrets
           import sys
           from datetime import datetime, date, timezone
           from pathlib import Path
@@ -142,15 +148,17 @@ jobs:
           body = prefix + "\n" + body
 
           env_file = os.environ["GITHUB_ENV"]
+          # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).
+          delim = secrets.token_hex(16)
           with open(env_file, "a") as f:
               f.write(f"YEAR_WEEK={year_week}\n")
               f.write(f"SCOUT_N={n}\n")
               f.write(f"SCOUT_TITLE={title}\n")
               f.write(f"AUTO_MERGE_OK={'true' if decision['auto_merge_ok'] else 'false'}\n")
               f.write(f"SCOUT_LABELS={','.join(decision['labels'])}\n")
-              f.write("SCOUT_PR_BODY<<__EOF__\n")
+              f.write(f"SCOUT_PR_BODY<<{delim}\n")
               f.write(body + "\n")
-              f.write("__EOF__\n")
+              f.write(f"{delim}\n")
           EOF
 
       # Always re-render: bot PRs never trigger the render gate, so this keeps README.md in sync.
@@ -159,7 +167,7 @@ jobs:
 
       # Fixed branch: an open Scout PR is updated in place instead of stacking.
       - id: cpr
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           branch: bot/scout
           title: ${{ env.SCOUT_TITLE }}

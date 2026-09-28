@@ -1,7 +1,13 @@
 name: Render gate
 
+# WARNING: this workflow executes PR code (`uv sync` and scripts/render.py from the
+# PR head), so it runs on plain `pull_request`: fork PRs get a read-only token, no
+# secrets and an isolated cache scope. Never switch it back to pull_request_target;
+# that would run fork code with secrets and the base branch's cache, which the
+# privileged scout/verify workflows restore. Bot PRs never trigger this gate either
+# way (GITHUB_TOKEN-created PRs start no workflows); the bots re-render themselves.
 on:
-  pull_request_target:
+  pull_request:
 
 permissions:
   contents: read
@@ -10,10 +16,11 @@ jobs:
   render-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Detect render-relevant changes
         id: changes
@@ -26,7 +33,7 @@ jobs:
             echo "::notice::No render-relevant files changed — skipping render check."
           fi
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
         if: steps.changes.outputs.changed == 'true'
 
       - run: uv sync --frozen
