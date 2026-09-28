@@ -174,6 +174,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ steps.cpr.outputs.pull-request-number }}
+        # The label also arrives via GATE_LABELS on create-pull-request; adding it
+        # here too is idempotent and keeps the hold explicit beside --disable-auto.
         run: |
           gh pr edit "$PR" --add-label auto-merge-skipped || true
           gh pr merge "$PR" --disable-auto || true
