@@ -10,6 +10,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date
 from pathlib import Path
+from typing import NamedTuple
 from urllib.parse import urlparse
 
 import requests
@@ -374,6 +375,34 @@ def report_transitions(changes: list[dict]) -> dict:
     }
 
 
+QUARANTINE_CAP = 5
+AUTO_MERGE_SKIPPED_LABEL = "auto-merge-skipped"
+
+
+class Decision(NamedTuple):
+    """Outcome of an auto-merge gate: whether to arm auto-merge, why not, and labels to apply."""
+
+    auto_merge_ok: bool
+    reasons: list[str]
+    labels: list[str]
+
+
+def evaluate_verify_automerge(report: dict, cap: int = QUARANTINE_CAP) -> Decision:
+    """Decide whether a Verify PR may auto-merge. Pure.
+
+    The only breaker is a mass quarantine (newly-quarantined count > cap), which usually
+    means a domain-wide outage during the verify window rather than real link rot.
+    Recoveries and top-7 quarantines do not block; the PR body calls them out instead.
+    """
+    quarantined = len(report.get("newly_quarantined") or [])
+    reasons: list[str] = []
+    if quarantined > cap:
+        reasons.append(f"{quarantined} quarantines exceed cap of {cap}")
+    if reasons:
+        return Decision(False, reasons, [AUTO_MERGE_SKIPPED_LABEL])
+    return Decision(True, [], [])
+
+
 def print_summary(report: dict) -> None:
     counts = report["counts"]
     print(
@@ -408,11 +437,23 @@ def print_summary(report: dict) -> None:
             print(f"  {r['url']} → {r['final_url']}")
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Verify links in resources.yaml")
     parser.add_argument("--dry-run", action="store_true", help="Run checks without modifying resources.yaml")
     parser.add_argument("--limit", type=int, default=None, metavar="N", help="Verify only the first N entries")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--automerge-decision",
+        action="store_true",
+        help="Skip verification; print the auto-merge gate decision for an existing report as JSON",
+    )
+    parser.add_argument("--report", type=Path, default=REPORT_PATH, help="Report path for --automerge-decision")
+    parser.add_argument("--cap", type=int, default=QUARANTINE_CAP, help="Quarantine cap for --automerge-decision")
+    args = parser.parse_args(argv)
+
+    if args.automerge_decision:
+        report = json.loads(args.report.read_text())
+        print(json.dumps(evaluate_verify_automerge(report, cap=args.cap)._asdict()))
+        return
 
     yaml = YAML()
     yaml.preserve_quotes = True
