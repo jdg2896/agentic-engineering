@@ -204,17 +204,10 @@ def main() -> None:
     existing_slugs = {r["id"] for r in resources_data["resources"]}
 
     system = build_system_prompt(resources_data["sections"], resources_data["resources"])
-    auth_failure: list[judge_runner.JudgeAuthError] = []
 
     def judge(title: str, url: str, summary: str, source_id: str) -> dict:
-        # A failed login fails every call the same way; stop invoking the CLI after the first.
-        if auth_failure:
-            raise auth_failure[0]
-        try:
-            return judge_runner.judge_entry(system, title, url, summary, source_id)
-        except judge_runner.JudgeAuthError as exc:
-            auth_failure.append(exc)
-            raise
+        # Raises JudgeError (JudgeAuthError carries the token-rotation hint) on failure.
+        return judge_runner.judge_entry(system, title, url, summary, source_id)
 
     enabled = [s for s in sources if s.get("enabled", True)]
     print(f"Processing {len(enabled)} source(s)...")
@@ -250,8 +243,6 @@ def main() -> None:
 
     if run.errors:
         # Fail closed: a dead judge must never advance last_checked_at or record rejects.
-        if auth_failure:
-            print(f"::error::Claude Code authentication failed. {judge_runner.AUTH_HINT}", file=sys.stderr)
         for err in run.errors:
             print(f"::error::{err}", file=sys.stderr)
         print(
