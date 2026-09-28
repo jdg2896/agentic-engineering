@@ -60,26 +60,35 @@ def test_source_is_fully_judged_when_every_new_entry_is_judged() -> None:
     assert [r["url"] for r in run.rejected] == ["https://a/2"]
 
 
-def test_judge_error_is_counted_and_blocks_only_that_sources_bump() -> None:
-    judge = _stub_judge({
+def test_first_judge_error_stops_judging_and_blocks_every_later_bump() -> None:
+    stub = _stub_judge({
         "https://a/1": _judgment("reject"),
         "https://a/2": RuntimeError("credit balance is too low"),
+        "https://a/3": _judgment("reject"),
         "https://b/1": _judgment("reject"),
     })
+    called: list[str] = []
+
+    def judge(title, url, summary, source_id):
+        called.append(url)
+        return stub(title, url, summary, source_id)
+
     run = scout.judge_sources(
         {
-            "src-a": [_entry("https://a/1"), _entry("https://a/2", "Broken")],
+            "src-z": [_entry("https://z/1")],
+            "src-a": [_entry("https://a/1"), _entry("https://a/2", "Broken"), _entry("https://a/3")],
             "src-b": [_entry("https://b/1")],
         },
         judge,
-        known_urls=set(),
+        known_urls={"https://z/1"},
         existing_slugs=set(),
     )
 
+    assert called == ["https://a/1", "https://a/2"]
     assert len(run.errors) == 1
     assert "src-a" in run.errors[0]
     assert "credit balance is too low" in run.errors[0]
-    assert run.fully_judged == {"src-b"}
+    assert run.fully_judged == {"src-z"}
 
 
 def test_limit_leaves_unfinished_sources_unbumped() -> None:

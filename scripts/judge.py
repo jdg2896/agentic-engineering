@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import tempfile
 from collections.abc import Callable
 
 MODEL = "claude-sonnet-4-6"
@@ -122,7 +123,11 @@ def run_claude(prompt: str, system: str) -> str:
         "--no-session-persistence",
     ]
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=CLI_TIMEOUT_SECONDS, check=False)
+        # Run from an empty directory so the repo's CLAUDE.md and skills are not loaded.
+        with tempfile.TemporaryDirectory(prefix="scout-judge-") as cwd:
+            proc = subprocess.run(
+                cmd, cwd=cwd, capture_output=True, text=True, timeout=CLI_TIMEOUT_SECONDS, check=False
+            )
     except FileNotFoundError as exc:
         raise JudgeError("Claude Code CLI (`claude`) is not installed or not on PATH") from exc
     except subprocess.TimeoutExpired as exc:
