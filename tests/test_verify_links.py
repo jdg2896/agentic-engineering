@@ -360,3 +360,69 @@ def test_verify_gate_holds_cross_host_migration() -> None:
     assert decision.auto_merge_ok is False
     assert decision.labels == ["auto-merge-skipped"]
     assert decision.reasons == ["1 cross-host migration(s) need review"]
+
+
+def test_verify_gate_holds_same_host_https_to_http_downgrade() -> None:
+    report = _gate_report()
+    report["migrated"] = [
+        _migrated("https://example.com/a", "http://example.com/a"),
+        _migrated("https://www.example.com/b", "http://example.com/b/"),
+        _migrated("http://example.com/c", "http://example.com/c2"),
+    ]
+    decision = verify_links.evaluate_verify_automerge(report)
+    assert decision.auto_merge_ok is False
+    assert decision.labels == ["auto-merge-skipped"]
+    assert decision.reasons == ["2 https→http downgrade(s) need review"]
+
+
+def test_verify_gate_holds_migration_to_a_non_web_url() -> None:
+    report = _gate_report()
+    report["migrated"] = [_migrated("https://example.com/a", "ftp://example.com/a")]
+    decision = verify_links.evaluate_verify_automerge(report)
+    assert decision.auto_merge_ok is False
+    assert decision.reasons == ["1 migration(s) to a non-http(s) url need review"]
+
+
+class _FakeResponse:
+    def __init__(self, status_code: int, url: str, content_type: str = "application/json") -> None:
+        self.status_code = status_code
+        self.url = url
+        self.headers = {"content-type": content_type}
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class _FakeSession:
+    """Stands in for requests.Session: HEAD answers 405, GET answers 200."""
+
+    instances: list[_FakeSession] = []
+
+    def __init__(self) -> None:
+        self.max_redirects = None
+        self.gets: list[tuple[str, dict]] = []
+        self.responses: list[_FakeResponse] = []
+        _FakeSession.instances.append(self)
+
+    def head(self, url, **kwargs):
+        return _FakeResponse(405, url)
+
+    def get(self, url, **kwargs):
+        self.gets.append((url, kwargs))
+        resp = _FakeResponse(200, url)
+        self.responses.append(resp)
+        return resp
+
+
+def test_head_405_fallback_get_streams_and_closes_the_body(monkeypatch) -> None:
+    _FakeSession.instances = []
+    monkeypatch.setattr(verify_links.requests, "Session", _FakeSession)
+
+    result = verify_links.check_url({"id": "x", "url": "https://example.com/api"})
+
+    assert result["outcome"] == "ok"
+    [session] = _FakeSession.instances
+    [(_, kwargs)] = session.gets
+    assert kwargs.get("stream") is True
+    assert all(r.closed for r in session.responses)

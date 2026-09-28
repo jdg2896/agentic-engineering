@@ -97,7 +97,9 @@ def check_url(resource: dict) -> dict:
     try:
         resp = session.head(url, headers=headers, timeout=TIMEOUT, allow_redirects=True)
         if resp.status_code in (405, 501):
-            resp = session.get(url, headers=headers, timeout=TIMEOUT, allow_redirects=True)
+            # Streamed and closed unread: only the status, final url and headers are used.
+            resp = session.get(url, headers=headers, timeout=TIMEOUT, allow_redirects=True, stream=True)
+            resp.close()
         status_code = resp.status_code
         final_url = resp.url
         content_type = resp.headers.get("content-type", "")
@@ -393,20 +395,25 @@ def evaluate_verify_automerge(report: dict, cap: int = QUARANTINE_CAP) -> Decisi
     Breakers: a mass quarantine (newly-quarantined count > cap), which usually means a
     domain-wide outage during the verify window rather than real link rot; and any
     cross-host migration, since a redirect to another host (e.g. an expired domain now
-    pointing elsewhere) would silently rewrite the entry's url. Recoveries and top-7
-    quarantines do not block; the PR body calls them out instead.
+    pointing elsewhere) would silently rewrite the entry's url. Same-host migrations
+    also hold when they downgrade https to http, or land on a non-http(s) url.
+    Recoveries and top-7 quarantines do not block; the PR body calls them out instead.
     """
     quarantined = len(report.get("newly_quarantined") or [])
-    cross_host = sum(
-        1
-        for r in report.get("migrated") or []
-        if r.get("final_url") and _normalize(r["url"])[0] != _normalize(r["final_url"])[0]
-    )
+    moves = [(r["url"], r["final_url"]) for r in report.get("migrated") or [] if r.get("final_url")]
+    cross_host = sum(1 for url, final in moves if _normalize(url)[0] != _normalize(final)[0])
+    schemes = [(urlparse(url).scheme.lower(), urlparse(final).scheme.lower()) for url, final in moves]
+    downgrades = sum(1 for old, new in schemes if old == "https" and new == "http")
+    non_web = sum(1 for _, new in schemes if new not in ("http", "https"))
     reasons: list[str] = []
     if quarantined > cap:
         reasons.append(f"{quarantined} quarantines exceed cap of {cap}")
     if cross_host:
         reasons.append(f"{cross_host} cross-host migration(s) need review")
+    if downgrades:
+        reasons.append(f"{downgrades} https→http downgrade(s) need review")
+    if non_web:
+        reasons.append(f"{non_web} migration(s) to a non-http(s) url need review")
     if reasons:
         return Decision(False, reasons, [AUTO_MERGE_SKIPPED_LABEL])
     return Decision(True, [], [])
