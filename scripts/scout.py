@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import os
 import sys
@@ -17,7 +18,7 @@ import feedparser
 import yaml as pyyaml
 from ruamel.yaml import YAML
 
-import judge as judge_runner
+import judge
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_PATH = ROOT / "sources.yaml"
@@ -139,25 +140,25 @@ def judge_sources(
                 return run
             run.evaluated += 1
             if result["decision"] == "include":
-                slug = safe_slug(result.get("slug", ""), slugs)
+                slug = safe_slug(result["slug"], slugs)
                 slugs.add(slug)
                 run.candidates.append({
                     "slug": slug,
                     "source_id": source_id,
                     "url": url,
-                    "title": result.get("title", title),
-                    "author": result.get("author", ""),
-                    "section": result.get("section", ""),
-                    "type": result.get("type", "article"),
+                    "title": result["title"],
+                    "author": result["author"],
+                    "section": result["section"],
+                    "type": result["type"],
                     "license": result.get("license"),
-                    "blurb": result.get("blurb", ""),
-                    "tags": result.get("tags", []),
-                    "rationale": result.get("rationale", ""),
+                    "blurb": result["blurb"],
+                    "tags": result["tags"],
+                    "rationale": result["rationale"],
                 })
                 print(f"    [include] {title}")
                 print(f"              {url}")
-                print(f"              section={result.get('section')}  type={result.get('type')}")
-                print(f"              blurb: {result.get('blurb')}")
+                print(f"              section={result['section']}  type={result['type']}")
+                print(f"              blurb: {result['blurb']}")
             else:
                 run.rejected.append({
                     "url": url,
@@ -166,7 +167,7 @@ def judge_sources(
                     "rejected_at": str(date.today()),
                 })
                 print(f"    [reject]  {title}")
-                print(f"              {result.get('rationale')}")
+                print(f"              {result['rationale']}")
         run.fully_judged.add(source_id)
     return run
 
@@ -174,7 +175,7 @@ def judge_sources(
 CANDIDATE_CAP = 8
 BASE_LABELS = ["automated", "scout"]
 SKIPPED_LABEL = "auto-merge-skipped"
-VALID_TYPES = tuple(judge_runner.JUDGMENT_SCHEMA["properties"]["type"]["enum"])
+VALID_TYPES = tuple(judge.JUDGMENT_SCHEMA["properties"]["type"]["enum"])
 
 
 class Decision(NamedTuple):
@@ -299,10 +300,6 @@ def main() -> None:
 
     system = build_system_prompt(resources_data["sections"], resources_data["resources"])
 
-    def judge(title: str, url: str, summary: str, source_id: str) -> dict:
-        # Raises JudgeError (JudgeAuthError carries the token-rotation hint) on failure.
-        return judge_runner.judge_entry(system, title, url, summary, source_id)
-
     enabled = [s for s in sources if s.get("enabled", True)]
     print(f"Processing {len(enabled)} source(s)...")
 
@@ -324,7 +321,7 @@ def main() -> None:
 
     run = judge_sources(
         new_entries,
-        judge,
+        functools.partial(judge.judge_entry, system),
         known_urls=seen_urls | existing_urls,
         existing_slugs=existing_slugs,
         limit=args.limit,
