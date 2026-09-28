@@ -1,7 +1,6 @@
 # Auto-merge bot-authored editorial PRs; PR history is the audit trail
 
-Scout (new Resources) and Source-discovery (new Sources) PRs **auto-merge by default** with
-no human review. Editorial quality is delegated to the LLM judge; the squash-merged PR
+Scout (new Resources) PRs **auto-merge by default** with no human review. Editorial quality is delegated to the LLM judge; the squash-merged PR
 history is the audit-and-rollback trail. A human is pulled in only when a circuit-breaker
 trips, via the existing `auto-merge-skipped` label + review path.
 
