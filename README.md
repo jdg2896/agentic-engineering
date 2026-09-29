@@ -45,6 +45,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Anthropic — Tool use docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) — Schema design, parallel calls, structured outputs.
 - [Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/) — Google. Agent-to-agent (vs agent-to-tool) protocol.
 - [A2A specification](https://a2a-protocol.org/latest/specification/) — Now under Linux Foundation; gRPC support since v0.3.
+- [MCP in LangChain: Stateless Protocol, Elicitation, and More!](https://www.langchain.com/blog/mcp-in-langchain-stateless-protocol-elicitation-and-more) — LangChain. \`langchain.mcp\` built on FastMCP targeting the 2026-07-28 spec; elicitation mapped to a LangGraph interrupt, stateless transport, and tool lists cached per session.
 
 ## 3. Multi-agent orchestration frameworks
 
@@ -83,6 +84,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [getzep/graphiti](https://github.com/getzep/graphiti) — The temporal-graph engine standalone.
 - [LangMem](https://langchain-ai.github.io/langmem/) — Semantic / episodic / procedural primitives over LangGraph stores.
 - [Generative Agents (Park et al.)](https://arxiv.org/abs/2304.03442) — Reflection + episodic memory; still the best single read.
+- [Wiki Memory: File-Based Memory for AI Agents](https://www.langchain.com/blog/wiki-memory) — LangChain. Agent-compressed, file-based persistent knowledge base as an alternative to RAG — LLM synthesises raw interaction data into structured "wiki pages" for selective retrieval without embedding lookup. Covers architectural trade-offs and when file-based beats vector store.
 
 ## 6. Sandboxing & code execution
 
@@ -118,6 +120,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Who Validates the Validators? (EvalGen)](https://arxiv.org/abs/2404.12272) — Shankar et al. Critical paper on grader drift.
 - [Judging LLM-as-a-Judge (MT-Bench)](https://arxiv.org/abs/2306.05685) — The original position/verbosity/self-preference bias paper.
 - [Low-Hanging Fruit for RAG Search](https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/) — Jason Liu. Retrieval-side instrumentation.
+- [Do Automated Evals Work?](https://hamel.dev/) — Hamel Husain. Empirical comparison of 100 human-annotated traces against automated eval systems — ground truth on where LLM judges agree with humans and where they diverge.
+- ["It's Hard to Eval" Is a Product Smell](https://hamel.dev/blog/posts/eval-smell/) — Hamel Husain. "Hard to eval" is a product flaw: unverifiable outputs are bad UX and bad eval signal. Three worked examples — data agent, PE curriculum tool, workers'-comp report — redesign monolithic outputs to surface provenance, diffs, and contradictions, turning full-document grading into scoped unit tests as a side effect.
 
 ## 9. Evaluation — frameworks & benchmarks
 
@@ -133,6 +137,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Langfuse Evaluations](https://langfuse.com/docs/evaluation/overview) — **OS + SaaS.**
 - [Patronus AI](https://docs.patronus.ai:443/docs) — **SaaS.** Managed judge models (Lynx for hallucination).
 - **Benchmarks:** [SWE-bench](https://www.swebench.com/), [SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/), [GAIA](https://arxiv.org/abs/2311.12983), [τ-bench](https://github.com/sierra-research/tau-bench), [WebArena](https://webarena.dev/), [OSWorld](http://osworld-v1.xlang.ai/), [MLE-bench](https://github.com/openai/mle-bench), [SWE-Lancer](https://arxiv.org/abs/2502.12115).
+- [Patterns for Building Cybersecurity Evals](https://eugeneyan.com//writing/cybersecurity-evals/) — Eugene Yan. Four-component harness for cybersecurity evals: sandboxed target, difficulty-tunable inputs, agent-facing tools, and a grader. Practical patterns transferable to any capability domain that requires isolated execution environments.
+- [How We Build Agent Environments & Tasks](https://www.langchain.com/blog/building-agent-environments-and-tasks) — LangChain. Synthetic task generation pipeline: spec generation → spec-to-task → world spec for shared environment knowledge. Concrete three-stage architecture for constructing reproducible agent eval harnesses at scale.
 
 ## 10. Observability & tracing
 
@@ -152,6 +158,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Honeycomb — We shipped AI](https://www.honeycomb.io/blog/we-shipped-ai-product) — Honest postmortem-style writing on shadow traffic + Query Assistant.
 - [Langfuse — Cost tracking](https://langfuse.com/docs/observability/features/token-and-cost-tracking) — Per-trace, per-user, per-prompt cost attribution.
 - [Helicone — Caching dashboards](https://docs.helicone.ai/features/advanced-usage/caching) — Per-route token spend + cache hit rates.
+- [Building a 100x Cheaper Trace Judge with Fireworks](https://www.langchain.com/blog/building-a-100x-cheaper-trace-judge-with-fireworks) — LangChain. Fine-tune a small open model as an LLM-as-judge by mining perceived error signals from production LangSmith traces; matches frontier model accuracy at 100× lower cost. Concrete data-pipeline-to-fine-tune pattern for operationalising cheap, scalable eval in production.
 
 ## 12. Security for agents
 
@@ -164,6 +171,11 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [NIST AI RMF + Generative AI Profile](https://www.nist.gov/itl/ai-risk-management-framework) — Risk-management vocabulary auditors will use.
 - [MITRE ATLAS](https://atlas.mitre.org/) — ATT&CK-style matrix for ML/agent threats.
 - [Trail of Bits — Prompt injection to RCE in AI agents](https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/) — Recent, concrete RCE chain.
+- [Breaking Claude Code Opus 5 Auto Mode](https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/) — Johann Rehberger (Embrace the Red). Indirect prompt injection via a malicious website achieves RCE inside Claude Code's Auto Mode at 60–80% success rate — directly contradicting Anthropic's own commissioned evaluation showing 0.00%. Auto Mode replaces human approval prompts with a safety classifier, and this tears through it.
+- [LLM Heist: Hijacking LiteLLM for Traffic Interception, Key Theft, and Tool-Call Injection](https://embracethered.com/blog/posts/2026/hijacking-litellm-for-fun-and-profit/) — Embrace The Red (Johann Rehberger). Red-team TTPs against LiteLLM as a high-value gateway target: traffic rerouting, backend provider key extraction, response modification, and tool-call injection via a compromised proxy. Defender mitigations included.
+- [Autonomous AI Intrusions Are Here: Lessons from the Hugging Face Compromise](https://embracethered.com/blog/posts/2026/ai-intrusion-are-now-real/) — Johann Rehberger (embracethered.com). First publicly disclosed end-to-end AI-agent-driven intrusion (Hugging Face, July 2026). Surfaces three emerging defensive gaps: fully autonomous attack execution, defensive asymmetry (attackers iterate in real time), and the collapse of traditional IOCs when agents generate novel behaviour per run. Cross-references JADEPUFFER agentic ransomware.
+- [From Indirect Prompt Injection to DNS Exfiltration in macOS Terminal](https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/) — Johann Rehberger (embracethered). Concrete indirect-injection chain: LLM output embedding ANSI escape sequences triggers DNS requests from macOS Terminal, silently exfiltrating data. Covers the original discovery, the exploit path, and Apple's fix — directly instructive for any agent that renders model output in a terminal.
+- [Computer-Use and TOCTOU: What You Click Is Not What You Get!](https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/) — Johann Rehberger (Embrace the Red). TOCTOU race condition in computer-use agents: the UI element checked differs from the one clicked when content changes mid-flight. Reproduces the ChatGPT Operator attack chain originally disclosed by Jun Kokatsu via Google Security Research, with a video demo from the Real-World AI Security conference.
 
 ## 13. Coding agent infrastructure (read for harness design even if not building one)
 
