@@ -444,6 +444,25 @@ def append_candidates(resources_data: dict, candidates: list[dict], today: str) 
         })
 
 
+class SourceRead(NamedTuple):
+    """What reading one Source's parsed feed found."""
+
+    new_entries: list
+
+
+def read_source(source: dict, parsed_feed, today: date) -> SourceRead:
+    """Read one Source's already-parsed feed; does no network I/O.
+
+    New entries are those dated after the Source's `last_checked_at`.
+    """
+    cutoff = date.fromisoformat(str(source["last_checked_at"]))
+    return SourceRead(new_entries=[
+        e for e in parsed_feed.entries
+        if e.get("published_parsed")
+        and date(*e.published_parsed[:3]) > cutoff
+    ])
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scout new resources from RSS/Atom feeds")
     parser.add_argument("--dry-run", action="store_true", help="Run the judge but skip all writes")
@@ -498,18 +517,14 @@ def main() -> None:
     print(f"Processing {len(enabled)} source(s)...")
 
     # Fetch every feed first; a Source whose feed fails is left out, so it is not bumped.
+    today = date.today()
     new_entries: dict[str, list] = {}
     for source in enabled:
         source_id = source["id"]
         try:
             feed = feedparser.parse(source["url"], agent=USER_AGENT)
-            cutoff = date.fromisoformat(str(source["last_checked_at"]))
-            new_entries[source_id] = [
-                e for e in feed.entries
-                if e.get("published_parsed")
-                and date(*e.published_parsed[:3]) > cutoff
-            ]
-            print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {cutoff}")
+            new_entries[source_id] = read_source(source, feed, today).new_entries
+            print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {source['last_checked_at']}")
         except Exception as exc:
             print(f"::error::source {source_id}: {sanitize_text(str(exc))}", file=sys.stderr)
 
@@ -579,7 +594,6 @@ def main() -> None:
         print(f"Updated {SEEN_PATH} (+{len(run.rejected)} rejected)")
 
     # sources.yaml — bump last_checked_at only on Sources whose every new entry was judged
-    today = date.today()
     bumped = [s for s in enabled if s["id"] in run.fully_judged]
     for source in bumped:
         source["last_checked_at"] = date(today.year, today.month, today.day)
