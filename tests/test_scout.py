@@ -861,3 +861,54 @@ def test_main_quota_error_with_no_progress_is_single_line(tmp_path, monkeypatch,
     assert [line for line in lines if line.startswith("::")] == [
         next(line for line in lines if line.startswith("::error::The Claude usage limit"))
     ]
+
+
+# --- read_source: one Source's parsed feed -> its new entries ---
+
+
+def _dated_entry(url: str, published=None, updated=None) -> dict:
+    """A feedparser entry stand-in; dates are (y, m, d), padded like feedparser's struct_time."""
+    fields = {"link": url, "title": url, "summary": "s"}
+    if published is not None:
+        fields["published_parsed"] = (*published, 0, 0, 0, 0, 0, 0)
+    if updated is not None:
+        fields["updated_parsed"] = (*updated, 0, 0, 0, 0, 0, 0)
+    return scout.feedparser.FeedParserDict(fields)
+
+
+def _read(entries: list, last_checked_at: str = "2026-08-01") -> list[str]:
+    source = {"id": "src-a", "url": "https://a/feed", "last_checked_at": last_checked_at}
+    read = scout.read_source(source, SimpleNamespace(entries=entries), scout.date(2026, 9, 29))
+    return [e["link"] for e in read.new_entries]
+
+
+def test_read_source_returns_published_entries_newer_than_last_checked_at() -> None:
+    assert _read([_dated_entry("https://a/new", published=(2026, 9, 1))]) == ["https://a/new"]
+
+
+def test_read_source_drops_entries_on_or_before_last_checked_at() -> None:
+    entries = [
+        _dated_entry("https://a/same-day", published=(2026, 8, 1)),
+        _dated_entry("https://a/older", published=(2026, 7, 1)),
+    ]
+    assert _read(entries) == []
+
+
+def test_read_source_dates_a_release_entry_by_updated_when_it_has_no_published() -> None:
+    # GitHub release Atom feeds carry only <updated>.
+    entries = [
+        _dated_entry("https://a/releases/v2", updated=(2026, 9, 1)),
+        _dated_entry("https://a/releases/v1", updated=(2026, 7, 1)),
+    ]
+    assert _read(entries) == ["https://a/releases/v2"]
+
+
+def test_read_source_prefers_published_even_when_updated_is_later() -> None:
+    # An old post edited after last_checked_at is not new.
+    entries = [_dated_entry("https://a/edited", published=(2026, 7, 1), updated=(2026, 9, 1))]
+    assert _read(entries) == []
+
+
+def test_read_source_skips_entries_with_no_date() -> None:
+    entries = [_dated_entry("https://a/undated"), _dated_entry("https://a/dated", updated=(2026, 9, 1))]
+    assert _read(entries) == ["https://a/dated"]
