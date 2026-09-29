@@ -42,11 +42,9 @@ sources:
     url: https://huyenchip.com/feed.xml
     cadence: weekly
     last_checked_at: 2026-09-29
-    consecutive_failures: 0
-    failing_since: null
-    last_http_status: 200
-    newest_entry_at: 2025-01-16
-    enabled: true
+    enabled: false
+    retired_at: 2026-09-29
+    retired_reason: dead-silent
     notes: null
 
   - id: embrace-the-red
@@ -152,11 +150,9 @@ sources:
     url: https://github.com/microsoft/autogen/releases.atom
     cadence: weekly
     last_checked_at: 2026-09-29
-    consecutive_failures: 0
-    failing_since: null
-    last_http_status: 200
-    newest_entry_at: 2025-09-30
-    enabled: true
+    enabled: false
+    retired_at: 2026-09-29
+    retired_reason: dead-silent
     notes: null
 
   - id: adk-python-releases
