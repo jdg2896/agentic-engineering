@@ -699,6 +699,29 @@ def test_pr_body_withholds_unsafe_urls_and_neutralises_hostile_fields() -> None:
     assert "`x' y`" in body
 
 
+CLOSING_OR_MENTION = re.compile(
+    r"\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\b|#\d|@\w", re.IGNORECASE
+)
+
+
+def test_pr_body_defuses_closing_keywords_and_mentions_in_feed_and_judge_text() -> None:
+    hostile = _full_candidate(
+        title="Fixes #42 by @octocat",
+        blurb="Closes jdg2896/agentic-engineering#7; RESOLVED https://github.com/o/r/issues/9",
+        rationale="fixed #1, cc @team",
+    )
+
+    body = scout.pr_body([hostile], {"auto_merge_ok": True, "reasons": [], "labels": []})
+
+    assert not CLOSING_OR_MENTION.search(body)
+    # Still readable: only zero-width spaces were added.
+    assert "Fixes #42 by @octocat" in body.replace("​", "")
+
+
+def test_defuse_references_leaves_ordinary_text_alone() -> None:
+    assert scout.defuse_references("Prefix caching for agents") == "Prefix caching for agents"
+
+
 # --- candidates.yaml ---
 
 
