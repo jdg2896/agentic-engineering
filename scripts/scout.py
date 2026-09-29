@@ -21,7 +21,7 @@ import yaml as pyyaml
 from ruamel.yaml import YAML
 
 import judge
-from judge import JudgeAuthError  # judge_sources' `judge` parameter shadows the module
+from judge import JudgeAuthError, JudgeQuotaError  # judge_sources' `judge` parameter shadows the module
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_PATH = ROOT / "sources.yaml"
@@ -120,6 +120,8 @@ class ScoutRun:
     fully_judged: set[str] = field(default_factory=set)
     # The judge error was an authentication failure, so the credential needs fixing.
     auth_failed: bool = False
+    # Judging stopped on the subscription usage limit (the error message); not an error.
+    quota_exhausted: str | None = None
 
 
 def judge_failure_hint(run: ScoutRun) -> str:
@@ -143,9 +145,11 @@ def judge_sources(
 
     `judge(title, url, summary, source_id)` returns the judgment dict or raises;
     the first raise is recorded in `errors` and stops judging, since any error
-    fails the run. Entries in `known_urls` are skipped. Judging also stops once
-    `limit` entries are judged. Sources left unfinished by either stop are not
-    in `fully_judged`.
+    fails the run. A `JudgeQuotaError` also stops judging, since every later call
+    would hit the same limit, but is recorded in `quota_exhausted` instead: the
+    judgments made so far stand. Entries in `known_urls` are skipped. Judging also
+    stops once `limit` entries are judged. Sources left unfinished by any stop are
+    not in `fully_judged`.
     """
     run = ScoutRun()
     slugs = set(existing_slugs)
@@ -167,6 +171,9 @@ def judge_sources(
 
             try:
                 result = judge(title, url, summary, source_id)
+            except JudgeQuotaError as exc:
+                run.quota_exhausted = str(exc)
+                return run
             except Exception as exc:
                 # Any error fails the run, so further judge calls would only burn quota.
                 run.errors.append(f"source {source_id}: judge error for '{title}' ({url}): {exc}")
@@ -249,11 +256,28 @@ def evaluate_scout_automerge(
     return Decision(not reasons, reasons, labels)
 
 
+def write_candidates(path: Path, run: ScoutRun) -> None:
+    """Write candidates.yaml; a quota-stopped run also records why it is incomplete."""
+    data: dict = {"candidates": run.candidates}
+    if run.quota_exhausted is not None:
+        data["incomplete"] = sanitize_text(run.quota_exhausted)
+    path.write_text(pyyaml.dump(data, sort_keys=False, allow_unicode=True))
+
+
+def _load_candidates_file(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    return pyyaml.safe_load(path.read_text()) or {}
+
+
 def load_candidates(path: Path) -> list[dict]:
     """Read candidates.yaml; a missing or empty file means zero Candidates."""
-    if not path.exists():
-        return []
-    return (pyyaml.safe_load(path.read_text()) or {}).get("candidates") or []
+    return _load_candidates_file(path).get("candidates") or []
+
+
+def load_incomplete_reason(path: Path) -> str | None:
+    """Why the run that wrote candidates.yaml stopped early, or None if it ran to completion."""
+    return _load_candidates_file(path).get("incomplete") or None
 
 
 def automerge_decision(candidates_path: Path, resources_path: Path, cap: int = CANDIDATE_CAP) -> dict:
@@ -384,14 +408,37 @@ def main() -> None:
         )
         sys.exit(1)
 
+    if run.quota_exhausted is not None and run.evaluated == 0:
+        # No progress at all: nothing to keep, and a green run would hide that the
+        # quota (shared with interactive use, ADR-0001) is gone.
+        print(
+            f"::error::The Claude usage limit is exhausted and nothing was judged "
+            f"({sanitize_text(run.quota_exhausted)}); no files written. The subscription "
+            "quota is shared with interactive use (docs/adr/0001-oauth-token-for-ci.md); "
+            "re-run once it resets.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if run.quota_exhausted is not None:
+        # Unlike an error, a usage limit leaves every judgment made so far real, so
+        # keep them: rejects go to seen.yaml, includes become Resources, and only fully
+        # judged Sources are bumped. Discarding them would re-judge the same entries
+        # next run, so a backlog larger than one quota window could never clear.
+        print(
+            f"::warning::Judging stopped on the Claude usage limit "
+            f"({sanitize_text(run.quota_exhausted)}). The {run.evaluated} judgment(s) made are "
+            "saved; unfinished Sources keep their last_checked_at, so the unjudged "
+            "remainder is picked up next run.",
+            flush=True,
+        )
+
     if args.dry_run:
         print("Dry run — no files written.")
         return
 
     # candidates.yaml — plain yaml, new file each run
-    CANDIDATES_PATH.write_text(
-        pyyaml.dump({"candidates": run.candidates}, sort_keys=False, allow_unicode=True)
-    )
+    write_candidates(CANDIDATES_PATH, run)
     print(f"Wrote {CANDIDATES_PATH}")
 
     # seen.yaml — append rejects

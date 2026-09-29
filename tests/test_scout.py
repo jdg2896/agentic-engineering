@@ -4,6 +4,10 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -116,6 +120,53 @@ def test_judge_auth_error_hints_at_the_credential() -> None:
 
     assert run.auth_failed is True
     assert "docs/adr/0001-oauth-token-for-ci.md" in scout.judge_failure_hint(run)
+
+
+def test_usage_limit_stops_judging_but_keeps_the_judgments_made_so_far() -> None:
+    stub = _stub_judge({
+        "https://a/1": _judgment("include", "one"),
+        "https://b/1": _judgment("reject"),
+        "https://b/2": scout.judge.JudgeQuotaError("Claude Code CLI error: You've hit your session limit"),
+        "https://b/3": _judgment("reject"),
+        "https://c/1": _judgment("reject"),
+    })
+    called: list[str] = []
+
+    def judge(title, url, summary, source_id):
+        called.append(url)
+        return stub(title, url, summary, source_id)
+
+    run = scout.judge_sources(
+        {
+            "src-a": [_entry("https://a/1")],
+            "src-b": [_entry("https://b/1"), _entry("https://b/2"), _entry("https://b/3")],
+            "src-c": [_entry("https://c/1")],
+        },
+        judge,
+        known_urls=set(),
+        existing_slugs=set(),
+    )
+
+    assert called == ["https://a/1", "https://b/1", "https://b/2"]
+    assert run.errors == []
+    assert run.quota_exhausted is not None and "session limit" in run.quota_exhausted
+    assert run.fully_judged == {"src-a"}
+    assert run.evaluated == 2
+    assert [c["url"] for c in run.candidates] == ["https://a/1"]
+    assert [r["url"] for r in run.rejected] == ["https://b/1"]
+
+
+def test_non_quota_judge_errors_leave_quota_exhausted_unset() -> None:
+    for exc in (scout.judge.JudgeError("timed out"), scout.judge.JudgeAuthError("401")):
+        run = scout.judge_sources(
+            {"src-a": [_entry("https://a/1")]},
+            _stub_judge({"https://a/1": exc}),
+            known_urls=set(),
+            existing_slugs=set(),
+        )
+
+        assert len(run.errors) == 1
+        assert run.quota_exhausted is None
 
 
 def test_limit_leaves_unfinished_sources_unbumped() -> None:
@@ -389,3 +440,126 @@ def test_logged_judge_and_feed_text_cannot_start_a_workflow_command(capsys) -> N
     )
 
     assert not any(line.startswith("::") for line in capsys.readouterr().out.splitlines())
+
+
+# --- candidates.yaml ---
+
+
+def test_load_candidates_ignores_the_incomplete_key(tmp_path) -> None:
+    path = tmp_path / "candidates.yaml"
+    path.write_text("candidates:\n  - {slug: a}\nincomplete: hit the usage limit\n")
+
+    assert scout.load_candidates(path) == [{"slug": "a"}]
+    assert scout.load_incomplete_reason(path) == "hit the usage limit"
+
+
+def test_load_incomplete_reason_is_none_for_a_complete_or_missing_file(tmp_path) -> None:
+    complete = tmp_path / "candidates.yaml"
+    complete.write_text("candidates: []\n")
+    empty = tmp_path / "empty.yaml"
+    empty.write_text("")
+
+    assert scout.load_incomplete_reason(complete) is None
+    assert scout.load_incomplete_reason(empty) is None
+    assert scout.load_incomplete_reason(tmp_path / "missing.yaml") is None
+
+
+def test_candidates_file_round_trips_the_sanitized_incomplete_reason(tmp_path) -> None:
+    path = tmp_path / "candidates.yaml"
+    run = scout.ScoutRun(candidates=[{"slug": "a"}], quota_exhausted="limit\n::error::[x](y)")
+
+    scout.write_candidates(path, run)
+
+    assert scout.load_candidates(path) == [{"slug": "a"}]
+    assert scout.load_incomplete_reason(path) == "limit ::error::\\[x\\](y)"
+
+
+def test_complete_run_writes_no_incomplete_key(tmp_path) -> None:
+    path = tmp_path / "candidates.yaml"
+
+    scout.write_candidates(path, scout.ScoutRun())
+
+    assert "incomplete" not in path.read_text()
+    assert scout.load_incomplete_reason(path) is None
+
+
+# --- main(): the quota path end to end ---
+
+
+def _feed_entry(url: str) -> dict:
+    return scout.feedparser.FeedParserDict(
+        link=url, title=url, summary="s", published_parsed=(2026, 9, 1, 0, 0, 0, 0, 0, 0)
+    )
+
+
+def _scout_repo(tmp_path, monkeypatch, judgments: list) -> dict[str, Path]:
+    """Point scout's data files at tmp copies, stub the feeds and script the judge's calls in order."""
+    paths = {
+        "sources": tmp_path / "sources.yaml",
+        "seen": tmp_path / "seen.yaml",
+        "resources": tmp_path / "resources.yaml",
+        "candidates": tmp_path / "candidates.yaml",
+    }
+    paths["sources"].write_text(
+        "sources:\n"
+        "  - {id: src-a, url: 'https://a/feed', last_checked_at: 2026-08-01}\n"
+        "  - {id: src-b, url: 'https://b/feed', last_checked_at: 2026-08-01}\n"
+    )
+    paths["seen"].write_text("seen: []\n")
+    paths["resources"].write_text(
+        "sections:\n  - {id: patterns, title: Patterns, description: d}\n"
+        "resources:\n  - {id: old, url: 'https://old', type: article, blurb: b}\n"
+    )
+    for name, path in paths.items():
+        monkeypatch.setattr(scout, f"{name.upper()}_PATH", path)
+    feeds = {
+        "https://a/feed": [_feed_entry("https://a/1"), _feed_entry("https://a/2")],
+        "https://b/feed": [_feed_entry("https://b/1"), _feed_entry("https://b/2")],
+    }
+    monkeypatch.setattr(scout.feedparser, "parse", lambda url, agent=None: SimpleNamespace(entries=feeds[url]))
+    queue = list(judgments)
+
+    def judge_entry(system, title, url, summary, source_id):
+        outcome = queue.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    monkeypatch.setattr(scout.judge, "judge_entry", judge_entry)
+    monkeypatch.setattr(sys, "argv", ["scout.py"])
+    return paths
+
+
+QUOTA = scout.judge.JudgeQuotaError("Claude Code CLI error: You've hit your session limit · resets 3pm (UTC)")
+
+
+def test_main_keeps_partial_progress_when_the_usage_limit_is_hit(tmp_path, monkeypatch, capsys) -> None:
+    paths = _scout_repo(
+        tmp_path,
+        monkeypatch,
+        [_judgment("include", "one"), _judgment("reject"), _judgment("reject"), QUOTA],
+    )
+
+    scout.main()  # returns normally: exit 0
+
+    candidates = yaml.safe_load(paths["candidates"].read_text())
+    assert [c["url"] for c in candidates["candidates"]] == ["https://a/1"]
+    assert "session limit" in candidates["incomplete"]
+    assert [s["url"] for s in yaml.safe_load(paths["seen"].read_text())["seen"]] == ["https://a/2", "https://b/1"]
+    bumped = {s["id"]: str(s["last_checked_at"]) for s in yaml.safe_load(paths["sources"].read_text())["sources"]}
+    assert bumped["src-a"] != "2026-08-01"
+    assert bumped["src-b"] == "2026-08-01"
+    assert "::warning::" in capsys.readouterr().out
+
+
+def test_main_fails_when_the_usage_limit_is_hit_before_any_judgment(tmp_path, monkeypatch, capsys) -> None:
+    paths = _scout_repo(tmp_path, monkeypatch, [QUOTA])
+    before = {name: path.read_text() for name, path in paths.items() if path.exists()}
+
+    with pytest.raises(SystemExit) as exc_info:
+        scout.main()
+
+    assert exc_info.value.code == 1
+    assert not paths["candidates"].exists()
+    assert {name: path.read_text() for name, path in paths.items() if path.exists()} == before
+    assert "usage limit" in capsys.readouterr().err

@@ -67,7 +67,13 @@ jobs:
 
       # Fails closed: a judge error that survives judge.py's retries (auth
       # errors are never retried) exits non-zero with no files written, so the
-      # job goes red and no PR opens. Unbuffered so progress logs stream live.
+      # job goes red and no PR opens. The Claude usage limit is the exception:
+      # it stops judging but keeps the partial progress (only fully judged
+      # Sources are bumped) and marks candidates.yaml incomplete, so a backlog
+      # larger than one quota window drains over several runs. That only works
+      # if each partial PR merges before the next run, which starts from main;
+      # a limit hit before any judgment still fails. Unbuffered so progress
+      # logs stream live.
       - name: Run scout
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -107,11 +113,13 @@ jobs:
           year_week = datetime.now(timezone.utc).strftime("%Y-W%V")
           decision = json.loads(Path(os.environ["RUNNER_TEMP"], "automerge_decision.json").read_text())
           candidates = scout.load_candidates(Path("candidates.yaml"))
+          # Set only when judging stopped on the usage limit; already sanitized by scout.py.
+          incomplete = scout.load_incomplete_reason(Path("candidates.yaml"))
 
           n = len(candidates)
 
           if n > 0:
-              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}"
+              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}{' (partial run)' if incomplete else ''}"
 
               # Append candidates to resources.yaml (never touches top_7)
               ryaml = YAML()
@@ -142,13 +150,21 @@ jobs:
 
               body = f"## Candidates ({n})\n\n" + "\n\n".join(rows)
           else:
-              title = f"Scout bookkeeping — {year_week} (no candidates)"
+              title = f"Scout bookkeeping — {year_week} (no candidates{', partial run' if incomplete else ''})"
               body = "_No new candidates this week. seen.yaml records the rejects; last\\_checked\\_at is bumped only on Sources whose feed was fetched and whose new entries were all judged._"
 
           if decision["auto_merge_ok"]:
               prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
           else:
               prefix = "> **Auto-merge skipped:** " + "; ".join(decision["reasons"]) + ".\n"
+          if incomplete:
+              prefix += (
+                  "\n> **Partial run:** the judge hit the Claude usage limit, so some entries "
+                  f"were left for the next run. {incomplete}\n"
+                  "> Merge this PR before the next scheduled run: that run starts from main, "
+                  "so until this lands it re-judges the same entries. For a large backlog, "
+                  "re-dispatch the workflow with a higher `candidate_cap`.\n"
+              )
           body = prefix + "\n" + body
 
           env_file = os.environ["GITHUB_ENV"]
