@@ -130,6 +130,8 @@ def _grace_period_passed(source: dict, window_start: date) -> bool:
     The anchor is the later of the attribution ship date and the Source's own
     `added_at`. The window begins the day after `window_start`, so the grace period
     ends exactly 3 calendar months after the anchor, by the same month arithmetic.
+    Sources added by hand should set `added_at`; otherwise their grace period falls
+    back to the attribution ship date alone.
     """
     added_at = _date_field(source.get("added_at"))
     anchor = max(ATTRIBUTION_SHIPPED, added_at) if added_at else ATTRIBUTION_SHIPPED
@@ -296,7 +298,7 @@ def _unproductive_retirement_with_yield(
     attributed to the Source added after the window start, with no upper bound. Dead
     retirements are exempt: a feed that broke last month may well have yielded before.
     """
-    start = _months_before(plan.today, UNPRODUCTIVE_WINDOW_MONTHS)
+    start, _ = _unproductive_window(plan.today)
     reasons = []
     for r in plan.retirements:
         if r.reason != "unproductive":
