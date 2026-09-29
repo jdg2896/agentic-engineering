@@ -2,4 +2,46 @@
 # (scripts/source_review.py); Scout never reads it. Each lasting rejection is kept
 # for 6 months, so Citation mining does not re-Trial the same site every month; a
 # Source suggestion is always tried again.
-rejected: []
+rejected:
+  - key: anthropic.com
+    url: https://www.anthropic.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-29
+  - key: modelcontextprotocol.io
+    url: https://modelcontextprotocol.io/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-29
+  - key: claude.ai
+    url: https://claude.ai/
+    channel: citation
+    suggestion: null
+    reason: unreachable
+    rejected_at: 2026-09-29
+  - key: developers.openai.com
+    url: https://developers.openai.com/
+    channel: citation
+    suggestion: null
+    reason: no-include
+    rejected_at: 2026-09-29
+  - key: claude.com
+    url: https://claude.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-29
+  - key: code.claude.com
+    url: https://code.claude.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-29
+  - key: aisi.gov.uk
+    url: https://aisi.gov.uk/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-29
