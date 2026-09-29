@@ -112,6 +112,23 @@ def test_non_auth_judge_error_hints_at_a_rerun_not_the_credential() -> None:
     assert "0001-oauth-token-for-ci" not in hint
 
 
+def test_judge_error_hint_does_not_promise_a_rerun_fixes_a_deterministic_failure() -> None:
+    run = scout.judge_sources(
+        {"src-a": [_entry("https://a/1")]},
+        _stub_judge({
+            "https://a/1": scout.judge.JudgeLaunchError(
+                "Claude Code CLI could not be started: [Errno 7] Argument list too long: 'claude'"
+            )
+        }),
+        known_urls=set(),
+        existing_slugs=set(),
+    )
+
+    hint = scout.judge_failure_hint(run)
+    assert "usually fixes it" not in hint
+    assert "repeats" in hint
+
+
 def test_judge_auth_error_hints_at_the_credential() -> None:
     run = scout.judge_sources(
         {"src-a": [_entry("https://a/1")]},
