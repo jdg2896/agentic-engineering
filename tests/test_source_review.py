@@ -593,7 +593,7 @@ def test_pr_body_lists_dead_broken_evidence_with_streak_span_and_run_count() -> 
         "- **broken** — `dead-broken`: feed failing since 2026-08-25 (35 days, 5 failed Scout runs"
         " in a row); last HTTP status 404; newest entry 2026-07-30" in body
     )
-    assert "Feed: https://broken.example/feed" in body
+    assert "Feed: `https://broken.example/feed`" in body
 
 
 def test_pr_body_lists_dead_silent_evidence() -> None:
@@ -617,7 +617,7 @@ def test_pr_body_lists_unproductive_evidence_with_judged_count_yield_and_window(
         "- **openai-news** — `unproductive`: 42 entries judged and a Yield of 0 in the window"
         " after 2026-10-15 up to and including 2027-01-15" in body
     )
-    assert "Feed: https://openai-news.example/feed" in body
+    assert "Feed: `https://openai-news.example/feed`" in body
 
 
 def test_pr_body_sanitizes_the_id_of_an_unproductive_source() -> None:
@@ -630,6 +630,16 @@ def test_pr_body_sanitizes_the_id_of_an_unproductive_source() -> None:
 
     assert "`unproductive`" in body
     assert "\n::" not in body and "[click](" not in body
+
+
+def test_pr_body_renders_a_retired_feed_url_as_an_inert_code_span() -> None:
+    sources = [_source("m", failures=4, failing_since=TODAY - timedelta(days=28), status=404,
+                       url="https://medium.com/feed/@someone")]
+
+    body = source_review.pr_body(_review(sources), PASSING, sources)
+
+    # In a code span, `@someone` is not a mention.
+    assert "  Feed: `https://medium.com/feed/@someone`" in body
 
 
 def test_pr_body_says_when_a_broken_feed_raised_instead_of_returning_a_status() -> None:
@@ -919,6 +929,34 @@ def test_a_fetch_failure_leaves_the_prospective_source_untried() -> None:
     assert _untried(plan) == {a: "fetch-failed", b: "fetch-failed"}
     assert plan.untried[0].detail == "HTTP status 500"
     assert plan.rejected == [] and plan.is_empty  # transient: retried next run, issue stays open
+
+
+@pytest.mark.parametrize("status", [500, 503, 408, 425, 429])
+def test_a_server_error_or_throttling_status_is_transient(status) -> None:
+    plan = _discover([_suggest(1, FEED)], {FEED: (status, {}, "")}, _judge())
+
+    assert _untried(plan) == {FEED: "fetch-failed"} and plan.rejected == []
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 404, 410, 451])
+def test_a_client_error_status_is_a_lasting_unreachable_rejection(status) -> None:
+    plan = _discover([_suggest(1, FEED)], {FEED: (status, {}, "")}, _judge())
+
+    assert _rejected(plan) == {FEED: "unreachable"} and plan.untried == []
+    assert plan.rejected[0].detail == f"HTTP status {status}"
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+    assert body.rstrip().endswith("Closes #1")
+    (entry,) = source_review.update_prospect_memory([], plan)
+    assert (entry["key"], entry["reason"]) == ("blog.example", "unreachable")
+
+
+def test_an_advertised_feed_that_is_gone_is_unreachable() -> None:
+    home = "https://blog.example/"
+    page = _html('<link rel="alternate" type="application/rss+xml" href="/gone.xml">')
+
+    plan = _discover([_suggest(1, home)], {home: page}, _judge())  # /gone.xml is a 404
+
+    assert _rejected(plan) == {home: "unreachable"}
 
 
 def test_a_feed_that_is_malformed_with_no_entries_is_untried() -> None:
@@ -1670,6 +1708,21 @@ def test_fetch_follows_a_redirect_and_returns_the_final_url(net) -> None:
     assert got == source_review.Fetched(
         200, {"Content-Type": "application/rss+xml"}, b"<rss/>", "https://a.example/feed"
     )
+
+
+def test_fetch_refuses_an_https_to_http_redirect(net) -> None:
+    opener = net({"https://a.example/feed": "http://a.example/feed"})
+
+    with pytest.raises(source_review.FetchError, match="https→http"):
+        source_review.http_fetch("https://a.example/feed")
+    assert opener.opened == ["https://a.example/feed"]
+
+
+def test_fetch_follows_an_http_to_https_redirect(net) -> None:
+    net({"http://a.example/feed": "https://a.example/feed",
+         "https://a.example/feed": _FakeResponse()})
+
+    assert source_review.http_fetch("http://a.example/feed").url == "https://a.example/feed"
 
 
 def test_fetch_refuses_a_redirect_to_a_private_host(net) -> None:

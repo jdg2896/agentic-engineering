@@ -143,7 +143,8 @@ class Rejection(NamedTuple):
     """
 
     prospect: ProspectiveSource
-    # no-url | unsafe-url | duplicate | no-feed | no-recent-entries | no-include
+    # no-url | unsafe-url | duplicate | unreachable | no-feed | no-recent-entries |
+    # no-include
     reason: str
     detail: str = ""  # sanitized when made
     trial: TrialEvidence | None = None
@@ -393,8 +394,14 @@ def _parse_feed(fetched: Fetched):
 
 
 def _get(fetch: Fetch, prospect: ProspectiveSource, url: str) -> Fetched | Untried | Rejection:
-    """Fetch `url`: the response, `fetch-failed` (transient) or `unsafe-url` (the final
-    url after redirects is not a safe public url)."""
+    """Fetch `url`: the response, or why not.
+
+    Lasting (a Rejection): the final url after redirects is not a safe public url
+    (`unsafe-url`), or a 4xx status other than TRANSIENT_CLIENT_ERRORS
+    (`unreachable`: gone, forbidden, not found). Transient (`fetch-failed`, Untried,
+    retried next run): a 5xx, 408, 425 or 429 status, or any network error or
+    refusal raised by `fetch`.
+    """
     try:
         got = fetch(url)
     except Exception as exc:  # noqa: BLE001 — any fetch failure is transient, never a crash
@@ -402,8 +409,11 @@ def _get(fetch: Fetch, prospect: ProspectiveSource, url: str) -> Fetched | Untri
     got = Fetched(*got) if len(got) == 4 else Fetched(*got, url)
     if not is_safe_url(got.url):
         return Rejection(prospect, "unsafe-url", "redirected to an unsafe url")
-    if got.status >= 400:
-        return Untried(prospect, "fetch-failed", f"HTTP status {int(got.status)}")
+    status = int(got.status)
+    if 400 <= status < 500 and status not in TRANSIENT_CLIENT_ERRORS:
+        return Rejection(prospect, "unreachable", f"HTTP status {status}")
+    if status >= 400:
+        return Untried(prospect, "fetch-failed", f"HTTP status {status}")
     return got
 
 
@@ -628,7 +638,8 @@ def discover_sources(
     - Same Source key (`source_key`) as any Source on the list, enabled or Retired, or
       as anything already considered this run → `duplicate`. Checked on the url, and
       again on the page's and feed's final urls after resolution.
-    - A fetch failure is transient (`plan.untried`, retried next run).
+    - A 4xx status (but 408, 425, 429) is lasting (`unreachable`); any other fetch
+      failure is transient (`plan.untried`, retried next run). See `_get`.
     - The Trial runs within the run's budget (MAX_TRIALS, TRIAL_BUDGET_SECONDS on
       `clock`); a spent budget, a usage limit or a judge error stops all further
       Trials and sets `plan.incomplete`, and a judge error also `plan.judge_failure`.
@@ -1030,7 +1041,8 @@ def pr_body(plan: ReviewPlan, decision: dict, sources: list[dict]) -> str:
         rows.append(
             f"- **{sanitize_text(r.source_id, 120)}** — `{sanitize_text(r.reason, 40)}`: "
             f"{_evidence(r, plan.today)}\n"
-            f"  Feed: {sanitize_text(str(urls.get(r.source_id)), 300)}"
+            # A code span: a url like medium.com/feed/@user must not mention anyone.
+            f"  Feed: {_url_span(urls.get(r.source_id))}"
         )
     if plan.incomplete:
         prefix += f"\n> **Partial run:** {_free_text(plan.incomplete)}\n"
@@ -1129,6 +1141,8 @@ FETCH_MAX_BYTES = 2_000_000
 FETCH_MAX_REDIRECTS = 5
 FETCH_PORTS = (None, 80, 443)  # None: the scheme's default
 _REDIRECT_CODES = frozenset({301, 302, 303, 307, 308})
+# 4xx statuses that say "try later" (timeout, too early, too many requests), not "gone".
+TRANSIENT_CLIENT_ERRORS = frozenset({408, 425, 429})
 _ACCEPT = (
     "application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.9, "
     "text/html;q=0.8, */*;q=0.5"
@@ -1238,7 +1252,8 @@ def http_fetch(url: str) -> Fetched:
     with `_public_create_connection`. An HTTP error status is returned, not raised; a
     body over FETCH_MAX_BYTES, a fetch outlasting FETCH_DEADLINE_SECONDS (checked
     before each connection and after each read, which returns whatever has arrived
-    rather than waiting for a full buffer), a refused url and any network error raise.
+    rather than waiting for a full buffer), a refused url, an https→http redirect and
+    any network error raise.
     """
     deadline = _clock() + FETCH_DEADLINE_SECONDS
     for _ in range(FETCH_MAX_REDIRECTS + 1):
@@ -1265,7 +1280,11 @@ def http_fetch(url: str) -> Fetched:
             location = headers.get("Location") if exc.code in _REDIRECT_CODES else None
             if not location:
                 return Fetched(exc.code, headers, b"", url)
-            url = urljoin(url, location)
+            target = urljoin(url, location)
+            if urlsplit(url).scheme.lower() == "https" and urlsplit(target).scheme.lower() != "https":
+                # A downgrade would be followed in the clear and stored as the feed url.
+                raise FetchError("refused an https→http redirect")
+            url = target
     raise FetchError(f"more than {FETCH_MAX_REDIRECTS} redirects")
 
 
