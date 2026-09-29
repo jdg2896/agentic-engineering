@@ -5,13 +5,10 @@ on:
     - cron: '0 13 1 * *'   # 1st of each month, 13:00 UTC
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   check-pause:
     runs-on: ubuntu-latest
+    permissions: {}
     outputs:
       paused: ${{ steps.check.outputs.paused }}
     steps:
@@ -29,6 +26,9 @@ jobs:
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       # This slice (Dead-Source retirement) reads Source health only and needs no
       # judge. Source discovery (#104) adds the Claude Code CLI and the
@@ -76,7 +76,16 @@ jobs:
                   f.write(f"{delim}\n")
           EOF
 
-      # Nothing to add or retire: no PR (sources.yaml was not written).
+      # Nothing to add or retire: no new PR (sources.yaml was not written), and an
+      # earlier held Source review PR is now stale evidence, so close it rather than
+      # leave it mergeable. No-op when there is none.
+      - name: Close superseded Source review PR
+        if: env.PLAN_EMPTY == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT: "Superseded: the ${{ env.YEAR_MONTH }} Source review planned no changes."
+        run: gh pr close bot/source-review --delete-branch --comment "$COMMENT" || true
+
       # Fixed branch: an open Source review PR is updated in place instead of stacking.
       - id: cpr
         if: env.PLAN_EMPTY != 'true'

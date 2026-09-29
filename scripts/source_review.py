@@ -54,6 +54,7 @@ class ReviewPlan:
     @property
     def is_empty(self) -> bool:
         """Nothing to add or retire: the run opens no PR."""
+        # #104 must also count `rejected`: rejected suggestions need a PR to close their issues.
         return not self.retirements and not self.additions
 
 
@@ -140,15 +141,21 @@ def apply_plan(sources: list[dict], plan: ReviewPlan) -> None:
 
     A retired Source gets `enabled: false`, `retired_at` (the plan's date) and
     `retired_reason`; the two new keys go right after `enabled` on a ruamel round-trip
-    mapping, so comments and layout are kept. Nothing is deleted, its Source health is
-    kept as the evidence, and a Source that is already disabled is left alone.
-    Resources are not an input: retiring a Source never touches what it yielded.
+    mapping, so comments and layout are kept. Its Source health keys are removed: Scout
+    skips disabled Sources, so that health would stay frozen, and a revived Source
+    would otherwise be re-retired on its old streak before Scout fetched it again. The
+    evidence lives on in the PR body (ADR 0002). Without health, a revived Source is
+    left alone until Scout records fresh health. The Source itself is never deleted, a
+    Source that is already disabled is left alone, and Resources are not an input:
+    retiring a Source never touches what it yielded.
     """
     by_id = {s["id"]: s for s in sources if s.get("enabled", True)}
     for retirement in plan.retirements:
         source = by_id.get(retirement.source_id)
         if source is None:
             continue  # the gate holds such a plan; there is nothing enabled to retire
+        for key in SourceHealth._fields:
+            source.pop(key, None)
         source["enabled"] = False
         anchor = "enabled"
         for key, value in (("retired_at", plan.today), ("retired_reason", retirement.reason)):
@@ -264,9 +271,9 @@ def pr_body(plan: ReviewPlan, decision: dict, sources: list[dict]) -> str:
         sections.append(
             f"## Retired Sources ({len(rows)})\n\n"
             "Each stays in sources.yaml with `enabled: false`, `retired_at` and `retired_reason`; "
-            "its Resources are untouched. Revive one by editing it back to `enabled: true`, "
-            "fixing its `url` if the feed moved and deleting its retirement and health keys "
-            "(an old failure streak left in place would retire it again).\n\n" + "\n".join(rows)
+            "its Source health is cleared and its Resources are untouched. Revive one by "
+            "setting `enabled: true` (and fixing its `url` if the feed moved).\n\n"
+            + "\n".join(rows)
         )
     return "\n".join(sections)
 

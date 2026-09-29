@@ -150,6 +150,15 @@ def test_never_retires_a_source_with_no_recorded_health() -> None:
     assert _review([_source("n", failures=None)]).retirements == []
 
 
+def test_a_revived_source_is_not_retired_until_scout_records_fresh_health() -> None:
+    # Retirement drops the health keys; the owner revives by setting enabled: true.
+    revived = _source(
+        "v", failures=None, retired_at=date(2026, 6, 1), retired_reason="dead-broken"
+    )
+
+    assert _review([revived]).retirements == []
+
+
 def test_never_retires_as_silent_when_no_dated_entry_was_ever_seen() -> None:
     assert _review([_source("n", newest=None)]).retirements == []
 
@@ -320,11 +329,19 @@ def test_applying_a_retirement_disables_the_source_and_records_date_and_reason()
 
     out = _apply_to_yaml(SOURCES_YAML, plan)
 
-    # Only the retired Source changes; comments, layout and its health are kept.
+    # Only the retired Source changes; comments and layout are kept. Its frozen health
+    # is dropped (the evidence lives in the PR body), so a revival starts clean.
     assert out == SOURCES_YAML.replace(
-        "    newest_entry_at: 2026-07-30\n    enabled: true\n",
-        "    newest_entry_at: 2026-07-30\n    enabled: false\n"
-        "    retired_at: 2026-09-29\n    retired_reason: dead-broken\n",
+        "    last_checked_at: 2026-08-01\n"
+        "    consecutive_failures: 5\n"
+        "    failing_since: 2026-08-25\n"
+        "    last_http_status: 404\n"
+        "    newest_entry_at: 2026-07-30\n"
+        "    enabled: true\n",
+        "    last_checked_at: 2026-08-01\n"
+        "    enabled: false\n"
+        "    retired_at: 2026-09-29\n"
+        "    retired_reason: dead-broken\n",
     )
     assert out.count("enabled: true") == 1
 
