@@ -23,6 +23,7 @@ RETRY_BACKOFF_SECONDS = 10
 # How much of an entry's summary the judge sees. A GitHub release can carry 100 KB+
 # of release notes; the opening is enough to judge it, and the rest only costs tokens.
 MAX_SUMMARY_CHARS = 4_000
+MAX_TITLE_CHARS = 500
 
 # The judge_candidate schema, passed to the CLI as --json-schema and re-checked here.
 JUDGMENT_SCHEMA = {
@@ -197,6 +198,7 @@ def run_claude(prompt: str, system: str) -> str:
                 cwd=cwd,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
                 timeout=CLI_TIMEOUT_SECONDS,
                 check=False,
             )
@@ -237,7 +239,7 @@ def judge_entry(
     time. Once attempts run out, the last error is raised.
 
     The summary is capped at `MAX_SUMMARY_CHARS`, with a note saying so, since
-    release notes can run to hundreds of KB.
+    release notes can run to hundreds of KB; the title is cut to `MAX_TITLE_CHARS`.
     """
     if summary and len(summary) > MAX_SUMMARY_CHARS:
         summary = (
@@ -246,7 +248,7 @@ def judge_entry(
         )
     prompt = (
         f"Evaluate this candidate resource for inclusion.\n\n"
-        f"Title: {title}\n"
+        f"Title: {str(title)[:MAX_TITLE_CHARS]}\n"
         f"URL: {url}\n"
         f"Source feed: {source_id}\n"
         f"Summary/description:\n{summary or '(no summary available)'}"
