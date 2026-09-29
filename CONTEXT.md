@@ -54,7 +54,9 @@ _Avoid_: candidate source (a **Candidate** is a scouted entry, not a feed).
 
 **Citation mining**:
 A **Source discovery** channel: finding **Prospective Sources** among the sites that
-accepted **Resources** repeatedly link to.
+accepted **Resources** repeatedly link to. A site becomes a Prospective Source when
+Resources on at least two different sites cite it; several Resources on one site are
+one voice.
 
 **Source suggestion**:
 A **Source discovery** channel: a human proposes a **Prospective Source** by filing it on

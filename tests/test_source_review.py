@@ -1953,7 +1953,7 @@ def test_two_resources_on_one_site_are_one_voice() -> None:
     assert _considered(_mine(resources, pages)) == ["https://blog.example/"]
 
 
-def test_links_to_the_resources_own_site_do_not_count() -> None:
+def test_links_to_a_sibling_subdomain_of_the_resources_site_do_not_count() -> None:
     resources = [_res("r1", "https://blog.acme.example/p"), _res("r2", "https://b.example/p")]
     link = "https://news.acme.example/x"
     pages = {"https://blog.acme.example/p": _cites(link), "https://b.example/p": _cites(link)}
@@ -2045,7 +2045,7 @@ def test_a_github_repo_cited_twice_trials_its_releases_feed_but_other_github_pag
     assert list(_added(plan)) == ["github-com-acme-agent-kit"]
 
 
-def test_a_resources_links_to_its_own_site_do_not_count() -> None:
+def test_a_resources_relative_and_same_host_links_do_not_count() -> None:
     resources = [_res("r1", "https://blog.example/post-1"), _res("r2", "https://b.example/p")]
     pages = {
         "https://blog.example/post-1": _cites("/post-2", "https://www.blog.example/about"),
@@ -2269,3 +2269,180 @@ def test_pr_body_lists_the_citing_resources_of_mined_additions_and_rejections_sa
     )
     assert "\n::" not in body and "[x](" not in body
     assert not CLOSING_OR_MENTION.search(body)
+
+
+# ── Citation mining: page regions ────────────────────────────────────────────
+
+
+def _both_cite(body: str) -> dict:
+    return {"https://a.example/p": body, "https://b.example/p": body}
+
+
+@pytest.mark.parametrize("chrome", ["aside", "footer", "nav", "header"])
+def test_an_article_inside_the_chrome_does_not_hide_the_pages_own_links(chrome) -> None:
+    body = (
+        "<html><body><div class='post'><a href='https://blog.example/x'>cited</a></div>"
+        f"<{chrome}><article><a href='https://related.example/'>related</a></article></{chrome}>"
+        "</body></html>"
+    )
+
+    assert _considered(_mine(TWO_CITING, _both_cite(body))) == ["https://blog.example/"]
+
+
+def test_a_content_region_without_links_falls_back_to_the_pages_other_links() -> None:
+    body = ("<html><body><main><p>No links here.</p></main>"
+            "<div><a href='https://blog.example/x'>cited</a></div></body></html>")
+
+    assert _considered(_mine(TWO_CITING, _both_cite(body))) == ["https://blog.example/"]
+
+
+def test_an_unclosed_header_does_not_zero_the_page() -> None:
+    # The header is never closed, so where the chrome ends cannot be told: every link
+    # on the page is read rather than none.
+    body = ("<html><body><header><a href='https://nav.example/'>nav</a>"
+            "<p><a href='https://blog.example/x'>cited</a></p></body></html>")
+
+    assert "https://blog.example/" in _considered(_mine(TWO_CITING, _both_cite(body)))
+
+
+# ── Citation mining: sites ───────────────────────────────────────────────────
+
+
+@pytest.mark.parametrize(("first", "second"), [
+    ("https://a.github.io/p", "https://b.github.io/p"),
+    ("https://alice.ghost.io/p", "https://bob.ghost.io/p"),
+    ("https://alice.substack.com/p/x", "https://bob.substack.com/p/y"),
+    ("https://acme.co.uk/p", "https://other.co.uk/p"),
+    ("https://dev.to/alice/post", "https://dev.to/bob/post"),
+])
+def test_tenants_of_a_shared_parent_are_separate_sites(first, second) -> None:
+    pages = {first: _cites("https://blog.example/1"), second: _cites("https://blog.example/2")}
+
+    plan = _mine([_res("r1", first), _res("r2", second)], pages)
+
+    assert _considered(plan) == ["https://blog.example/"]
+
+
+@pytest.mark.parametrize(("first", "second"), [
+    ("https://blog.acme.co.uk/p", "https://news.acme.co.uk/p"),
+    ("https://blog.acme.example/p", "https://www.acme.example/p"),
+])
+def test_subdomains_of_one_site_are_one_voice(first, second) -> None:
+    pages = {first: _cites("https://blog.example/1"), second: _cites("https://blog.example/2")}
+
+    assert _considered(_mine([_res("r1", first), _res("r2", second)], pages)) == []
+
+
+def test_non_tenant_pages_are_per_host() -> None:
+    cited = ["https://dev.to/t/python", "https://dev.to/alice/a-post",
+             "https://medium.com/tag/ai", "https://gitlab.com/explore/projects"]
+
+    plan = _mine(TWO_CITING, _both_cite(_cites(*cited)))
+
+    assert _considered(plan) == ["https://dev.to/alice"]
+
+
+def test_huggingface_resources_are_read_and_only_its_blog_is_proposed() -> None:
+    resources = [_res("hf", "https://huggingface.co/blog/some-post"), _res("r2", "https://b.example/p")]
+    pages = {
+        "https://huggingface.co/blog/some-post": _cites("https://blog.example/1"),
+        "https://b.example/p": _cites("https://blog.example/2"),
+    }
+
+    plan = _mine(resources, pages)
+
+    assert "https://huggingface.co/blog/some-post" in plan.fetch_calls
+    assert _considered(plan) == ["https://blog.example/"]
+
+    models = _cites("https://huggingface.co/acme/some-model", "https://huggingface.co/datasets/x/y")
+    assert _considered(_mine(TWO_CITING, _both_cite(models))) == []
+
+    blog = _cites("https://huggingface.co/blog/a-post")
+    assert _considered(_mine(TWO_CITING, _both_cite(blog))) == ["https://huggingface.co/blog"]
+
+
+def test_google_blogs_stay_proposable_but_its_product_pages_do_not() -> None:
+    cited = ["https://cloud.google.com/blog/products/ai", "https://scholar.google.com/x",
+             "https://policies.google.com/privacy", "https://play.google.com/store/apps"]
+
+    plan = _mine(TWO_CITING, _both_cite(_cites(*cited)))
+
+    assert _considered(plan) == ["https://cloud.google.com/blog"]
+
+
+# ── Citation mining: run stats ───────────────────────────────────────────────
+
+
+def test_the_plan_counts_pages_read_failed_skipped_as_directories_and_without_links() -> None:
+    resources = [_res(f"r{i}", f"https://r{i}.example/p") for i in range(5)]
+    pages = {
+        "https://r0.example/p": _cites("https://blog.example/1"),
+        "https://r1.example/p": _cites("https://blog.example/2"),
+        "https://r2.example/p": _cites(*[f"https://tool{i}.example/" for i in range(61)]),
+        "https://r3.example/p": _html(),
+        # r4 is a 404
+        "https://blog.example/": _html(),
+    }
+
+    plan = _mine(resources, pages)
+
+    assert plan.mining == source_review.MiningStats(
+        pages_read=5, pages_failed=1, link_directories=1, no_links=1, prospects=1
+    )
+    assert source_review.mining_summary(plan.mining) == (
+        "Citation mining read 5 Resource page(s): 1 failed, 1 skipped as link "
+        "directories, 1 with no links; 1 Prospective Source(s)."
+    )
+
+
+# ── PR body: size ────────────────────────────────────────────────────────────
+
+
+def _mined_rejection(i: int, reason: str = "no-feed"):
+    return source_review.Rejection(
+        source_review.ProspectiveSource(f"https://site{i:02}.example/", "citation",
+                                        citations=("r1", "r2")),
+        reason,
+    )
+
+
+def test_pr_body_lists_suggestion_rejections_in_full_and_summarises_mined_ones() -> None:
+    plan = source_review.ReviewPlan(today=TODAY)
+    plan.rejected = [
+        source_review.Rejection(source_review.ProspectiveSource("https://s.example/", "suggestion",
+                                                                suggestion=4), "no-feed"),
+        *[_mined_rejection(i) for i in range(17)],
+        *[_mined_rejection(i, "unreachable") for i in range(17, 20)],
+    ]
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert "## Rejected Prospective Sources (21)" in body
+    assert "- Source suggestion #4: `https://s.example/` — `no-feed`" in body
+    assert "<summary>Citation mining: 20 rejected (no-feed 17, unreachable 3)</summary>" in body
+    assert "`https://site14.example/`" in body and "`https://site15.example/`" not in body
+    assert "- and 5 more (see scout/prospects.yaml)" in body
+    assert body.count("<details>") == body.count("</details>") == 1
+    assert body.rstrip().endswith("Closes #4")
+
+
+def test_pr_body_is_truncated_below_githubs_limit_but_keeps_every_closes_line(monkeypatch) -> None:
+    monkeypatch.setattr(source_review, "MAX_BODY_CHARS", 2_000)
+    plan = source_review.ReviewPlan(today=TODAY)
+    plan.rejected = [
+        source_review.Rejection(
+            source_review.ProspectiveSource(f"https://s{i}.example/{'x' * 80}", "suggestion",
+                                            suggestion=100 + i), "no-feed")
+        for i in range(40)
+    ]
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert len(body) <= 2_000
+    assert "**Truncated:**" in body
+    assert body.rstrip().endswith("\n".join(f"Closes #{100 + i}" for i in range(40)))
+    assert body.count("<details>") == body.count("</details>")
+
+
+def test_the_default_body_limit_is_below_githubs() -> None:
+    assert source_review.MAX_BODY_CHARS < 65_536
