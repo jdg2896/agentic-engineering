@@ -1,0 +1,110 @@
+name: Source review
+
+on:
+  schedule:
+    - cron: '0 13 1 * *'   # 1st of each month, 13:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-pause:
+    runs-on: ubuntu-latest
+    outputs:
+      paused: ${{ steps.check.outputs.paused }}
+    steps:
+      - id: check
+        run: |
+          if [ "${{ vars.MAINTENANCE_PAUSED }}" = "true" ]; then
+            echo "paused=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Maintenance paused — skipping Source review."
+          else
+            echo "paused=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  source-review:
+    needs: check-pause
+    if: needs.check-pause.outputs.paused != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # This slice (Dead-Source retirement) reads Source health only and needs no
+      # judge. Source discovery (#104) adds the Claude Code CLI and the
+      # CLAUDE_CODE_OAUTH_TOKEN secret, scoped to its own step as in Scout.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      # No cache: a privileged job must not restore a cache writable by less-trusted runs.
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          enable-cache: false
+
+      - run: uv sync --frozen
+
+      # Plans the review, evaluates the auto-merge gate (ADR 0002) against the
+      # pre-plan Source list, then applies the plan to sources.yaml. Writes the
+      # PR title/body/labels outside the checkout so they are never committed.
+      - name: Run Source review
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: uv run python scripts/source_review.py --summary "$RUNNER_TEMP/source_review.json"
+
+      - name: Compute PR metadata
+        run: |
+          uv run python3 - <<'EOF'
+          import json
+          import os
+          import secrets
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          summary = json.loads(Path(os.environ["RUNNER_TEMP"], "source_review.json").read_text())
+          env_file = os.environ["GITHUB_ENV"]
+          with open(env_file, "a") as f:
+              f.write(f"YEAR_MONTH={datetime.now(timezone.utc):%Y-%m}\n")
+              f.write(f"PLAN_EMPTY={'true' if summary['empty'] else 'false'}\n")
+              if not summary["empty"]:
+                  # Title, body and labels are built and sanitized in source_review.py.
+                  # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).
+                  delim = secrets.token_hex(16)
+                  f.write(f"REVIEW_TITLE={summary['title']}\n")
+                  f.write(f"AUTO_MERGE_OK={'true' if summary['auto_merge_ok'] else 'false'}\n")
+                  f.write(f"REVIEW_LABELS={','.join(summary['labels'])}\n")
+                  f.write(f"REVIEW_PR_BODY<<{delim}\n")
+                  f.write(summary["body"] + "\n")
+                  f.write(f"{delim}\n")
+          EOF
+
+      # Nothing to add or retire: no PR (sources.yaml was not written).
+      # Fixed branch: an open Source review PR is updated in place instead of stacking.
+      - id: cpr
+        if: env.PLAN_EMPTY != 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
+        with:
+          branch: bot/source-review
+          title: ${{ env.REVIEW_TITLE }}
+          body: ${{ env.REVIEW_PR_BODY }}
+          commit-message: "chore(source-review): monthly Source review ${{ env.YEAR_MONTH }}"
+          labels: ${{ env.REVIEW_LABELS }}
+
+      # Labels are additive on an updated PR, so clear a hold left by an earlier run.
+      - name: Enable auto-merge (gate passed)
+        if: env.PLAN_EMPTY != 'true' && env.AUTO_MERGE_OK == 'true' && steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          gh pr edit "$PR" --remove-label auto-merge-skipped || true
+          gh pr merge "$PR" --auto --squash
+
+      # The auto-merge-skipped label comes from the gate's labels above; also turn
+      # off auto-merge an earlier clean run may have enabled on this same PR.
+      - name: Hold for review (gate failed)
+        if: env.PLAN_EMPTY != 'true' && env.AUTO_MERGE_OK != 'true' && steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          gh pr edit "$PR" --add-label auto-merge-skipped || true
+          gh pr merge "$PR" --disable-auto || true

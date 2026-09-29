@@ -40,7 +40,7 @@ The weekly job that discovers **Candidates** by polling known **Sources**.
 The weekly job that link-checks every **Resource** and quarantines dead ones.
 
 **Source review**:
-The monthly job (planned) that curates the **Source** list itself. It has two halves:
+The monthly job that curates the **Source** list itself. It has two halves:
 **Source discovery** and **Source retirement**. It is the only job that changes which
 Sources exist or are enabled.
 
