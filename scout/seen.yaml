@@ -153,3 +153,1230 @@ seen:
     title: Mission Control for Self-Hosted LangSmith on Kubernetes
     source_id: langchain-blog
     rejected_at: '2026-05-28'
+  - url: https://hamel.dev/
+    title: AI Product Engineering Notes
+    source_id: hamel-husain
+    rejected_at: '2026-09-29'
+  - url: 
+      https://embracethered.com/blog/posts/2026/recovering-encrypted-llm-thoughts/
+    title: Recovering Encrypted LLM Reasoning Traces
+    source_id: embrace-the-red
+    rejected_at: '2026-09-29'
+  - url: 
+      https://embracethered.com/blog/posts/2026/pipewire-flatpak-linux-sandbox-escape-cve-2026-5674/
+    title: Escaping Linux Sandboxes via PipeWire (CVE-2026-5674)
+    source_id: embrace-the-red
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/building-prod-with-jev-and-langgraph
+    title: Building Production Agents with Jev and LangGraph
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/langsmith-engine-agents-fine-tuning-trajectories
+    title: 'New in LangSmith: Engine v2, Managed Deep Agents, Fine-Tuning, and more'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langsmith-custom-apps
+    title: 'LangSmith Custom Apps: Build custom interfaces around your agent data'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langsmith-engine-v2-redteam
+    title: 'New in LangSmith Engine: red teaming and automated testing'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langsmith-fine-tuning
+    title: Introducing LangSmith Fine-Tuning
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langsmith-managed-deep-agents-whats-new
+    title: Managed Deep Agents delivers a better user experience for agents in 
+      production
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langsmith-trajectories-tracing
+    title: 'Trajectories now in LangSmith: A readable view of every agent session'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/building-a-harness-with-jev
+    title: What Is Jev? A Guide to TypeSafe AI’s System One Model
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/reliability-healthcare-ai-langsmith-use-cases
+    title: 'The Reliability Layer for Healthcare AI: Common LangSmith Use Cases'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/jev-is-now-available-in-langsmith-evals
+    title: Jev is now available in LangSmith Evals
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/jev-agent-evals-langsmith
+    title: Can Jev Be a Better Agent Evaluator?
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/how-included-health-built-federated-agents-for-healthcare-navigation-with-deep-agents-and-langgraph
+    title: How Included Health Built Federated Healthcare Agents with LangGraph 
+      and Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/agent-harness-life-sciences
+    title: 'Building an Agent Harness for Life Sciences: Introducing Deep Life Sci'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/scaling-agents-in-healthcare-life-sciences-lessons-from-madrigal-pharmaceuticals-abridge-and-vizient
+    title: 'Scaling Agents in Healthcare & Life Sciences: Lessons from Madrigal Pharmaceuticals,
+      Abridge, and Vizient'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/paid-media-agent
+    title: How We Built LangChain’s Paid Media Agent
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/scaling-agents-in-europe-the-middle-east-lessons-from-schneider-electric-vodafone-and-monday-com
+    title: 'Scaling Agents in Europe & The Middle East: Lessons from Schneider Electric,
+      Vodafone, and monday.com'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/how-credit-genie-uses-openwiki-to-keep-codebase-knowledge-fresh-searchable-and-automated
+    title: How Credit Genie keeps codebase docs fresh with OpenWiki
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/connections-managed-credentials-and-per-caller-identity-for-managed-deep-agents
+    title: 'Connections: managed credentials and per-caller identity for Managed Deep
+      Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/how-we-built-langchains-gtm-agent
+    title: How we built LangChain’s GTM Agent
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/organizing-context-in-a-multi-agent-harness
+    title: Organizing Context in a Multi-Agent Harness
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/agents-that-pay-how-nevermined-empowers-langchain-agents-to-buy-and-sell-services
+    title: ''
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/august-2026-langchain-newsletter
+    title: 'August 2026: LangChain Newsletter — Managed Deep Agents, LLM Gateway,
+      and More'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/langsmith-llm-gateway-runtime-controls-for-production-agents
+    title: 'LangSmith LLM Gateway: Runtime Controls for Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langsmith-langchain-oss-eu-ai-act
+    title: How LangSmith and LangChain OSS Help You Meet EU AI Act Requirements
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/customers-factory
+    title: How Factory used LangSmith to automate their feedback loop and 
+      improve iteration speed by 2x
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/aligning-llm-as-a-judge-with-human-preferences
+    title: Aligning LLM-as-a-Judge with Human Preferences
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langgraph-cloud
+    title: 'Announcing LangGraph v0.1 & LangGraph Cloud: Running agents at scale,
+      reliably'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/customers-podium
+    title: How Podium optimized agent behavior and reduced engineering 
+      intervention by 90% with LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/customers-replit
+    title: Pushing LangSmith to new limits with Replit Agent's complex workflows
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langchain-second-birthday
+    title: LangChain's Second Birthday
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/langsmith-homepage-redesign-and-resource-tags
+    title: 'LangSmith: Redesigned product homepage and Resource Tags for better organization'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langchain-state-of-ai-2024
+    title: LangChain State of AI 2024 Report
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/introducing-interrupt-langchain-conference
+    title: 'Introducing Interrupt: The AI Agent Conference by LangChain'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/three-years-langchain
+    title: Reflections on Three Years of Building LangChain
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/rebuilding-chat-langchain
+    title: Why We Rebuilt LangChain’s Chatbot and What We Learned
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/january-2026-langchain-newsletter
+    title: 'January 2026: LangChain Newsletter'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/evaluating-openwiki-with-wikibench
+    title: Evaluating OpenWiki with WikiBench
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/langchain-and-nvidia-launch-the-nemoclaw-deep-agents-blueprint
+    title: LangChain and NVIDIA Launch NemoClaw Deep Agents Blueprint
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/how-do-i-speed-up-my-agent
+    title: 'AI Agent Latency 101: How do I speed up my AI agent?'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langgraph-platform-ga
+    title: 'LangGraph Platform is now Generally Available: Deploy & manage long-running,
+      stateful Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/series-b
+    title: LangChain raises $125M to build the platform for agent engineering
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/nvidia-enterprise
+    title: LangChain Announces Enterprise Agentic AI Platform Built with NVIDIA
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/proving-the-roi-of-agentic-ai-in-financial-services
+    title: Proving Agentic AI ROI in Financial Services | LangChain
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/how-candidly-built-state-aware-agent-harnesses-with-langsmith
+    title: How Candidly Built State-Aware Agent Harnesses in LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/build-an-auditable-vc-research-agent-with-the-perplexity-agent-api-langgraph-and-langsmith
+    title: Build an Auditable VC Research Agent with Perplexity
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/how-harmonic-rebuilt-scout-on-deep-agents-and-4xd-retention-with-langsmith
+    title: How Harmonic Rebuilt Scout on Deep Agents and 4x'd Retention
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/financial-ai-that-investigates-macro-trends-eu-economic-analysis-with-you-com-and-langchain
+    title: EU Macroeconomic Analysis with Deep Agents and You.com
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/applying-openai-rag
+    title: Applying OpenAI's RAG Strategies
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/auto-evaluator-opportunities
+    title: Auto-Evaluator Opportunities
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/data-driven-characters
+    title: Data-Driven Characters
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/qdrant-x-langchain-endgame-performance
+    title: 'Qdrant x LangChain: Endgame Performance'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/introducing-airbyte-sources-within-langchain
+    title: Introducing Airbyte sources within LangChain
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/xata-x-langchain-new-vector-store-and-memory-store-integrations
+    title: 'Xata x LangChain: new vector store and memory store integrations'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/eden-ai-x-langchain
+    title: 'Eden AI x LangChain: Harnessing LLMs, Embeddings, and AI'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/kay-x-cybersyn-x-langchain
+    title: 'Kay x Cybersyn x LangChain: Embedding SEC Filings for RAG'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/how-to-design-an-agent-for-production
+    title: How to design an Agent for Production
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/openais-bet-on-a-cognitive-architecture
+    title: OpenAI's Bet on a Cognitive Architecture
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langchain-state-of-ai-2023
+    title: LangChain State of AI 2023
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/meet-connery-an-open-source-plugin-infrastructure-for-opengpts-and-llm-apps
+    title: 'Meet Connery: An Open-Source Plugin Infrastructure for OpenGPTs and LLM
+      apps'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/agents-round
+    title: Autonomous Agents & Agent Simulations
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/timescale-vector-x-langchain-making-postgresql-a-better-vector-database-for-ai-applications
+    title: 'Timescale Vector x LangChain: Making PostgreSQL A Better Vector Database
+      for AI Applications'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/retrieval
+    title: Retrieval
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/announcing-our-10m-seed-round-led-by-benchmark
+    title: Announcing our $10M seed round led by Benchmark
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/plan-and-execute-agents
+    title: Plan-and-Execute Agents
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/automating-web-research
+    title: Automating Web Research
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/making-data-ingestion-production-ready-a-langchain-powered-airbyte-destination
+    title: 'Making Data Ingestion Production Ready: a LangChain-Powered Airbyte Destination'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/benchmarking-question-answering-over-csv-data
+    title: Benchmarking Question/Answering Over CSV Data
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/using-langsmith-to-support-fine-tuning-of-open-source-llms
+    title: Using LangSmith to Support Fine-tuning
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/cube-x-langchain-building-ai-experiences-with-llms-and-the-semantic-layer
+    title: 'Cube x LangChain: Building AI experiences with LLMs and the semantic layer'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langserve-playground-and-configurability
+    title: LangServe Playground and Configurability
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/access-control-updates-for-langsmith
+    title: Role Based Access Control (RBAC) for LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/pytest-and-vitest-for-langsmith-evals
+    title: Introducing Pytest and Vitest integrations for LangSmith Evaluations
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/new-in-langsmith-engine-2x-better-issue-detection
+    title: LangSmith Engine Improves Agent Issue Detection by 2x
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/self-correcting-memory-openwiki
+    title: Building Self-Correcting Memory in OpenWiki
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/the-art-of-loop-engineering
+    title: The Art of Loop Engineering
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/introducing-rubrics-for-deepagents
+    title: 'Introducing Rubrics: Build Agents that Evaluate and Correct Their Work'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/agentic-engineering-redefining-software-engineering
+    title: 'Agentic Engineering: How Swarms of AI Agents Are Redefining Software Engineering'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/multi-modal-rag-template
+    title: Multi-modal RAG on slide decks
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/llms-and-sql
+    title: LLMs and SQL
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/structured-tools
+    title: Structured Tools
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/semi-structured-multi-modal-rag
+    title: Multi-Vector Retriever for RAG on tables, text, and images
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/workspaces-in-langsmith
+    title: Workspaces in LangSmith for improved collaboration and organization
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/customers-klarna
+    title: How Klarna's AI assistant redefined customer support at scale for 85 
+      million active users
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/the-rise-of-context-engineering
+    title: The rise of "context engineering"
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/using-skills-with-deep-agents
+    title: Using skills with Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/debugging-deep-agents-with-langsmith
+    title: Debugging Deep Agents with LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/how-toyota-north-america-put-enterprise-ai-on-the-balance-sheet-with-deep-agents-and-langsmith
+    title: Toyota Scales Enterprise AI with Deep Agents and LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/langsmith-preview-builds-test-agent-changes-before-production
+    title: Test Agent Changes with LangSmith Preview Builds
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: 
+      https://www.langchain.com/blog/introducing-langsmith-tuned-evaluators-starting-with-perceived-error
+    title: Introducing LangSmith Tuned Evaluators
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/langchain-agentcore-payments
+    title: AgentCore Payments middleware for LangChain agents
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/own-your-intelligence
+    title: 'Own Your Intelligence: The Key to Lasting AI Advantage'
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://www.langchain.com/blog/what-is-an-agent
+    title: What is an AI agent?
+    source_id: langchain-blog
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/lenfest-ai-collaborative-expansion
+    title: The Lenfest Institute grows landmark program with expanded OpenAI 
+      support
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/form/codex-originals
+    title: Are you a Codex Original?
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/basis-tax-workbook-with-astra
+    title: Basis completes a tax workbook 2x faster with GPT-6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/proaction
+    title: Proaction boosts sales 60% and saves 75+ hours with Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/two-years-of-openai-academy
+    title: Two years of OpenAI Academy
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/openai-extends-cyber-access-to-ukraine-for-civilian-defense
+    title: OpenAI extends cyber access to Ukraine for civilian defense
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/sam-altman-un-security-council-remarks
+    title: Sam Altman’s remarks at the United Nations Security Council
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/harvey-from-context-to-confidence-with-astra
+    title: Harvey turns legal context into stronger drafts with GPT-6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/invideo-builds-with-gpt-6-astra
+    title: How invideo improves color grading 3x with GPT‑6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ringg
+    title: Ringg’s AI agents resolve up to 65% of customer calls with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-mentalhealthbench
+    title: Introducing MentalHealthBench
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/chatgpt-ads-expands-southeast-asia-taiwan
+    title: ChatGPT Ads expands to Southeast Asia and Taiwan
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/airbnb-gpt-6-astra
+    title: Airbnb widens access to GPT-6 Astra and OpenAI frontier models
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/grab-openai-ai-skills-southeast-asia
+    title: Grab and OpenAI bring practical AI skills to Southeast Asia
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/better-prompt-caching-for-gpt-6
+    title: Better prompt caching for GPT-6
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-gpt-6-sol-and-luna
+    title: Introducing GPT-6 Sol and Luna
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/parallel-cuts-time-and-cost-with-astra
+    title: Parallel cut research time and cost in half with GPT‑6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/priorities-principles-third-party-assessments
+    title: Priorities and principles for effective third party assessments
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/advisory-group-on-mathematics-and-ai
+    title: Advisory Group on Mathematics and Artificial Intelligence
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/higgsfield-from-prompt-to-production-with-astra
+    title: Higgsfield AI ships new video features in a day with GPT-6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/building-standards-next-phase-ai
+    title: Building standards for the next phase of AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/expanding-openai-academy-with-new-learning-paths
+    title: Expanding OpenAI Academy with new learning paths
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/v7
+    title: V7 cuts costs 78% while boosting accuracy with GPT-5.6 Luna
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/australian-youth-safety-blueprint
+    title: Introducing the Australian Youth Safety Blueprint
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/cooley-gopublic
+    title: How Cooley is accelerating IPO work with ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/astra-for-law
+    title: Introducing Astra for Law
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/helping-older-adults-use-ai-in-everyday-life
+    title: Helping older adults use AI in everyday life
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/reimagining-advertising-with-ai
+    title: Reimagining advertising with AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/hex-gpt-6-astra
+    title: Hex turns complex analysis into visual reports with GPT‑6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-to-connect-ai-usage-to-business-value
+    title: How to connect AI usage to business value
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/model-misalignment-reporting-framework
+    title: Our framework for reporting model misalignment
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/unlocking-new-ways-of-working
+    title: How workers are unlocking new ways of working
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/fyxer
+    title: How Fyxer built an AI executive assistant people trust
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/perplexity-improving-accuracy-with-astra
+    title: Perplexity trusts GPT-6 Astra with end-to-end systems
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/scaling-storage-one-billion-users-part-one
+    title: Rapidly scaling online storage to serve over 1 billion ChatGPT users
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/cognition-devin-testing-with-astra
+    title: Cognition helps Devin test its own work with GPT‑6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/using-codex-chatgpt-to-search-for-new-antimicrobials
+    title: How a researcher uses Codex and ChatGPT to search for new 
+      antimicrobial molecules
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/put-data-to-work
+    title: Now everyone can put data to work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-chatgpt-financial-services
+    title: Introducing ChatGPT for Financial Services
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/expanding-ai-access-us-government
+    title: Expanding AI access and cyber defense for federal, state, local, and 
+      tribal governments
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-gpt-live-1-in-the-api
+    title: Build more natural voice experiences with GPT‑Live‑1 in the API
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-the-agents-api
+    title: Introducing the Agents API
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ai-policy-window
+    title: The AI policy window is open. We need to act.
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-6-astra-next-generation-work
+    title: 'GPT-6 Astra: The next generation in intelligence for work'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/paul-christiano-joins-openai-foundation-board
+    title: Paul Christiano joins OpenAI Foundation Board
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/codex-quantum-computing-experiments
+    title: How GPT-5.6 Sol helps run quantum computing experiments
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/the-work-now-within-reach
+    title: The Work Now Within Reach
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-chatgpt-images-2-5
+    title: Introducing ChatGPT Images 2.5
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/supporting-journalism-from-classrooms-to-newsrooms
+    title: OpenAI expands initiatives to support journalism from classrooms to 
+      newsrooms
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/navier-stokes-solution
+    title: On the Navier–Stokes Millennium Prize Problem
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/teen-development-research-grants
+    title: Funding grants for new research into AI and teen development
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/1password
+    title: 1Password increases engineering productivity 21% with Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/supporting-independent-journalism-in-ukraine
+    title: Supporting independent journalism in Ukraine
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/an-alien-mind
+    title: An Alien Mind
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/research-acceleration-view-inside-openai
+    title: 'Research acceleration: The view inside OpenAI'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/daybreak-for-frontline-defenders
+    title: 'Daybreak for Frontline Defenders: $1B to protect essential services'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/legora-financial-statement-review-with-astra
+    title: Legora reviewed 41 documents in minutes with GPT-6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/playco-game-prototyping-with-astra
+    title: Playco cut manual fixes 50% prototyping games with GPT-6 Astra
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-6-astra
+    title: 'GPT-6 Astra: A new generation of intelligence'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/safety-overview-gpt-6-astra
+    title: 'Safety overview: GPT-6 Astra'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/atv-big-air-tour
+    title: ATV Big Air Tour turned 3 days of work into 3 hours with ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ai-native-company-workflows
+    title: How AI-native companies turn workflows into operating capability
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/path-to-astra
+    title: 'Path to Astra: critical capabilities and frontier safeguards'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/chatgpt-connects-health-records-and-healthcare-sources
+    title: Healthcare organizations can now connect EHR and additional industry 
+      data to ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gilbert-tobin
+    title: How law firm Gilbert + Tobin governs and scales AI with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/supporting-california-bill-advance-ai-youth-safety
+    title: OpenAI supports California’s bill to advance youth AI safety
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/polimill
+    title: Polimill builds Japan's next-generation public AI infrastructure
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/expanding-access-to-ai-with-chatgpt-ads
+    title: A milestone in expanding access to AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/our-decision-on-cursor-following-its-acquisition-by-spacex
+    title: Our decision on Cursor following its acquisition by SpaceX
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/supporting-next-generation-ai-startups-thailand
+    title: Supporting Thailand’s next generation of AI startups
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/what-students-gain-from-chatgpt-critical-thinking-training
+    title: 'Better answers, broader thinking: What students gain from ChatGPT and
+      critical-thinking training'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/expanding-our-presence-in-brazil
+    title: Expanding OpenAI’s presence in Brazil
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/learning-never-stops
+    title: 'Learning never stops: How AI makes learning continuous'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/bringing-chatgpt-for-teachers-to-more-us-school-districts
+    title: Bringing ChatGPT for Teachers to more U.S. school districts
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/hugging-face-incident-and-the-road-ahead
+    title: The Hugging Face incident and the road ahead
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/loveholidays
+    title: How loveholidays is making everyone a builder with Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/the-full-stack-behind-abundant-intelligence
+    title: The full stack behind abundant intelligence
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/jalapeno-first-results
+    title: Jalapeño’s first results show industry-leading speed and efficiency 
+      in AI inference
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/disrupting-malicious-uses-of-ai-influence-campaign-russia
+    title: Disrupting a new covert influence campaign from Russia
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-admin-plugin
+    title: Introducing the Admin plugin for ChatGPT Work and Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-5-6-in-kiro
+    title: Advancing price-performance for developers with GPT‑5.6 in Kiro
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-intelligence-age
+    title: Introducing Intelligence Age
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/stampli
+    title: Stampli cuts launch hours by 68% using ChatGPT Work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/offering-zero-data-retention-for-frontier-models
+    title: Offering Zero Data Retention for frontier models
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/replit
+    title: Replit expands access to software creation with GPT-5.6 Luna
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/chatgpt-ads-expands-across-europe
+    title: ChatGPT Ads expands across Europe
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/strengthening-democratic-oversight-in-national-security
+    title: Strengthening democratic oversight in national security
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/partnering-with-codeai
+    title: Partnering with CodeAI to prepare the first AI generation
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/pacing-model-development-cyber-capabilities
+    title: Pacing model development in an era of cyber-critical capabilities
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/chatgpt-for-teens
+    title: 'Introducing ChatGPT for Teens: Built for learning, backed by protections'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/nvidia/chatgpt-work
+    title: How NVIDIA scales expertise with ChatGPT Work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/asana
+    title: Asana completed a years-long code migration in 2 weeks with Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/the-defenders-window
+    title: The Defender’s Window
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/openai-joins-ports-pike-project
+    title: OpenAI joins PORTS-Pike project
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/new-policy-ideas-for-the-intelligence-age
+    title: New policy ideas for the Intelligence Age
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/builders-guide-to-gpt-5-6
+    title: The builder’s guide to GPT‑5.6
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/previewing-ultrafast
+    title: 'Previewing Ultrafast mode: GPT-5.6 Sol at up to 14X the speed'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/dali-rajic-chief-revenue-officer
+    title: OpenAI appoints Dali Rajic as Chief Revenue Officer
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-enterprises-put-ai-to-work
+    title: 'From assistance to execution: How enterprises put AI to work'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ringcentral
+    title: How RingCentral builds AI-native work from engineering to ops
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/daybreak-models-are-now-available-on-aws
+    title: Daybreak models are now available on AWS
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/testing-ads-in-chatgpt
+    title: Testing ads in ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/responsible-ai-infrastructure-texas
+    title: OpenAI’s letter to Governor Abbott on responsible AI infrastructure 
+      in Texas
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/model-ml
+    title: Model ML completes finance work more efficiently with GPT-5.6 Sol
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/building-an-ai-native-finance-function
+    title: What building an AI-native finance function taught me
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/expanding-daybreak-as-the-cyber-defense-window-narrows
+    title: Expanding Daybreak as the Cyber Defense Window Narrows
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/putting-frontier-cyber-models-in-more-trusted-hands
+    title: Putting frontier cyber models in more trusted hands
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/premium-seats-chatgpt-business
+    title: Premium seats are coming to ChatGPT Business
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/zapier
+    title: How Zapier transformed core marketing processes with ChatGPT Work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/virgin-atlantic/chatgpt-work
+    title: Virgin Atlantic sharpens customer journeys with ChatGPT Work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/responding-next-frontier-critical-cyber-capabilities
+    title: Responding to the next frontier of critical cyber capabilities
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/hsp-gruppe
+    title: How HSP GRUPPE builds AI capabilities for tax advisory
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt
+    title: Improving GPT‑5.6 Sol in ChatGPT—and expanding access to GPT-5.6 Luna
+      for free users
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai
+    title: Working with the American Psychological Association on youth mental 
+      health and AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-the-world-is-putting-chatgpt-to-work
+    title: 'From asking to doing: How the world is putting ChatGPT to work'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/third-party-cyber-evaluations-involving-openai-models
+    title: Third-party cyber evaluations involving OpenAI models
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/learn-teach-chatgpt-work-codex
+    title: New ways to learn and teach with ChatGPT Work and Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/apple-is-getting-this-wrong
+    title: Apple is getting this wrong
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/continuous-voice-interaction-with-gpt-live
+    title: How we built a realtime system for responsive voice AI in six months
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/circles
+    title: Circles powers telco personalization with OpenAI technology
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ten-advances-in-mathematics
+    title: Ten advances in mathematics and theoretical computer science
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/advancing-responsible-ai-across-europe
+    title: Advancing responsible AI across Europe
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/building-abundant-intelligence
+    title: Building abundant intelligence
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/unive
+    title: Univé builds an AI-ready workforce
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation
+    title: Disrupting a Cambodia-based criminal scam operation
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6
+    title: Advancing the price-performance frontier with GPT-5.6
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/avatarin
+    title: How avatarin built a 24/7 retail agent with GPT-Realtime
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores
+    title: How enabling two settings tripled our scores on the ARC-AGI-3 
+      benchmark
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/chatgpt-for-academic-researchers
+    title: Accelerating scientific discovery with ChatGPT for Academic 
+      Researchers
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency
+    title: How GPT-5.6 fuses frontier intelligence with frontier efficiency
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/scientific-computing-agentic-ai
+    title: Scientific computing in the age of agentic AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-ai-is-expanding-what-people-do-at-work
+    title: How AI is expanding what people do at work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/health-in-chatgpt
+    title: Launching Health in ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community
+    title: Building AI infrastructure with the Effingham County community
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-news-organizations-are-using-ai
+    title: How news organizations are using AI to advance their vital missions
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/advancing-the-next-era-of-national-science
+    title: Advancing the next era of national science
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-openai-presence
+    title: Introducing OpenAI Presence
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ntt-data
+    title: NTT DATA Group cuts incident analysis to 30 minutes with Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-chatgpt-small-business-program
+    title: Introducing the ChatGPT for small business program
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/hugging-face-model-evaluation-security-incident
+    title: OpenAI and Hugging Face partner to address security incident during 
+      model evaluation
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/david-velez-robin-vince-join-openai-boards
+    title: David Vélez and Robin Vince join the boards of the OpenAI Foundation 
+      and OpenAI Group PBC
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/safety-alignment-long-horizon-models
+    title: Safety and alignment in an era of long-horizon models
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/a-scorecard-for-the-ai-age
+    title: A scorecard for the AI age
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/why-teens-deserve-access-safe-ai
+    title: Why teens deserve access to safe AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/codex-collaborator-creative-team
+    title: How Codex became a collaborator for OpenAI’s creative team
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/cars24
+    title: How Cars24 scales conversations and builds faster with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/advancing-ai-safety-through-state-and-federal-action
+    title: The US is advancing AI safety through state and federal action
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/unlocking-self-improvement-gpt-red
+    title: 'GPT-Red: Unlocking Self-Improvement for Robustness'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/managing-ai-investments-in-agentic-era
+    title: How to manage AI investments in the agentic era
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex
+    title: Data science workflows with ChatGPT Work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/academy/chatgpt-work/how-sales-teams-use-codex
+    title: Sales workflows with ChatGPT Work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/deutsche-telekom
+    title: How Deutsche Telekom is rewiring telecommunications with AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/academy/getting-started
+    title: Getting started with ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot
+    title: GPT-5.6 is now the preferred model in Microsoft 365 Copilot
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/bio-bug-bounty
+    title: GPT-5.5 Bio Bug Bounty
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/chatgpt-for-your-most-ambitious-work
+    title: ChatGPT is now a partner for your most ambitious work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-5-6
+    title: 'GPT-5.6: Frontier intelligence that scales with your ambition'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/government-national-security-partnerships
+    title: Our approach to government and national security partnerships
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: 
+      https://openai.com/index/separating-signal-from-noise-coding-evaluations
+    title: Separating signal from noise in coding evaluations
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/k-12-educators-practical-skills
+    title: Helping K–12 educators build practical AI skills
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-gpt-live
+    title: Introducing GPT-Live
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/australian-payments-plus
+    title: Australian Payments Plus moves faster with ChatGPT and Codex
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/mufg
+    title: MUFG aims to become AI-native with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-chatgpt-adoption-has-expanded
+    title: How ChatGPT adoption has expanded
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/genebench-pro/case-studies
+    title: Inside Genebench-Pro
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug
+    title: 'Core dump epidemiology: fixing an 18-year-old bug'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-genebench-pro
+    title: Introducing GeneBench-Pro
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/mapping-ai-jobs-transition-eu
+    title: Mapping Europe’s AI Workforce Opportunity
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/hp-frontier-partnership
+    title: HP Inc. launches Frontier strategic partnership with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/previewing-gpt-5-6-sol
+    title: 'Previewing GPT-5.6 Sol: a next-generation model'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/how-agents-are-transforming-work
+    title: How agents are transforming work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/openai-broadcom-jalapeno-inference-chip
+    title: OpenAI and Broadcom unveil LLM-optimized inference chip
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/helping-build-shared-standards-for-advanced-ai
+    title: Helping build shared standards for advanced AI
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/gpt-5-immunology-mystery
+    title: How GPT-5 helped immunologist Derya Unutmaz solve a 3-year-old 
+      mystery
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/omio
+    title: How Omio is building the future of conversational travel
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/patch-the-planet
+    title: 'Patch the Planet: a Daybreak initiative to support open source maintainers'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/daybreak-securing-the-world
+    title: 'Daybreak: Tools for securing every organization in the world'
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/codex-maxxing-long-running-work
+    title: Codex-maxxing for long-running work
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/samsung-electronics-chatgpt-codex-deployment
+    title: Samsung Electronics brings ChatGPT and Codex to employees
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/chatgpt-enterprise-spend-controls
+    title: New usage analytics and updated spend controls for enterprises
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/improving-health-intelligence-in-chatgpt
+    title: Improving health intelligence in ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/diagnose-rare-childhood-diseases
+    title: Using AI to help physicians diagnose rare genetic diseases affecting 
+      children
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/ai-chemist-improves-reaction
+    title: A near-autonomous AI chemist improves a challenging reaction in 
+      medicinal chemistry
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://openai.com/index/introducing-life-sci-bench
+    title: Introducing LifeSciBench
+    source_id: openai-news
+    rejected_at: '2026-09-29'
+  - url: https://zed.dev/blog/delta-public-beta
+    title: Replace PRs with Delta – Now in Public Beta
+    source_id: zed-blog
+    rejected_at: '2026-09-29'
+  - url: https://zed.dev/blog/agentic-xanadu
+    title: Xanadu Was Waiting for Agents
+    source_id: zed-blog
+    rejected_at: '2026-09-29'
+  - url: https://zed.dev/blog/introducing-delta
+    title: Introducing Delta
+    source_id: zed-blog
+    rejected_at: '2026-09-29'
+  - url: https://zed.dev/blog/sandboxing
+    title: Sandboxing
+    source_id: zed-blog
+    rejected_at: '2026-09-29'
+  - url: https://zed.dev/blog/hidden-gems-part-4
+    title: 'Hidden Gems: Part 4'
+    source_id: zed-blog
+    rejected_at: '2026-09-29'
