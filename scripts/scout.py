@@ -209,8 +209,9 @@ def judge_failure_hint(run: ScoutRun) -> str:
     if run.auth_failed:
         return "Check the judge credential (see docs/adr/0001-oauth-token-for-ci.md)."
     return (
-        "The judge failed after retries (e.g. a CLI timeout or API error); "
-        "a re-run of the workflow usually fixes it."
+        "The judge failed (see the error). A CLI timeout or API error that outlasted the "
+        "retries may clear on a re-run; an error that repeats run after run needs a code "
+        "or config fix."
     )
 
 

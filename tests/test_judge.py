@@ -344,3 +344,108 @@ def test_quota_error_message_is_single_line() -> None:
         judge.parse_judgment(stdout)
     assert _single_line(str(exc_info.value))
     assert "session limit · resets 3pm (UTC) ::error::boom x" in str(exc_info.value)
+
+
+# --- Long feed entries (release notes) must not overflow the CLI's argv (E2BIG) ---
+
+
+def _recording_cli(monkeypatch) -> list:
+    """Stub subprocess.run inside judge, recording (cmd, kwargs) and returning a valid envelope."""
+    calls: list = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append((cmd, kwargs))
+        return subprocess.CompletedProcess(cmd, 0, stdout=_envelope(), stderr="")
+
+    monkeypatch.setattr(judge.subprocess, "run", fake_run)
+    return calls
+
+
+def test_run_claude_sends_a_huge_prompt_on_stdin_not_argv(monkeypatch) -> None:
+    calls = _recording_cli(monkeypatch)
+    prompt = "release notes line\n" * 20_000  # ~380 KB, past Linux's 128 KiB per-argument cap
+
+    assert json.loads(judge.run_claude(prompt, "SYSTEM"))["structured_output"] == VALID_JUDGMENT
+
+    [(cmd, kwargs)] = calls
+    assert kwargs["input"] == prompt
+    assert all("release notes line" not in arg for arg in cmd)
+    assert sum(len(arg) for arg in cmd) < 5_000
+    # Every other flag is unchanged: headless, no tools, no session, no settings or MCP.
+    assert cmd[:2] == ["claude", "-p"]
+    assert cmd[cmd.index("--system-prompt") + 1] == "SYSTEM"
+    assert cmd[cmd.index("--tools") + 1] == ""
+    assert cmd[cmd.index("--setting-sources") + 1] == ""
+    for flag in ("--no-session-persistence", "--strict-mcp-config", "--json-schema"):
+        assert flag in cmd
+    assert cmd[cmd.index("--output-format") + 1] == "json"
+    assert kwargs["timeout"] == judge.CLI_TIMEOUT_SECONDS
+    # Feed text is arbitrary Unicode: don't leave stdin/stdout to the runner's locale.
+    assert kwargs["encoding"] == "utf-8"
+
+
+def _prompt_for(summary: str, title: str = "v1.103.0") -> str:
+    calls = []
+
+    def fake_run(prompt: str, system: str) -> str:
+        calls.append(prompt)
+        return _envelope()
+
+    judge.judge_entry("SYSTEM", title, "https://example.com/r", summary, "src", run=fake_run)
+    [prompt] = calls
+    return prompt
+
+
+def test_judge_entry_caps_a_huge_summary_and_says_it_was_truncated() -> None:
+    summary = "HEAD-MARKER " + "changelog line\n" * 10_000 + "TAIL-MARKER"  # ~150 KB of release notes
+
+    prompt = _prompt_for(summary)
+
+    assert "HEAD-MARKER" in prompt
+    assert "TAIL-MARKER" not in prompt
+    assert len(prompt) < 5_000
+    assert "truncated" in prompt
+
+
+def test_judge_entry_passes_a_short_summary_through_whole() -> None:
+    summary = "Workflows vs. agents.\nWhen each earns its complexity."
+
+    prompt = _prompt_for(summary)
+
+    assert summary in prompt
+    assert "truncated" not in prompt
+
+
+def test_judge_entry_caps_a_huge_title() -> None:
+    title = "TITLE-HEAD " + "x" * 20_000 + " TITLE-TAIL"
+
+    prompt = _prompt_for("a summary", title=title)
+
+    assert "TITLE-HEAD" in prompt
+    assert "TITLE-TAIL" not in prompt
+    assert len(prompt) < 1_000
+
+
+@pytest.mark.parametrize(
+    ("error", "message"),
+    [
+        (OSError(7, "Argument list too long", "claude"), "Argument list too long"),
+        (FileNotFoundError(2, "No such file or directory", "claude"), "not installed or not on PATH"),
+    ],
+    ids=["e2big", "cli-missing"],
+)
+def test_os_error_launching_the_cli_is_a_launch_error_that_is_not_retried(monkeypatch, error, message) -> None:
+    calls: list = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        raise error
+
+    monkeypatch.setattr(judge.subprocess, "run", fake_run)
+    sleeps: list[float] = []
+
+    with pytest.raises(judge.JudgeLaunchError, match=message) as exc_info:
+        judge.judge_entry("SYSTEM", "A title", "https://example.com/a", "s", "src", sleep=sleeps.append)
+    assert len(calls) == 1
+    assert sleeps == []
+    assert _single_line(str(exc_info.value))

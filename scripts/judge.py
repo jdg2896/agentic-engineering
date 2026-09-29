@@ -20,6 +20,10 @@ CLI_TIMEOUT_SECONDS = 300
 # Attempts per entry, including the first; the backoff before attempt n+1 is n * this.
 MAX_ATTEMPTS = 3
 RETRY_BACKOFF_SECONDS = 10
+# How much of an entry's summary the judge sees. A GitHub release can carry 100 KB+
+# of release notes; the opening is enough to judge it, and the rest only costs tokens.
+MAX_SUMMARY_CHARS = 4_000
+MAX_TITLE_CHARS = 500
 
 # The judge_candidate schema, passed to the CLI as --json-schema and re-checked here.
 JUDGMENT_SCHEMA = {
@@ -70,6 +74,10 @@ class JudgeAuthError(JudgeError):
 
 class JudgeQuotaError(JudgeError):
     """The Claude subscription usage limit is exhausted."""
+
+
+class JudgeLaunchError(JudgeError):
+    """The Claude Code CLI could not be started (not installed, E2BIG, ...); a retry fails the same way."""
 
 
 _JSON_TYPES = {
@@ -161,9 +169,15 @@ def parse_judgment(stdout: str) -> dict:
 
 
 def run_claude(prompt: str, system: str) -> str:
-    """Invoke the Claude Code CLI headless and return its stdout (the JSON envelope)."""
+    """Invoke the Claude Code CLI headless and return its stdout (the JSON envelope).
+
+    The prompt goes in on stdin, not argv: it carries feed text of any length, and
+    one argv string over Linux's 128 KiB cap fails the exec with E2BIG. The system
+    prompt stays in argv; it is built from the guide's sections and a few example
+    blurbs (a few KB), not from feed content.
+    """
     cmd = [
-        "claude", "-p", prompt,
+        "claude", "-p",
         "--system-prompt", system,
         "--model", MODEL,
         "--output-format", "json",
@@ -179,10 +193,19 @@ def run_claude(prompt: str, system: str) -> str:
         # Run from an empty directory so the repo's CLAUDE.md and skills are not loaded.
         with tempfile.TemporaryDirectory(prefix="scout-judge-") as cwd:
             proc = subprocess.run(
-                cmd, cwd=cwd, capture_output=True, text=True, timeout=CLI_TIMEOUT_SECONDS, check=False
+                cmd,
+                input=prompt,
+                cwd=cwd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=CLI_TIMEOUT_SECONDS,
+                check=False,
             )
     except FileNotFoundError as exc:
-        raise JudgeError("Claude Code CLI (`claude`) is not installed or not on PATH") from exc
+        raise JudgeLaunchError("Claude Code CLI (`claude`) is not installed or not on PATH") from exc
+    except OSError as exc:
+        raise JudgeLaunchError(f"Claude Code CLI could not be started: {_one_line(exc)}") from exc
     except subprocess.TimeoutExpired as exc:
         raise JudgeError(f"Claude Code CLI timed out after {CLI_TIMEOUT_SECONDS}s") from exc
     # On API errors the CLI exits non-zero but still prints the JSON envelope; parse that.
@@ -211,12 +234,21 @@ def judge_entry(
     and errors are usually transient, and malformed or off-schema output is a
     nondeterministic model slip worth another draw. `JudgeAuthError` is raised at
     once, since a bad token will not fix itself, and so is `JudgeQuotaError`, since
-    a usage limit resets in hours, not within the backoff. Once attempts run out,
-    the last error is raised.
+    a usage limit resets in hours, not within the backoff, and so is
+    `JudgeLaunchError`, since a CLI that cannot be started fails the same way every
+    time. Once attempts run out, the last error is raised.
+
+    The summary is capped at `MAX_SUMMARY_CHARS`, with a note saying so, since
+    release notes can run to hundreds of KB; the title is cut to `MAX_TITLE_CHARS`.
     """
+    if summary and len(summary) > MAX_SUMMARY_CHARS:
+        summary = (
+            f"{summary[:MAX_SUMMARY_CHARS]}\n"
+            f"[... truncated: showing the first {MAX_SUMMARY_CHARS:,} of {len(summary):,} characters]"
+        )
     prompt = (
         f"Evaluate this candidate resource for inclusion.\n\n"
-        f"Title: {title}\n"
+        f"Title: {str(title)[:MAX_TITLE_CHARS]}\n"
         f"URL: {url}\n"
         f"Source feed: {source_id}\n"
         f"Summary/description:\n{summary or '(no summary available)'}"
@@ -224,7 +256,7 @@ def judge_entry(
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             return parse_judgment(run(prompt, system))
-        except (JudgeAuthError, JudgeQuotaError):
+        except (JudgeAuthError, JudgeQuotaError, JudgeLaunchError):
             raise
         except JudgeError as exc:
             if attempt == MAX_ATTEMPTS:
