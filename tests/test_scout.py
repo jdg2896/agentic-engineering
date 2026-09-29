@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 import re
 import sys
 from pathlib import Path
@@ -936,3 +937,220 @@ def test_read_source_prefers_published_even_when_updated_is_later() -> None:
 def test_read_source_skips_entries_with_no_date() -> None:
     entries = [_dated_entry("https://a/undated"), _dated_entry("https://a/dated", updated=(2026, 9, 1))]
     assert _read(entries) == ["https://a/dated"]
+
+
+# --- read_source: Source health ---
+
+TODAY = scout.date(2026, 9, 29)
+
+
+def _health(parsed_feed, **prior) -> scout.SourceHealth:
+    source = {"id": "src-a", "url": "https://a/feed", "last_checked_at": "2026-08-01", **prior}
+    return scout.read_source(source, parsed_feed, TODAY).health
+
+
+def _parsed(entries=(), status=200, bozo=False) -> SimpleNamespace:
+    """A feedparser result stand-in with the fields Source health reads."""
+    return SimpleNamespace(entries=list(entries), status=status, bozo=bozo)
+
+
+def test_read_source_reports_a_healthy_feed() -> None:
+    feed = _parsed([_dated_entry("https://a/1", published=(2026, 9, 1))])
+
+    assert _health(feed) == scout.SourceHealth(
+        consecutive_failures=0,
+        failing_since=None,
+        last_http_status=200,
+        newest_entry_at=scout.date(2026, 9, 1),
+    )
+
+
+def test_read_source_counts_an_http_error_as_a_failed_fetch_with_no_new_entries() -> None:
+    feed = _parsed([_dated_entry("https://a/1", published=(2026, 9, 1))], status=404)
+    source = {"id": "src-a", "url": "https://a/feed", "last_checked_at": "2026-08-01"}
+
+    read = scout.read_source(source, feed, TODAY)
+
+    assert read.new_entries == []
+    assert read.health == scout.SourceHealth(
+        consecutive_failures=1, failing_since=TODAY, last_http_status=404, newest_entry_at=None
+    )
+
+
+def test_read_source_counts_a_malformed_feed_with_no_entries_as_failed() -> None:
+    # feedparser does not raise on e.g. an HTML error page served with 200: it sets bozo.
+    health = _health(_parsed([], status=200, bozo=True))
+
+    assert health == scout.SourceHealth(
+        consecutive_failures=1, failing_since=TODAY, last_http_status=200, newest_entry_at=None
+    )
+
+
+def test_read_source_counts_a_malformed_feed_that_still_has_entries_as_healthy() -> None:
+    feed = _parsed([_dated_entry("https://a/1", published=(2026, 9, 1))], bozo=True)
+
+    assert _health(feed).consecutive_failures == 0
+
+
+def test_read_source_counts_a_fetch_that_raised_as_failed_with_no_http_status() -> None:
+    source = {"id": "src-a", "url": "https://a/feed", "last_checked_at": "2026-08-01"}
+
+    read = scout.read_source(source, OSError("connection reset"), TODAY)
+
+    assert read.new_entries == []
+    assert read.health == scout.SourceHealth(
+        consecutive_failures=1, failing_since=TODAY, last_http_status=None, newest_entry_at=None
+    )
+
+
+def test_read_source_extends_a_failure_streak_keeping_its_start_date_and_newest_entry() -> None:
+    health = _health(
+        _parsed([], status=410),
+        consecutive_failures=2,
+        failing_since=scout.date(2026, 9, 15),
+        last_http_status=404,
+        newest_entry_at=scout.date(2026, 3, 2),
+    )
+
+    assert health == scout.SourceHealth(
+        consecutive_failures=3,
+        failing_since=scout.date(2026, 9, 15),
+        last_http_status=410,
+        newest_entry_at=scout.date(2026, 3, 2),
+    )
+
+
+def test_read_source_resets_the_failure_streak_on_the_first_successful_fetch() -> None:
+    health = _health(
+        _parsed([_dated_entry("https://a/1", published=(2026, 9, 1))]),
+        consecutive_failures=5,
+        failing_since="2026-08-25",
+        last_http_status=503,
+    )
+
+    assert (health.consecutive_failures, health.failing_since, health.last_http_status) == (0, None, 200)
+
+
+def test_read_source_newest_entry_date_counts_old_entries_and_updated_only_entries() -> None:
+    # Entries at or before last_checked_at are not new, but still show the feed is alive.
+    entries = [
+        _dated_entry("https://a/old", published=(2026, 5, 1)),
+        _dated_entry("https://a/release", updated=(2026, 6, 10)),
+        _dated_entry("https://a/undated"),
+    ]
+
+    assert _health(_parsed(entries)).newest_entry_at == scout.date(2026, 6, 10)
+
+
+def test_read_source_keeps_the_stored_newest_entry_date_when_the_feed_shows_nothing_newer() -> None:
+    health = _health(_parsed([_dated_entry("https://a/undated")]), newest_entry_at="2026-04-01")
+
+    assert health.newest_entry_at == scout.date(2026, 4, 1)
+
+
+# --- record_health: Source health onto a sources.yaml entry ---
+
+SOURCES_YAML = """\
+sources:
+  # ── Author / blog feeds ──
+  - id: src-a
+    type: rss
+    url: https://a/feed
+    last_checked_at: 2026-09-22
+    enabled: true
+    notes: null
+"""
+
+
+def test_record_health_writes_fields_beside_last_checked_at_and_keeps_comments() -> None:
+    ryaml = scout.round_trip_yaml()
+    data = ryaml.load(SOURCES_YAML)
+    health = scout.SourceHealth(3, scout.date(2026, 9, 15), 404, scout.date(2026, 3, 2))
+
+    scout.record_health(data["sources"][0], health)
+    out = io.StringIO()
+    ryaml.dump(data, out)
+
+    assert out.getvalue() == (
+        "sources:\n"
+        "  # ── Author / blog feeds ──\n"
+        "  - id: src-a\n"
+        "    type: rss\n"
+        "    url: https://a/feed\n"
+        "    last_checked_at: 2026-09-22\n"
+        "    consecutive_failures: 3\n"
+        "    failing_since: 2026-09-15\n"
+        "    last_http_status: 404\n"
+        "    newest_entry_at: 2026-03-02\n"
+        "    enabled: true\n"
+        "    notes: null\n"
+    )
+
+
+def test_record_health_overwrites_previous_health_in_place() -> None:
+    ryaml = scout.round_trip_yaml()
+    data = ryaml.load(SOURCES_YAML)
+    scout.record_health(data["sources"][0], scout.SourceHealth(3, scout.date(2026, 9, 15), 404, None))
+
+    scout.record_health(data["sources"][0], scout.SourceHealth(0, None, 200, scout.date(2026, 9, 28)))
+    out = io.StringIO()
+    ryaml.dump(data, out)
+
+    assert "    consecutive_failures: 0\n    failing_since: null\n    last_http_status: 200\n" in out.getvalue()
+    assert "    newest_entry_at: 2026-09-28\n    enabled: true\n" in out.getvalue()
+
+
+# --- main(): Source health on every run ---
+
+
+def _stored_sources(paths) -> dict[str, dict]:
+    return {s["id"]: s for s in yaml.safe_load(paths["sources"].read_text())["sources"]}
+
+
+def test_main_records_health_even_for_a_source_whose_judging_stopped_early(tmp_path, monkeypatch) -> None:
+    paths = _scout_repo(tmp_path, monkeypatch, [_judgment("reject"), _judgment("reject"), QUOTA])
+
+    scout.main()
+
+    stored = _stored_sources(paths)
+    assert str(stored["src-b"]["last_checked_at"]) == "2026-08-01"  # not fully judged, not bumped
+    for source_id in ("src-a", "src-b"):
+        assert stored[source_id]["consecutive_failures"] == 0
+        assert stored[source_id]["failing_since"] is None
+        assert str(stored[source_id]["newest_entry_at"]) == "2026-09-01"
+
+
+def test_main_records_failed_fetches_and_does_not_bump_or_judge_those_sources(tmp_path, monkeypatch) -> None:
+    paths = _scout_repo(tmp_path, monkeypatch, [_judgment("reject"), _judgment("reject")])
+    paths["sources"].write_text(
+        "sources:\n"
+        "  - {id: src-a, url: 'https://a/feed', last_checked_at: 2026-08-01, enabled: true}\n"
+        "  - {id: gone, url: 'https://gone/feed', last_checked_at: 2026-08-01, enabled: true,"
+        " consecutive_failures: 1, failing_since: 2026-09-22}\n"
+        "  - {id: down, url: 'https://down/feed', last_checked_at: 2026-08-01, enabled: true}\n"
+    )
+    entries = [_feed_entry("https://a/1"), _feed_entry("https://a/2")]
+
+    def parse(url, agent=None):
+        if url == "https://down/feed":
+            raise OSError("connection reset")
+        if url == "https://gone/feed":
+            return SimpleNamespace(entries=[_feed_entry("https://gone/1")], status=404, bozo=False)
+        return SimpleNamespace(entries=entries, status=200, bozo=False)
+
+    monkeypatch.setattr(scout.feedparser, "parse", parse)
+
+    scout.main()  # both src-a entries judged; nothing from gone or down reaches the judge
+
+    stored = _stored_sources(paths)
+    assert str(stored["src-a"]["last_checked_at"]) != "2026-08-01"
+    assert stored["src-a"]["last_http_status"] == 200
+    assert (
+        stored["gone"]["consecutive_failures"],
+        str(stored["gone"]["failing_since"]),
+        stored["gone"]["last_http_status"],
+        str(stored["gone"]["last_checked_at"]),
+    ) == (2, "2026-09-22", 404, "2026-08-01")
+    assert (stored["down"]["consecutive_failures"], stored["down"]["last_http_status"]) == (1, None)
+    assert str(stored["down"]["last_checked_at"]) == "2026-08-01"
+    assert all(s["enabled"] is True for s in stored.values())

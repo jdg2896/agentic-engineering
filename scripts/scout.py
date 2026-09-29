@@ -447,10 +447,23 @@ def append_candidates(resources_data: dict, candidates: list[dict], today: str) 
         })
 
 
+class SourceHealth(NamedTuple):
+    """A Source's health after this run's fetch; stored on the Source in sources.yaml.
+
+    Scout records it but never acts on it: Source review decides whether a Source is Dead.
+    """
+
+    consecutive_failures: int  # failed fetches in a row; 0 once a fetch succeeds
+    failing_since: date | None  # run date the current failure streak began; None when healthy
+    last_http_status: int | None  # this run's HTTP status; None when fetching raised or no status
+    newest_entry_at: date | None  # newest dated entry ever seen, of any age
+
+
 class SourceRead(NamedTuple):
     """What reading one Source's parsed feed found."""
 
     new_entries: list
+    health: SourceHealth
 
 
 def entry_date(entry) -> date | None:
@@ -459,20 +472,89 @@ def entry_date(entry) -> date | None:
     return date(*parsed[:3]) if parsed else None
 
 
+def _stored_date(value) -> date | None:
+    """A date field read back from sources.yaml (a date, an ISO string, or null)."""
+    return None if value is None else date.fromisoformat(str(value))
+
+
+def _failed_health(source: dict, status: int | None, today: date) -> SourceHealth:
+    """Extend the Source's failure streak by one run; its start date is kept once set."""
+    return SourceHealth(
+        consecutive_failures=int(source.get("consecutive_failures") or 0) + 1,
+        failing_since=_stored_date(source.get("failing_since")) or today,
+        last_http_status=status,
+        newest_entry_at=_stored_date(source.get("newest_entry_at")),
+    )
+
+
 def read_source(source: dict, parsed_feed, today: date) -> SourceRead:
     """Read one Source's already-parsed feed; does no network I/O.
 
     New entries are those dated (see `entry_date`) after the Source's
     `last_checked_at`. Undated entries are skipped rather than guessed, so an
     undated feed cannot flood the judge with its whole history.
+
+    Also returns the Source's health, carried forward from the health stored on
+    `source`. The fetch failed when the HTTP status is >= 400, when the parser flagged
+    the document malformed (`bozo`) and found no entries, or when fetching raised (pass
+    the exception as `parsed_feed`; its HTTP status is recorded as None). A failed fetch
+    yields no new entries and extends the failure streak; a successful one resets it.
     """
+    if isinstance(parsed_feed, BaseException):
+        return SourceRead(new_entries=[], health=_failed_health(source, None, today))
+    status = getattr(parsed_feed, "status", None)
+    malformed_and_empty = bool(getattr(parsed_feed, "bozo", False)) and not parsed_feed.entries
+    if (status is not None and status >= 400) or malformed_and_empty:
+        return SourceRead(new_entries=[], health=_failed_health(source, status, today))
+
     cutoff = date.fromisoformat(str(source["last_checked_at"]))
     new_entries = []
+    # Seeded with the stored date: a feed that trims its history must not look silent sooner.
+    stored_newest = _stored_date(source.get("newest_entry_at"))
+    dates = [stored_newest] if stored_newest else []
     for entry in parsed_feed.entries:
         dated = entry_date(entry)
-        if dated is not None and dated > cutoff:
+        if dated is None:
+            continue
+        dates.append(dated)
+        if dated > cutoff:
             new_entries.append(entry)
-    return SourceRead(new_entries=new_entries)
+    health = SourceHealth(
+        consecutive_failures=0,
+        failing_since=None,
+        last_http_status=getattr(parsed_feed, "status", None),
+        newest_entry_at=max(dates, default=None),
+    )
+    return SourceRead(new_entries=new_entries, health=health)
+
+
+def record_health(source: dict, health: SourceHealth) -> None:
+    """Write Source health onto a sources.yaml Source entry, beside `last_checked_at`.
+
+    Existing health fields are overwritten in place; new ones are inserted after
+    `last_checked_at` (on a ruamel round-trip mapping) so the entry stays readable.
+    Nothing else on the entry changes: Scout records health but never touches `enabled`.
+    """
+    anchor = "last_checked_at"
+    for name, value in health._asdict().items():
+        if name not in source and anchor in source and hasattr(source, "insert"):
+            source.insert(list(source).index(anchor) + 1, name, value)
+        else:
+            source[name] = value
+        anchor = name
+
+
+def round_trip_yaml() -> YAML:
+    """The ruamel round-trip loader/dumper for the data files; keeps comments and layout."""
+    ryaml = YAML()
+    ryaml.preserve_quotes = True
+    ryaml.default_flow_style = False
+    ryaml.indent(mapping=2, sequence=4, offset=2)
+    ryaml.representer.add_representer(
+        type(None),
+        lambda dumper, data: dumper.represent_scalar("tag:yaml.org,2002:null", "null"),
+    )
+    return ryaml
 
 
 def main() -> None:
@@ -496,14 +578,7 @@ def main() -> None:
         print(json.dumps(automerge_decision(args.automerge_decision, RESOURCES_PATH, args.cap)))
         return
 
-    ryaml = YAML()
-    ryaml.preserve_quotes = True
-    ryaml.default_flow_style = False
-    ryaml.indent(mapping=2, sequence=4, offset=2)
-    ryaml.representer.add_representer(
-        type(None),
-        lambda dumper, data: dumper.represent_scalar("tag:yaml.org,2002:null", "null"),
-    )
+    ryaml = round_trip_yaml()
 
     with open(SOURCES_PATH) as f:
         sources_data = ryaml.load(f)
@@ -528,17 +603,30 @@ def main() -> None:
     enabled = [s for s in sources if s.get("enabled", True)]
     print(f"Processing {len(enabled)} source(s)...")
 
-    # Fetch every feed first; a Source whose feed fails is left out, so it is not bumped.
+    # Fetch every feed first; a Source whose fetch fails is left out, so it is not bumped.
     today = date.today()
     new_entries: dict[str, list] = {}
+    health: dict[str, SourceHealth] = {}
     for source in enabled:
         source_id = source["id"]
         try:
             feed = feedparser.parse(source["url"], agent=USER_AGENT)
-            new_entries[source_id] = read_source(source, feed, today).new_entries
-            print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {source['last_checked_at']}")
         except Exception as exc:
             print(f"::error::source {source_id}: {sanitize_text(str(exc))}", file=sys.stderr)
+            feed = exc  # read_source records it as a failed fetch with no HTTP status
+        read = read_source(source, feed, today)
+        health[source_id] = read.health
+        if read.health.consecutive_failures:
+            if not isinstance(feed, Exception):
+                print(
+                    f"::warning::source {source_id}: feed fetch failed "
+                    f"(HTTP status {read.health.last_http_status}); "
+                    f"{read.health.consecutive_failures} failed run(s) in a row",
+                    flush=True,
+                )
+            continue
+        new_entries[source_id] = read.new_entries
+        print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {source['last_checked_at']}")
 
     run = judge_sources(
         new_entries,
@@ -553,6 +641,11 @@ def main() -> None:
         f"{run.evaluated} evaluated / {len(run.errors)} judge error(s)"
     )
 
+    # The fail-closed exits below write no files at all, Source health included: the
+    # workflow does not commit a failed run, so health written there would be discarded
+    # anyway, and "no files written" stays a simple, whole-run guarantee. Every run that
+    # writes sources.yaml — including one stopped early by the usage limit — records
+    # health for every enabled Source, however far its entries were judged.
     if run.errors:
         # Fail closed: a dead judge must never advance last_checked_at or record rejects.
         for err in run.errors:
@@ -609,6 +702,9 @@ def main() -> None:
     bumped = [s for s in enabled if s["id"] in run.fully_judged]
     for source in bumped:
         source["last_checked_at"] = date(today.year, today.month, today.day)
+    # Source health is about the feed, not the judge: every enabled Source gets it.
+    for source in enabled:
+        record_health(source, health[source["id"]])
     with open(SOURCES_PATH, "w") as f:
         ryaml.dump(sources_data, f)
     print(f"Updated {SOURCES_PATH} (last_checked_at → {today} on {len(bumped)}/{len(enabled)} source(s))")
