@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Source review: the monthly job that curates the Source list itself.
 
-This slice implements Source retirement of Dead Sources, read from the Source health
-Scout records in sources.yaml. Source discovery and Unproductive retirement extend
-`review_sources` later (#103, #104, #105); its signature is already final.
+This slice implements Source retirement: Dead Sources, read from the Source health
+Scout records in sources.yaml, and Unproductive Sources, read from the Yield and rejects
+Scout attributes to each Source. Source discovery extends `review_sources` later (#104,
+#105); its signature is already final.
 """
 
 from __future__ import annotations
@@ -27,18 +28,38 @@ DEAD_BROKEN_MIN_DAYS = 28
 DEAD_BROKEN_MIN_RUNS = 4
 # A Source that fetches fine is Dead-silent once its newest entry is older than this.
 DEAD_SILENT_MONTHS = 6
+# A Source is Unproductive once at least this many of its entries were judged in the
+# trailing window with a Yield of zero, and its grace period has passed.
+UNPRODUCTIVE_WINDOW_MONTHS = 3
+UNPRODUCTIVE_MIN_JUDGED = 15
+# The day Scout began attributing Resources to their Source (PR #106). Yield before it
+# is unmeasurable, so it is the earliest start of any Source's grace period.
+ATTRIBUTION_SHIPPED = date(2026, 9, 29)
 
 # `fetch(url)` -> (HTTP status, headers, body); `judge` is Scout's per-entry judge.
 Fetch = Callable[[str], tuple]
 Judge = Callable[[str, str, str, str], dict]
 
 
+class UnproductiveEvidence(NamedTuple):
+    """What shows a Source is Unproductive: its judged count and Yield in the window.
+
+    The window is `window_start` < day <= `window_end` (the review date).
+    """
+
+    judged: int  # rejects in seen.yaml + Resources attributed to the Source, in window
+    yield_count: int  # Resources attributed to the Source, in window
+    window_start: date  # exclusive
+    window_end: date  # inclusive
+
+
 class Retirement(NamedTuple):
-    """A Source to retire, why, and the Source health that shows it."""
+    """A Source to retire, why, and the evidence that shows it."""
 
     source_id: str
-    reason: str  # dead-broken | dead-silent (| unproductive, #103)
-    evidence: SourceHealth
+    reason: str  # dead-broken | dead-silent | unproductive
+    # Source health for a Dead Source; judged count and Yield for an Unproductive one.
+    evidence: SourceHealth | UnproductiveEvidence
 
 
 @dataclass
@@ -98,6 +119,63 @@ def _dead_reason(health: SourceHealth, today: date) -> str | None:
     return None
 
 
+def _unproductive_window(today: date) -> tuple[date, date]:
+    """The trailing window as (exclusive start, inclusive end): the last 3 calendar months."""
+    return _months_before(today, UNPRODUCTIVE_WINDOW_MONTHS), today
+
+
+def _grace_period_passed(source: dict, window_start: date) -> bool:
+    """True once the whole window lies after the Source's grace anchor.
+
+    The anchor is the later of the attribution ship date and the Source's own
+    `added_at`. The window begins the day after `window_start`, so the grace period
+    ends exactly 3 calendar months after the anchor, by the same month arithmetic.
+    Sources added by hand should set `added_at`; otherwise their grace period falls
+    back to the attribution ship date alone.
+    """
+    added_at = _date_field(source.get("added_at"))
+    anchor = max(ATTRIBUTION_SHIPPED, added_at) if added_at else ATTRIBUTION_SHIPPED
+    return window_start >= anchor
+
+
+def _attributed_dates(entries: list[dict], ids: set[str], date_key: str) -> dict[str, list[date]]:
+    """Per Source id in `ids`, the `date_key` date of every entry attributed to it.
+
+    Entries of other Sources, and unattributed ones (hand-curated Resources), are
+    skipped. A missing or malformed date on an entry that counts raises: a retirement
+    is never decided on data that cannot be read.
+    """
+    dates: dict[str, list[date]] = {i: [] for i in ids}
+    for entry in entries:
+        source_id = entry.get("source_id")
+        if source_id not in dates:
+            continue
+        value = entry.get(date_key)
+        if value is None:
+            raise ValueError(f"an entry attributed to Source {source_id!r} has no {date_key}")
+        dates[source_id].append(_date_field(value))
+    return dates
+
+
+def _unproductive_evidence(
+    sources: list[dict], resources: list[dict], seen: list[dict], today: date
+) -> dict[str, UnproductiveEvidence]:
+    """Evidence for every enabled, out-of-grace Source that is Unproductive, by Source id."""
+    start, end = _unproductive_window(today)
+    eligible = {
+        s["id"] for s in sources if s.get("enabled", True) and _grace_period_passed(s, start)
+    }
+    yielded = _attributed_dates(resources, eligible, "added_at")
+    rejected = _attributed_dates(seen, eligible, "rejected_at")
+    found = {}
+    for source_id in eligible:
+        yield_count = sum(start < d <= end for d in yielded[source_id])
+        judged = yield_count + sum(start < d <= end for d in rejected[source_id])
+        if judged >= UNPRODUCTIVE_MIN_JUDGED and yield_count == 0:
+            found[source_id] = UnproductiveEvidence(judged, yield_count, start, end)
+    return found
+
+
 def review_sources(
     sources: list[dict],
     resources: list[dict],
@@ -111,8 +189,8 @@ def review_sources(
 
     Pure apart from the injected `fetch` (url -> status, headers, body) and `judge`
     (Scout's per-entry judge), which Source discovery will call; this slice calls
-    neither, and `resources`, `seen` and `suggestions` are read by later slices only.
-    Nothing passed in is modified.
+    neither, and `suggestions` is read by later slices only. Nothing passed in is
+    modified.
 
     An enabled Source is Dead, whatever its age (no grace period):
     - `dead-broken` when its failure streak spans >= 28 days AND >= 4 failed runs;
@@ -122,17 +200,31 @@ def review_sources(
     run on it since health recording shipped) is left alone, and one whose feed has
     never shown a dated entry is never judged silent. Disabled and Retired Sources
     are skipped.
+
+    An enabled Source is Unproductive when, in the trailing window of 3 calendar months
+    (after the day 3 months before `today`, up to and including `today`), at least 15
+    of its entries were judged — its rejects in `seen` by `rejected_at` plus the
+    Resources attributed to it by `added_at` — and its Yield (those Resources) is zero.
+    It is exempt during its grace period: until the whole window lies after the later
+    of ATTRIBUTION_SHIPPED and its own `added_at`. A Source both Dead and Unproductive
+    is retired once, as Dead: its Source health is the more direct evidence, and a
+    Dead Source can be repaired (a moved feed) where an Unproductive one cannot.
+
+    Raises ValueError on a missing or malformed date that a decision depends on.
     """
     plan = ReviewPlan(today=today)
+    unproductive = _unproductive_evidence(sources, resources, seen, today)
     for source in sources:
         if not source.get("enabled", True):
             continue  # Retired (or hand-disabled): Source retirement never touches it again
-        health = _recorded_health(source)
-        if health is None:
-            continue  # never retire on missing data
-        reason = _dead_reason(health, today)
+        health = _recorded_health(source)  # None (no health yet): never judged Dead
+        reason = _dead_reason(health, today) if health is not None else None
         if reason:
             plan.retirements.append(Retirement(source["id"], reason, health))
+        elif source["id"] in unproductive:
+            plan.retirements.append(
+                Retirement(source["id"], "unproductive", unproductive[source["id"]])
+            )
     return plan
 
 
@@ -177,14 +269,16 @@ def _enabled_ids(sources: list[dict]) -> set[str]:
     return {s["id"] for s in sources if s.get("enabled", True)}
 
 
-def _mass_retirement(plan: ReviewPlan, sources: list[dict]) -> list[str]:
+def _mass_retirement(plan: ReviewPlan, sources: list[dict], resources: list[dict]) -> list[str]:
     n = len(plan.retirements)
     if n > RETIREMENT_CAP:
         return [f"{n} Sources would be retired, more than the cap of {RETIREMENT_CAP}"]
     return []
 
 
-def _retirement_of_non_enabled_source(plan: ReviewPlan, sources: list[dict]) -> list[str]:
+def _retirement_of_non_enabled_source(
+    plan: ReviewPlan, sources: list[dict], resources: list[dict]
+) -> list[str]:
     enabled = _enabled_ids(sources)
     return [
         f"retirement targets {sanitize_text(r.source_id, 80)}, which is not an enabled Source"
@@ -193,7 +287,36 @@ def _retirement_of_non_enabled_source(plan: ReviewPlan, sources: list[dict]) -> 
     ]
 
 
-def _enabled_floor(plan: ReviewPlan, sources: list[dict]) -> list[str]:
+def _unproductive_retirement_with_yield(
+    plan: ReviewPlan, sources: list[dict], resources: list[dict]
+) -> list[str]:
+    """Hold an Unproductive retirement of a Source that yielded in its window.
+
+    Impossible by definition, so a logic-bug backstop. It recounts Yield from
+    `resources` rather than reading the plan's evidence (which would only re-check
+    the rule against itself), and counts more broadly than the rule: every Resource
+    attributed to the Source added after the window start, with no upper bound. Dead
+    retirements are exempt: a feed that broke last month may well have yielded before.
+    """
+    start, _ = _unproductive_window(plan.today)
+    reasons = []
+    for r in plan.retirements:
+        if r.reason != "unproductive":
+            continue
+        n = sum(
+            1
+            for res in resources
+            if res.get("source_id") == r.source_id and _date_field(res.get("added_at")) > start
+        )
+        if n:
+            reasons.append(
+                f"Unproductive retirement of {sanitize_text(r.source_id, 80)}, "
+                f"which has a Yield of {n} in its window"
+            )
+    return reasons
+
+
+def _enabled_floor(plan: ReviewPlan, sources: list[dict], resources: list[dict]) -> list[str]:
     retiring = {r.source_id for r in plan.retirements}
     after = len(_enabled_ids(sources) - retiring) + len(plan.additions)
     if after < ENABLED_FLOOR:
@@ -202,22 +325,25 @@ def _enabled_floor(plan: ReviewPlan, sources: list[dict]) -> list[str]:
 
 
 # Each breaker returns its hold reasons (empty when it passes). Mass addition and the
-# addition structural checks (unsafe url, duplicate host) join with #104/#105; the
-# non-zero-Yield retirement backstop with #103.
-_BREAKERS: tuple[Callable[[ReviewPlan, list[dict]], list[str]], ...] = (
+# addition structural checks (unsafe url, duplicate host) join with #104/#105.
+_BREAKERS: tuple[Callable[[ReviewPlan, list[dict], list[dict]], list[str]], ...] = (
     _mass_retirement,
     _retirement_of_non_enabled_source,
+    _unproductive_retirement_with_yield,
     _enabled_floor,
 )
 
 
-def evaluate_source_review_automerge(plan: ReviewPlan, sources: list[dict]) -> Decision:
+def evaluate_source_review_automerge(
+    plan: ReviewPlan, sources: list[dict], resources: list[dict]
+) -> Decision:
     """Circuit-breaker gate for Source review PRs (ADR 0002); pure, anomalies only.
 
-    `sources` is the Source list before the plan is applied. Reasons are joined into
-    the PR body, so any Source id in them is sanitized.
+    `sources` is the Source list before the plan is applied, and `resources` the
+    Resources the plan was made from (for the independent Yield recount). Reasons are
+    joined into the PR body, so any Source id in them is sanitized.
     """
-    reasons = [reason for breaker in _BREAKERS for reason in breaker(plan, sources)]
+    reasons = [reason for breaker in _BREAKERS for reason in breaker(plan, sources, resources)]
     labels = list(BASE_LABELS) if not reasons else [*BASE_LABELS, SKIPPED_LABEL]
     return Decision(not reasons, reasons, labels)
 
@@ -227,6 +353,12 @@ def evaluate_source_review_automerge(plan: ReviewPlan, sources: list[dict]) -> D
 
 def _evidence(retirement: Retirement, today: date) -> str:
     """One line of evidence for a retirement; built only from dates and integers."""
+    if isinstance(retirement.evidence, UnproductiveEvidence):
+        e = retirement.evidence
+        return (
+            f"{e.judged} entries judged and a Yield of {e.yield_count} in the window after "
+            f"{e.window_start} up to and including {e.window_end}"
+        )
     h = retirement.evidence
     status = "none (the fetch raised)" if h.last_http_status is None else str(h.last_http_status)
     newest = "never seen" if h.newest_entry_at is None else str(h.newest_entry_at)
@@ -291,7 +423,7 @@ def _not_wired(what: str, ticket: str) -> Callable:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Source review: retire Dead Sources")
+    parser = argparse.ArgumentParser(description="Source review: retire Dead and Unproductive Sources")
     parser.add_argument("--dry-run", action="store_true", help="Print the plan and gate; write nothing")
     parser.add_argument(
         "--summary", type=Path, default=None, metavar="JSON",
@@ -316,7 +448,7 @@ def main() -> None:
         fetch=_not_wired("fetch", "#104"),
         judge=_not_wired("judge", "#104"),
     )
-    decision = evaluate_source_review_automerge(plan, sources)
+    decision = evaluate_source_review_automerge(plan, sources, resources)
 
     enabled = sum(1 for s in sources if s.get("enabled", True))
     print(f"Reviewed {enabled} enabled Source(s): {len(plan.retirements)} to retire.")

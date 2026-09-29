@@ -26,8 +26,10 @@ trips, via the existing `auto-merge-skipped` label + review path.
     than 3 Sources added — the Trial judge or Citation mining has likely gone wrong), or if
     the run would leave fewer than 10 enabled Sources. Also hold on structural errors: a new
     Source's feed url fails `is_safe_url`, duplicates an enabled or Retired Source (same
-    host counts), or a retirement targets a Source with non-zero Yield in its window
-    (impossible by definition; a backstop against a logic bug). Every addition and
+    host counts), or an Unproductive retirement targets a Source with non-zero Yield in
+    its window (impossible by definition; a backstop against a logic bug). Dead
+    retirements are exempt: a feed that broke recently may well have yielded before it
+    broke. Every addition and
     retirement is listed in the PR body with its evidence for post-hoc review.
 - `top_7` ("if you only read 7 things") is never touched by automation — it stays
   hand-curated.
