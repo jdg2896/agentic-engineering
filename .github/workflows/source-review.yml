@@ -25,14 +25,26 @@ jobs:
     needs: check-pause
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Like Scout. source_review.py stops starting Trials after 35 minutes (and at 10
+    # Trials), so the PR steps always get to run well inside this.
+    timeout-minutes: 90
     permissions:
       contents: write
       pull-requests: write
+      issues: read   # Source suggestions
     steps:
-      # This slice (Dead-Source retirement) reads Source health only and needs no
-      # judge. Source discovery (#104) adds the Claude Code CLI and the
-      # CLAUDE_CODE_OAUTH_TOKEN secret, scoped to its own step as in Scout.
+      # Trials run the Scout judge on Claude Code headless with the subscription OAuth
+      # token (docs/adr/0001-oauth-token-for-ci.md). The token is scoped to the steps
+      # that need it so third-party actions in this job never see it.
+      - name: Check Claude Code OAuth token
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "::error::CLAUDE_CODE_OAUTH_TOKEN secret is empty or missing. Run \`claude setup-token\` locally and save the token as the CLAUDE_CODE_OAUTH_TOKEN repo secret. The token expires after one year and must be rotated (docs/adr/0001-oauth-token-for-ci.md)."
+            exit 1
+          fi
+
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       # No cache: a privileged job must not restore a cache writable by less-trusted runs.
@@ -42,13 +54,46 @@ jobs:
 
       - run: uv sync --frozen
 
-      # Plans the review, evaluates the auto-merge gate (ADR 0002) against the
-      # pre-plan Source list, then applies the plan to sources.yaml. Writes the
-      # PR title/body/labels outside the checkout so they are never committed.
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code CLI
+        # Pinned: scripts/judge.py's CLI flags and JSON envelope were verified against 2.1.283.
+        run: npm install -g @anthropic-ai/claude-code@2.1.283
+
+      # Open issues labelled source-suggestion, as raw JSON in a file: issue bodies are
+      # untrusted (public repo), so none of it touches the shell or GITHUB_ENV.
+      # source_review.py keeps only the owner's and collaborators' issues and reads
+      # nothing from a body but its first http(s) url. A missing label lists no issues;
+      # if the listing itself fails, the review still runs, without suggestions.
+      - name: Fetch Source suggestions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUT: ${{ runner.temp }}/source_suggestions.json
+        run: |
+          if ! gh api --method GET "repos/$GITHUB_REPOSITORY/issues" \
+              -f labels=source-suggestion -f state=open -f per_page=100 > "$OUT"; then
+            echo "::warning::Could not list Source suggestions; reviewing without them."
+            echo '[]' > "$OUT"
+          fi
+
+      # Plans the review (Trials call the judge, so this step alone gets the OAuth
+      # token), evaluates the auto-merge gate (ADR 0002) against the pre-plan Source
+      # list, then applies the plan to sources.yaml and scout/prospects.yaml (the
+      # Prospective Source memory). Writes the PR title/body/labels outside the
+      # checkout so they are never committed. A judge error, usage limit or spent
+      # Trial budget stops Trials but not this step: retirements and finished Trials
+      # still land and the PR body says the run was partial. A judge error then fails
+      # the job in the last step, after the PR steps.
       - name: Run Source review
         env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           PYTHONUNBUFFERED: '1'
-        run: uv run python scripts/source_review.py --summary "$RUNNER_TEMP/source_review.json"
+        run: >-
+          uv run python scripts/source_review.py
+          --suggestions "$RUNNER_TEMP/source_suggestions.json"
+          --summary "$RUNNER_TEMP/source_review.json"
 
       - name: Compute PR metadata
         run: |
@@ -64,6 +109,8 @@ jobs:
           with open(env_file, "a") as f:
               f.write(f"YEAR_MONTH={datetime.now(timezone.utc):%Y-%m}\n")
               f.write(f"PLAN_EMPTY={'true' if summary['empty'] else 'false'}\n")
+              f.write(f"RUN_INCOMPLETE={'true' if summary['incomplete'] else 'false'}\n")
+              f.write(f"JUDGE_FAILED={'true' if summary['judge_failed'] else 'false'}\n")
               if not summary["empty"]:
                   # Title, body and labels are built and sanitized in source_review.py.
                   # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).
@@ -76,11 +123,12 @@ jobs:
                   f.write(f"{delim}\n")
           EOF
 
-      # Nothing to add or retire: no new PR (sources.yaml was not written), and an
+      # Nothing to add, retire or reject: no new PR (nothing was written), and an
       # earlier held Source review PR is now stale evidence, so close it rather than
-      # leave it mergeable. No-op when there is none.
+      # leave it mergeable. No-op when there is none. Not after a partial run: Trials
+      # that did not run decided nothing, so an open PR is not shown to be stale.
       - name: Close superseded Source review PR
-        if: env.PLAN_EMPTY == 'true'
+        if: env.PLAN_EMPTY == 'true' && env.RUN_INCOMPLETE != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT: "Superseded: the ${{ env.YEAR_MONTH }} Source review planned no changes."
@@ -96,6 +144,10 @@ jobs:
           body: ${{ env.REVIEW_PR_BODY }}
           commit-message: "chore(source-review): monthly Source review ${{ env.YEAR_MONTH }}"
           labels: ${{ env.REVIEW_LABELS }}
+          # Only the files Source review writes.
+          add-paths: |
+            sources.yaml
+            scout/prospects.yaml
 
       # Labels are additive on an updated PR, so clear a hold left by an earlier run.
       - name: Enable auto-merge (gate passed)
@@ -117,3 +169,24 @@ jobs:
         run: |
           gh pr edit "$PR" --add-label auto-merge-skipped || true
           gh pr merge "$PR" --disable-auto || true
+
+      # A judge error must not look like a quiet month: after the PR steps (so
+      # retirements and decided work still land), fail the job with what to do. A
+      # usage limit is not a failure and stays a green warning.
+      - name: Fail on judge error
+        if: always() && env.JUDGE_FAILED == 'true'
+        run: |
+          uv run python3 - <<'EOF'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, "scripts")
+          import scout
+
+          summary = json.loads(Path(os.environ["RUNNER_TEMP"], "source_review.json").read_text())
+          hint = scout.sanitize_text(summary.get("judge_failure_hint") or "")
+          print(f"::error::A judge error stopped Source review's Trials. {hint}")
+          sys.exit(1)
+          EOF

@@ -171,6 +171,23 @@ def sanitize_text(value: str, max_len: int = 500) -> str:
     return text.strip()[:max_len].strip().translate(_MARKDOWN_SIGNIFICANT)
 
 
+_ZWSP = "​"
+_CLOSING_KEYWORD_RE = re.compile(r"\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\b", re.IGNORECASE)
+
+
+def defuse_references(text: str) -> str:
+    """Stop feed or judge text in a PR body from closing issues or pinging people. Pure.
+
+    GitHub acts on `Fixes #42`, `Closes owner/repo#42` or an issue url after a
+    closing keyword when the PR merges, and notifies `@user`. A zero-width space
+    after the first letter of each closing keyword and after every `#` and `@`
+    breaks all of these while the text still reads the same. For PR bodies only:
+    text stored in resources.yaml or rendered into the README is left alone.
+    """
+    text = _CLOSING_KEYWORD_RE.sub(lambda m: m.group(0)[0] + _ZWSP + m.group(0)[1:], str(text))
+    return text.replace("#", "#" + _ZWSP).replace("@", "@" + _ZWSP)
+
+
 @dataclass
 class ScoutRun:
     """Outcome of judging one run's new entries."""
@@ -371,15 +388,17 @@ def pr_body(candidates: list[dict], decision: dict, incomplete: str | None = Non
         return prefix + "\n" + NO_CANDIDATES_NOTE
     rows = []
     for c in candidates:
+        # Feed/judge text is defused so it cannot close an issue or mention anyone on merge.
+        title = defuse_references(c["title"])
         if is_safe_url(c.get("url")):
-            link = f"[{c['title']}]({c['url']})"
+            link = f"[{title}]({c['url']})"
         else:
-            link = f"{c['title']} (unsafe url withheld)"
+            link = f"{title} (unsafe url withheld)"
         rows.append(
             f"- [ ] **{link}** — `{_code_span_text(c['section'])}` · `{_code_span_text(c['type'])}`\n"
             f"      Source: `{_code_span_text(c['source_id'])}` | Proposed slug: `{_code_span_text(c['slug'])}`\n"
-            f"      Blurb: _{c['blurb']}_\n"
-            f"      Rationale: _{c['rationale']}_"
+            f"      Blurb: _{defuse_references(c['blurb'])}_\n"
+            f"      Rationale: _{defuse_references(c['rationale'])}_"
         )
     return prefix + "\n" + f"## Candidates ({len(candidates)})\n\n" + "\n\n".join(rows)
 

@@ -1,0 +1,5 @@
+# Source discovery's Prospective Source memory, written by Source review only
+# (scripts/source_review.py); Scout never reads it. Each lasting rejection is kept
+# for 6 months, so Citation mining does not re-Trial the same site every month; a
+# Source suggestion is always tried again.
+rejected: []

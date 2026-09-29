@@ -26,7 +26,9 @@ trips, via the existing `auto-merge-skipped` label + review path.
     than 3 Sources added — the Trial judge or Citation mining has likely gone wrong), or if
     the run would leave fewer than 10 enabled Sources. Also hold on structural errors: a new
     Source's feed url fails `is_safe_url`, duplicates an enabled or Retired Source (same
-    host counts), or an Unproductive retirement targets a Source with non-zero Yield in
+    Source key counts: the `www.`-stripped host, plus on path-tenanted hosts such as
+    github.com or medium.com the first path segments that name the tenant, so another
+    repo or author on the same host is a different Source), or an Unproductive retirement targets a Source with non-zero Yield in
     its window (impossible by definition; a backstop against a logic bug). Dead
     retirements are exempt: a feed that broke recently may well have yielded before it
     broke. Every addition and
