@@ -25,8 +25,9 @@ jobs:
     needs: check-pause
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
-    # Like Scout. source_review.py stops starting Trials after 35 minutes (and at 10
-    # Trials), so the PR steps always get to run well inside this.
+    # Like Scout. source_review.py stops Citation mining after 20 minutes (and 200
+    # Resource pages), then stops starting Trials after 35 minutes (and at 10 Trials),
+    # so the PR steps always get to run well inside this.
     timeout-minutes: 90
     permissions:
       contents: write

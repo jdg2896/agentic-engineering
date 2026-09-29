@@ -4,8 +4,8 @@
 Source retirement retires Dead Sources, read from the Source health Scout records in
 sources.yaml, and Unproductive Sources, read from the Yield and rejects Scout attributes
 to each Source. Source discovery adds Prospective Sources that pass a Trial through the
-Scout judge; Source suggestions (GitHub issues) are its first channel, and Citation
-mining (#105) feeds the same pipeline.
+Scout judge; its two channels, Source suggestions (GitHub issues) and Citation mining
+(sites the guide's Resources repeatedly link to), feed the same pipeline.
 """
 
 from __future__ import annotations
@@ -109,13 +109,15 @@ class ProspectiveSource(NamedTuple):
     """A feed (or a site that may advertise one) Source discovery is considering adding.
 
     Every channel produces these and they all go through the same Trial: a Source
-    suggestion (`channel="suggestion"`, with its issue number) here, Citation mining
-    (#105) next. `url` is untrusted until checked with `is_safe_url`.
+    suggestion (`channel="suggestion"`, with its issue number) or Citation mining
+    (`channel="citation"`, with the ids of the Resources citing it). `url` is untrusted
+    until checked with `is_safe_url`.
     """
 
     url: str
     channel: str  # suggestion | citation
     suggestion: int | None = None  # the Source suggestion's issue number
+    citations: tuple[str, ...] = ()  # ids of the Resources citing it (Citation mining)
 
 
 class TrialEvidence(NamedTuple):
@@ -706,6 +708,278 @@ def discover_sources(
         taken.add(feed_key)
 
 
+# ── Citation mining ──────────────────────────────────────────────────────────
+
+# A site is a Prospective Source once at least this many distinct Resources, on at
+# least two different sites, cite it.
+MIN_CITING_RESOURCES = 2
+# One run reads at most this many Resource pages, within this much wall clock (each
+# fetch is bounded by FETCH_DEADLINE_SECONDS). The guide has ~150 Resources.
+MAX_CITATION_FETCHES = 200
+CITATION_BUDGET_SECONDS = 20 * 60
+# The guide itself: its own repo is never one of its Sources.
+GUIDE_REPO_KEY = "github.com/jdg2896/agentic-engineering"
+# Hosts (and all their subdomains) that cannot be a Source: a citation of them points
+# at one post, video, paper, package, product or page, not at an author's stream of
+# posts. A Resource hosted on one is not read either: its links are the platform's.
+NON_SOURCE_HOSTS = frozenset({
+    # Social media, forums, chat and events
+    "x.com", "twitter.com", "linkedin.com", "facebook.com", "instagram.com", "threads.net",
+    "threads.com", "bsky.app", "mastodon.social", "fosstodon.org", "hachyderm.io",
+    "youtube.com", "youtu.be", "vimeo.com", "tiktok.com", "reddit.com",
+    "news.ycombinator.com", "lobste.rs", "discord.com", "discord.gg", "t.me", "slack.com",
+    "stackoverflow.com", "stackexchange.com", "lu.ma", "luma.com", "meetup.com",
+    "eventbrite.com", "maven.com",
+    # Link shorteners
+    "t.co", "bit.ly", "goo.gl", "goo.gle", "aka.ms", "tinyurl.com", "ow.ly", "buff.ly",
+    "lnkd.in", "dub.sh", "shorturl.at", "rebrand.ly", "t.mp",
+    # Code hosts' non-feed pages (a github.com / gitlab.com repo is a releases feed, below)
+    "gist.github.com", "raw.githubusercontent.com", "githubusercontent.com",
+    "bitbucket.org", "huggingface.co", "deepwiki.com",
+    # Package registries, paper archives and indexes, reference, legal and file hosts
+    "pypi.org", "pypi.python.org", "npmjs.com", "crates.io", "pkg.go.dev", "pepy.tech",
+    "arxiv.org", "alphaxiv.org", "doi.org", "openreview.net", "aclanthology.org",
+    "semanticscholar.org", "wikipedia.org", "archive.org",
+    "creativecommons.org", "google.com", "substackcdn.com", "website-files.com",
+})
+# Subdomains that serve a product, status page, docs or assets, not posts
+# (docs.example.com, status.example.com, ...).
+NON_SOURCE_FIRST_LABELS = frozenset({
+    "docs", "doc", "api", "help", "support", "status", "trust", "console", "platform",
+    "app", "dash", "dashboard", "login", "accounts", "auth", "cdn", "static", "assets",
+    "community", "forum", "forums", "discuss", "chat", "events", "academy", "learn",
+    "careers", "jobs", "shop", "store", "play", "cloud", "pages", "go", "join",
+})
+# A page citing more sites than this is a link directory (an awesome-list), not an
+# article: its links are listings, not citations, so it is not read for them.
+MAX_SITES_PER_PAGE = 60
+
+
+# Hosts whose subdomains belong to different people (author.github.io, ...).
+_SHARED_PARENTS = frozenset({
+    "github.io", "gitlab.io", "substack.com", "blogspot.com", "wordpress.com",
+    "netlify.app", "vercel.app", "pages.dev", "medium.com", "hashnode.dev", "bearblog.dev",
+})
+_COUNTRY_SECOND_LEVELS = frozenset({"co", "com", "org", "net", "ac", "gov", "edu"})
+
+
+def _site(key: str) -> str:
+    """Which site a Source key belongs to, near enough, without a public-suffix list:
+    the whole key on a path-tenanted host (each tenant is its own site); else the
+    host's last two labels (`blog.example.com` → `example.com`), or three under a
+    country code's second level (`bbc.co.uk`) or a shared parent (`me.github.io`)."""
+    host = key.partition("/")[0]
+    if host in PATH_TENANTED_HOSTS:
+        return key
+    labels = host.split(".")
+    n = 2
+    if len(labels) >= 3 and (
+        (len(labels[-1]) == 2 and labels[-2] in _COUNTRY_SECOND_LEVELS)
+        or ".".join(labels[-2:]) in _SHARED_PARENTS
+    ):
+        n = 3
+    return ".".join(labels[-n:])
+# First path segments on path-tenanted hosts that are site pages, not a tenant.
+NON_TENANT_SEGMENTS = frozenset({
+    "about", "apps", "collections", "customer-stories", "enterprise", "events", "explore",
+    "features", "help", "login", "marketplace", "orgs", "pricing", "search", "settings",
+    "signup", "site", "solutions", "sponsors", "tag", "tags", "topics", "trending", "users",
+    "contact", "open-source", "resources", "security", "readme", "team", "new",
+    "notifications", "codespaces", "copilot", "partners", "git-guides", "account", "-",
+})
+
+
+def _on_platform(key: str) -> bool:
+    """True for a Source key on a NON_SOURCE_HOSTS host or one of its subdomains."""
+    host = key.partition("/")[0]
+    return any(host == h or host.endswith("." + h) for h in NON_SOURCE_HOSTS)
+
+
+def _citable(key: str) -> bool:
+    """False for a Source key that cannot be a Source: a NON_SOURCE_HOSTS host or
+    subdomain, a reference-docs host, the guide's own repo, or a path-tenanted host
+    without a whole tenant (a github.com profile or site page; a repo is its releases
+    feed)."""
+    host, _, path = key.partition("/")
+    if _on_platform(key):
+        return False
+    if host.count(".") >= 2 and host.split(".", 1)[0] in NON_SOURCE_FIRST_LABELS:
+        return False
+    if key == GUIDE_REPO_KEY:
+        return False
+    depth = PATH_TENANTED_HOSTS.get(host, 0)
+    segments = path.split("/") if path else []
+    return not depth or (len(segments) == depth and segments[0] not in NON_TENANT_SEGMENTS)
+
+
+_CHROME_TAGS = frozenset({"nav", "header", "footer", "aside"})
+_CONTENT_TAGS = frozenset({"main", "article"})
+
+
+class _AnchorParser(HTMLParser):
+    """Collects `<a href>`s outside the page chrome (nav, header, footer, aside),
+    noting which lie inside the content (`<main>` or `<article>`)."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.hrefs: list[tuple[str, bool]] = []  # (href, inside the content)
+        self.has_content = False
+        self.depth = {"chrome": 0, "content": 0}
+
+    def _region(self, tag: str) -> str | None:
+        return "chrome" if tag in _CHROME_TAGS else "content" if tag in _CONTENT_TAGS else None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if region := self._region(tag):
+            self.depth[region] += 1
+            self.has_content |= region == "content"
+        elif tag in ("a", "area") and not self.depth["chrome"]:
+            href = next((v for k, v in attrs if k.lower() == "href" and v), "")
+            if href.strip():
+                self.hrefs.append((href.strip(), self.depth["content"] > 0))
+
+    def handle_endtag(self, tag: str) -> None:
+        if (region := self._region(tag)) and self.depth[region]:
+            self.depth[region] -= 1
+
+
+def _outbound_links(page: Fetched) -> list[str]:
+    """The `<a href>`s of a fetched page's own text, resolved against its final url:
+    links in its nav, header, footer or aside are the site's template, not citations,
+    and when the page marks its content (`<main>` or `<article>`) only links inside it
+    count. Unvalidated: the caller checks each with `is_safe_url`. Never raises on bad
+    HTML."""
+    parser = _AnchorParser()
+    try:
+        parser.feed(_text(page.body))
+        parser.close()
+    except Exception:  # noqa: BLE001 — hostile markup must not crash the review
+        pass
+    links = []
+    for href, in_content in parser.hrefs:
+        if parser.has_content and not in_content:
+            continue
+        try:
+            links.append(urljoin(page.url, href))
+        except ValueError:
+            continue
+    return links
+
+
+def _read_page(fetch: Fetch, url: str) -> Fetched | None:
+    """A Resource's page, or None when it cannot be read for links: the fetch raised,
+    the status is not 2xx, the final url is not safe, or the body is not HTML."""
+    try:
+        got = fetch(url)
+    except Exception:  # noqa: BLE001 — a page that fails to fetch is skipped, never fatal
+        return None
+    got = Fetched(*got) if len(got) == 4 else Fetched(*got, url)
+    if not 200 <= int(got.status) < 300 or not is_safe_url(got.url):
+        return None
+    kind = next((str(v) for k, v in (got.headers or {}).items() if str(k).lower() == "content-type"), "")
+    if kind and "html" not in kind.lower():
+        return None
+    return got
+
+
+def _minable(resource: dict) -> bool:
+    """A live Resource worth reading: a safe url, not on a NON_SOURCE_HOSTS platform
+    (an arXiv abstract's or a video page's links are the platform's), and not archived,
+    quarantined or hidden (a hidden entry repeats another Resource's page)."""
+    url = resource.get("url")
+    return (
+        is_safe_url(url)
+        and not _on_platform(source_key(url) or "")
+        and not resource.get("archived")
+        and not resource.get("quarantined_at")
+        and not resource.get("hidden")
+    )
+
+
+def _page_citations(page: Fetched, resource_url: str, excluded: set[str]) -> dict[str, bool]:
+    """The Source keys a Resource's page cites, each with whether it was first cited
+    with `www.`. Links failing `is_safe_url`, to the Resource's own site (before or
+    after redirects), to a key in `excluded`, or to a key that is not `_citable` do not
+    count; a link directory (more than MAX_SITES_PER_PAGE keys) cites nothing."""
+    own = {_site(k) for k in (source_key(resource_url), source_key(page.url)) if k}
+    found: dict[str, bool] = {}
+    for link in _outbound_links(page):
+        if not is_safe_url(link):
+            continue
+        key = source_key(link)
+        if key is None or _site(key) in own or key in excluded or not _citable(key):
+            continue
+        found.setdefault(key, (urlsplit(link).hostname or "").lower().startswith("www."))
+    return {} if len(found) > MAX_SITES_PER_PAGE else found
+
+
+def _mine_citations(
+    resources: list[dict], excluded: set[str], fetch: Fetch, clock: Callable[[], float]
+) -> tuple[list[ProspectiveSource], str | None]:
+    """Citation mining: the sites the Resources' pages repeatedly link to, as Prospective
+    Sources, and why mining stopped early (None when it read every page).
+
+    Reads each live Resource's page (`_minable`; a page shared by two Resources is
+    read, and counts, once), in resources.yaml order, within MAX_CITATION_FETCHES and
+    CITATION_BUDGET_SECONDS; a page that cannot be read is skipped. The Source keys it
+    cites are those of `_page_citations`. A key cited by at least MIN_CITING_RESOURCES
+    distinct Resources is a Prospective Source, provided they are on at least two
+    different sites (`_site`): Resources of one site citing the same thing are one
+    voice, usually its template (a sidebar, an "edit this page" link).
+
+    Its url is where autodiscovery can find its feed: the site root
+    (`https://<host>/`) for a single-tenant host, the tenant (`https://github.com/<owner>/<repo>`,
+    `https://medium.com/@<author>`) for a path-tenanted one, over https and with
+    `www.` if it was first cited so. Ordered by citing sites, then citing Resources
+    (most first), then Source key, so the Trial cap takes the best-evidenced first and
+    runs are reproducible.
+    """
+    start = clock()
+    citing: dict[str, list[str]] = {}  # Source key -> ids of the Resources citing it
+    sites: dict[str, set[str]] = {}  # Source key -> the sites of the Resources citing it
+    www: dict[str, bool] = {}  # Source key -> first cited with `www.`
+    read: set[str] = set()
+    stopped = None
+    for resource in resources:
+        if not _minable(resource) or resource["url"] in read:
+            continue
+        if len(read) >= MAX_CITATION_FETCHES:
+            stopped = f"the run's cap of {MAX_CITATION_FETCHES} Resource page fetches"
+            break
+        if clock() - start >= CITATION_BUDGET_SECONDS:
+            stopped = f"its time budget of {CITATION_BUDGET_SECONDS // 60} minutes"
+            break
+        read.add(resource["url"])
+        page = _read_page(fetch, resource["url"])
+        if page is None:
+            continue
+        resource_id = str(resource.get("id"))
+        resource_site = _site(source_key(resource["url"]) or "")
+        for key, with_www in _page_citations(page, resource["url"], excluded).items():
+            ids = citing.setdefault(key, [])
+            if resource_id not in ids:
+                ids.append(resource_id)
+            sites.setdefault(key, set()).add(resource_site)
+            www.setdefault(key, with_www)
+    mined = sorted(
+        (k for k, ids in citing.items() if len(ids) >= MIN_CITING_RESOURCES and len(sites[k]) >= 2),
+        key=lambda k: (-len(sites[k]), -len(citing[k]), k),
+    )
+    prospects = [
+        ProspectiveSource(
+            f"https://{'www.' if www[k] else ''}{k}{'' if '/' in k else '/'}",
+            "citation",
+            citations=tuple(citing[k]),
+        )
+        for k in mined
+    ]
+    note = (
+        f"Citation mining stopped at {stopped}; Resources after it were not read this run."
+        if stopped else None
+    )
+    return prospects, note
+
+
 def review_sources(
     sources: list[dict],
     resources: list[dict],
@@ -742,6 +1016,15 @@ def review_sources(
     `plan.incomplete`, while retirements and completed Trials stand (Scout's
     semantics).
 
+    Citation mining (`_mine_citations`) reads each live Resource's page with `fetch`
+    and proposes every site at least 2 distinct Resources (on 2 sites) link to, bar non-Sources
+    (`_citable`), Sources on the list (enabled or Retired) and suggested sites. Mined
+    Prospective Sources go through the same `discover_sources` call and Trial budget,
+    after the suggestions, most-cited first; a site in `memory` is skipped silently. A
+    Resource page that cannot be read is skipped; running out of Resource page fetches
+    (MAX_CITATION_FETCHES) or mining time (CITATION_BUDGET_SECONDS) stops mining,
+    Trials what was mined so far and adds to `plan.incomplete`.
+
     An enabled Source is Dead, whatever its age (no grace period):
     - `dead-broken` when its failure streak spans >= 28 days AND >= 4 failed runs;
     - `dead-silent` when it fetches fine (no current streak) but its newest entry is
@@ -775,9 +1058,19 @@ def review_sources(
             plan.retirements.append(
                 Retirement(source["id"], "unproductive", unproductive[source["id"]])
             )
-    discover_sources(
-        plan, _suggested_prospects(suggestions), sources, fetch, judge, memory, clock
-    )
+    suggested = _suggested_prospects(suggestions)
+    # Never proposed by mining: any Source on the list (enabled or Retired) and any
+    # suggested site, which is Trialled as the suggestion.
+    excluded = {
+        k for k in (source_key(u) for u in [*(s.get("url") for s in sources),
+                                            *(p.url for p in suggested)]) if k
+    }
+    mined, mining_stopped = _mine_citations(resources, excluded, fetch, clock)
+    # One pipeline and one Trial budget for both channels: suggestions first (the owner
+    # asked for them), then mined Prospective Sources, best-evidenced first.
+    discover_sources(plan, [*suggested, *mined], sources, fetch, judge, memory, clock)
+    if mining_stopped:
+        plan.incomplete = f"{plan.incomplete} {mining_stopped}" if plan.incomplete else mining_stopped
     return plan
 
 
@@ -1101,7 +1394,26 @@ def _url_span(url: object) -> str:
 def _channel(prospect: ProspectiveSource) -> str:
     if prospect.channel == "suggestion" and type(prospect.suggestion) is int:
         return f"Source suggestion #{prospect.suggestion}"
+    if prospect.channel == "citation":
+        return "Citation mining"
     return sanitize_text(prospect.channel, 40)
+
+
+CITATIONS_SHOWN = 10
+
+
+def _cited_by(prospect: ProspectiveSource) -> str:
+    """`cited by N Resources: id, id, ...` for a mined Prospective Source, or "".
+
+    Resource ids come from resources.yaml, so each is sanitized and defused like any
+    other text in the PR body.
+    """
+    ids = prospect.citations
+    if not ids:
+        return ""
+    shown = ", ".join(_free_text(sanitize_text(i, 80)) for i in ids[:CITATIONS_SHOWN])
+    more = f" and {len(ids) - CITATIONS_SHOWN} more" if len(ids) > CITATIONS_SHOWN else ""
+    return f"cited by {len(ids)} Resource{'s' if len(ids) != 1 else ''}: {shown}{more}"
 
 
 def _trial_line(trial: TrialEvidence) -> str:
@@ -1114,6 +1426,10 @@ def _trial_line(trial: TrialEvidence) -> str:
 def _addition_row(a: Addition) -> str:
     lines = [
         f"- **{sanitize_text(a.source.get('id'), 120)}** — from {_channel(a.prospect)}",
+    ]
+    if cited := _cited_by(a.prospect):
+        lines.append(f"  {cited[0].upper()}{cited[1:]}")
+    lines += [
         f"  Feed: {_url_span(a.source.get('url'))} ({sanitize_text(a.source.get('type'), 10)})",
         f"  {_trial_line(a.trial)}:",
     ]
@@ -1127,8 +1443,9 @@ def _outcome_row(r: Rejection | Untried) -> str:
     row = f"- {_channel(r.prospect)}: {url} — `{sanitize_text(r.reason, 40)}`"
     if r.detail:
         row += f": {_free_text(r.detail)}"  # sanitized when the outcome was made
-    if r.trial is not None:
-        row += f" ({_trial_line(r.trial)})"
+    extras = [e for e in (_cited_by(r.prospect), r.trial and _trial_line(r.trial)) if e]
+    if extras:
+        row += f" ({'; '.join(extras)})"
     return row
 
 
@@ -1325,7 +1642,10 @@ rejected: []
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Source review: retire Dead and Unproductive Sources, add suggested ones"
+        description=(
+            "Source review: retire Dead and Unproductive Sources, add suggested and "
+            "Citation-mined ones that pass a Trial"
+        )
     )
     parser.add_argument("--dry-run", action="store_true", help="Print the plan and gate; write nothing")
     parser.add_argument(
