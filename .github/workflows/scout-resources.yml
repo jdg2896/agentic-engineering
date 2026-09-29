@@ -67,7 +67,13 @@ jobs:
 
       # Fails closed: a judge error that survives judge.py's retries (auth
       # errors are never retried) exits non-zero with no files written, so the
-      # job goes red and no PR opens. Unbuffered so progress logs stream live.
+      # job goes red and no PR opens. The Claude usage limit is the exception:
+      # it stops judging but keeps the partial progress (only fully judged
+      # Sources are bumped) and marks candidates.yaml incomplete, so a backlog
+      # larger than one quota window drains over several runs. That only works
+      # if each partial PR merges before the next run, which starts from main;
+      # a limit hit before any judgment still fails. Unbuffered so progress
+      # logs stream live.
       - name: Run scout
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -107,11 +113,13 @@ jobs:
           year_week = datetime.now(timezone.utc).strftime("%Y-W%V")
           decision = json.loads(Path(os.environ["RUNNER_TEMP"], "automerge_decision.json").read_text())
           candidates = scout.load_candidates(Path("candidates.yaml"))
+          # Set only when judging stopped on the usage limit; already sanitized by scout.py.
+          incomplete = scout.load_incomplete_reason(Path("candidates.yaml"))
 
           n = len(candidates)
 
           if n > 0:
-              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}"
+              title = f"Scout — {year_week} — {n} candidate{'s' if n != 1 else ''}{' (partial run)' if incomplete else ''}"
 
               # Append candidates to resources.yaml (never touches top_7)
               ryaml = YAML()
@@ -131,10 +139,11 @@ jobs:
               with open("resources.yaml", "w") as f:
                   ryaml.dump(res_data, f)
           else:
-              title = f"Scout bookkeeping — {year_week} (no candidates)"
+              title = f"Scout bookkeeping — {year_week} (no candidates{', partial run' if incomplete else ''})"
 
-          # Pure and tested in scout.py: withholds unsafe urls, neutralises model text.
-          body = scout.pr_body(candidates, decision)
+          # Pure and tested in scout.py: withholds unsafe urls, neutralises model text,
+          # and adds the partial-run note when judging stopped on the usage limit.
+          body = scout.pr_body(candidates, decision, incomplete)
 
           env_file = os.environ["GITHUB_ENV"]
           # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).
