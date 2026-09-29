@@ -451,7 +451,7 @@ class SourceRead(NamedTuple):
 
 
 def entry_date(entry) -> date | None:
-    """An entry's date: `published`, else `updated` (all GitHub release feeds carry), else None."""
+    """An entry's date: `published`, else `updated` (the only date GitHub release feeds carry), else None."""
     parsed = entry.get("published_parsed") or entry.get("updated_parsed")
     return date(*parsed[:3]) if parsed else None
 
