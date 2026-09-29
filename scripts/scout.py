@@ -500,7 +500,7 @@ def read_source(source: dict, parsed_feed, today: date) -> SourceRead:
     the exception as `parsed_feed`; its HTTP status is recorded as None). A failed fetch
     yields no new entries and extends the failure streak; a successful one resets it.
     """
-    if isinstance(parsed_feed, BaseException):
+    if isinstance(parsed_feed, Exception):
         return SourceRead(new_entries=[], health=_failed_health(source, None, today))
     status = getattr(parsed_feed, "status", None)
     malformed_and_empty = bool(getattr(parsed_feed, "bozo", False)) and not parsed_feed.entries
@@ -516,7 +516,8 @@ def read_source(source: dict, parsed_feed, today: date) -> SourceRead:
         dated = entry_date(entry)
         if dated is None:
             continue
-        dates.append(dated)
+        if dated <= today:  # a future date (scheduled post, typo) would pin newest_entry_at
+            dates.append(dated)
         if dated > cutoff:
             new_entries.append(entry)
     health = SourceHealth(
@@ -612,18 +613,21 @@ def main() -> None:
         try:
             feed = feedparser.parse(source["url"], agent=USER_AGENT)
         except Exception as exc:
-            print(f"::error::source {source_id}: {sanitize_text(str(exc))}", file=sys.stderr)
             feed = exc  # read_source records it as a failed fetch with no HTTP status
         read = read_source(source, feed, today)
         health[source_id] = read.health
         if read.health.consecutive_failures:
-            if not isinstance(feed, Exception):
-                print(
-                    f"::warning::source {source_id}: feed fetch failed "
-                    f"(HTTP status {read.health.last_http_status}); "
-                    f"{read.health.consecutive_failures} failed run(s) in a row",
-                    flush=True,
-                )
+            # Only source_id, integers and sanitized exception text: no line break can
+            # smuggle a `::` workflow command out of a feed or network error.
+            if isinstance(feed, Exception):
+                reason = sanitize_text(str(feed))
+            else:
+                reason = f"HTTP status {read.health.last_http_status}"
+            print(
+                f"::warning::source {source_id}: feed fetch failed ({reason}); "
+                f"{read.health.consecutive_failures} failed run(s) in a row",
+                flush=True,
+            )
             continue
         new_entries[source_id] = read.new_entries
         print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {source['last_checked_at']}")

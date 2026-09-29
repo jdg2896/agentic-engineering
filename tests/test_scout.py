@@ -1048,6 +1048,17 @@ def test_read_source_keeps_the_stored_newest_entry_date_when_the_feed_shows_noth
     assert health.newest_entry_at == scout.date(2026, 4, 1)
 
 
+def test_read_source_newest_entry_date_ignores_future_dated_entries() -> None:
+    # A scheduled post or a typo like 2099 would otherwise pin the date forever.
+    entries = [
+        _dated_entry("https://a/typo", published=(2099, 1, 1)),
+        _dated_entry("https://a/tomorrow", published=(2026, 9, 30)),
+        _dated_entry("https://a/today", published=(2026, 9, 29)),
+    ]
+
+    assert _health(_parsed(entries)).newest_entry_at == TODAY
+
+
 # --- record_health: Source health onto a sources.yaml entry ---
 
 SOURCES_YAML = """\
@@ -1154,3 +1165,28 @@ def test_main_records_failed_fetches_and_does_not_bump_or_judge_those_sources(tm
     assert (stored["down"]["consecutive_failures"], stored["down"]["last_http_status"]) == (1, None)
     assert str(stored["down"]["last_checked_at"]) == "2026-08-01"
     assert all(s["enabled"] is True for s in stored.values())
+
+
+def test_main_warns_about_every_failed_fetch_in_one_single_line_format(tmp_path, monkeypatch, capsys) -> None:
+    paths = _scout_repo(tmp_path, monkeypatch, [])
+    paths["sources"].write_text(
+        "sources:\n"
+        "  - {id: gone, url: 'https://gone/feed', last_checked_at: 2026-08-01, consecutive_failures: 2}\n"
+        "  - {id: down, url: 'https://down/feed', last_checked_at: 2026-08-01}\n"
+    )
+
+    def parse(url, agent=None):
+        if url == "https://down/feed":
+            raise OSError("reset\n::error::injected")
+        return SimpleNamespace(entries=[], status=404, bozo=False)
+
+    monkeypatch.setattr(scout.feedparser, "parse", parse)
+
+    scout.main()
+
+    out = capsys.readouterr()
+    lines = [line for line in (out.out + out.err).splitlines() if line.startswith("::")]
+    assert lines == [
+        "::warning::source gone: feed fetch failed (HTTP status 404); 3 failed run(s) in a row",
+        "::warning::source down: feed fetch failed (reset ::error::injected); 1 failed run(s) in a row",
+    ]
