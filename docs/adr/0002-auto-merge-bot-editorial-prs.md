@@ -1,6 +1,6 @@
 # Auto-merge bot-authored editorial PRs; PR history is the audit trail
 
-Scout (new Resources) PRs **auto-merge by default** with no human review. Editorial quality is delegated to the LLM judge; the squash-merged PR
+Scout (new Resources), Verify, and Source review (the Source list) PRs **auto-merge by default** with no human review. Editorial quality is delegated to the LLM judge; the squash-merged PR
 history is the audit-and-rollback trail. A human is pulled in only when a circuit-breaker
 trips, via the existing `auto-merge-skipped` label + review path.
 
@@ -21,7 +21,14 @@ trips, via the existing `auto-merge-skipped` label + review path.
     to a non-http(s) url.
     Recoveries and top-7 quarantines auto-merge and are called out in the PR body for
     post-hoc review.
-- Source-discovery is deferred to a separate spec; its breakers will be decided there.
+  - **Source review:** hold on mass retirement (more than 3 Sources retired in one run —
+    most likely a Source-health recording bug, not a real die-off), on mass addition (more
+    than 3 Sources added — the Trial judge or Citation mining has likely gone wrong), or if
+    the run would leave fewer than 10 enabled Sources. Also hold on structural errors: a new
+    Source's feed url fails `is_safe_url`, duplicates an enabled or Retired Source (same
+    host counts), or a retirement targets a Source with non-zero Yield in its window
+    (impossible by definition; a backstop against a logic bug). Every addition and
+    retirement is listed in the PR body with its evidence for post-hoc review.
 - `top_7` ("if you only read 7 things") is never touched by automation — it stays
   hand-curated.
 

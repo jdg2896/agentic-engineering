@@ -39,15 +39,85 @@ The weekly job that discovers **Candidates** by polling known **Sources**.
 **Verify**:
 The weekly job that link-checks every **Resource** and quarantines dead ones.
 
+**Source review**:
+The monthly job (planned) that curates the **Source** list itself. It has two halves:
+**Source discovery** and **Source retirement**. It is the only job that changes which
+Sources exist or are enabled.
+
 **Source discovery**:
-A periodic job (planned) that discovers new **Sources** to add — distinct from **Scout**,
+The half of **Source review** that finds new **Sources** to add — distinct from **Scout**,
 which discovers **Resources** from *existing* Sources.
+
+**Prospective Source**:
+A feed that **Source discovery** is considering adding, not yet on the Source list.
+_Avoid_: candidate source (a **Candidate** is a scouted entry, not a feed).
+
+**Citation mining**:
+A **Source discovery** channel: finding **Prospective Sources** among the sites that
+accepted **Resources** repeatedly link to.
+
+**Source suggestion**:
+A **Source discovery** channel: a human proposes a **Prospective Source** by filing it on
+the issue tracker. It is validated exactly like a mined one — a suggestion is not an
+override.
+
+**Trial**:
+How a **Prospective Source** is validated: a sample of its recent entries is put through
+the same editorial judge **Scout** uses. It is added only if the Trial shows it is alive
+and would have yielded at least one **Resource** — the same bar that keeps a Source from
+being **Unproductive**.
+
+**Source retirement**:
+The half of **Source review** that turns **Dead** or **Unproductive Sources** into
+**Retired Sources**.
+
+**Source health**:
+The facts **Scout** records about each **Source** on every run — whether its feed could be
+fetched, and when it last published. Scout records health but never acts on it; **Source
+review** decides.
+
+**Dead Source**:
+A **Source** whose feed no longer works, in one of two forms: **broken** (the feed
+persistently fails to fetch or parse) or **silent** (it fetches, but has published nothing
+for a long stretch). A broken feed that returns no entries is not "quiet" — it is broken.
+It may be repairable (e.g. the feed moved), so it is distinct from an **Unproductive
+Source**.
+_Avoid_: broken feed, stale source.
+
+**Unproductive Source**:
+A **Source** that still publishes, but whose entries the judge persistently rejects — it
+yields no **Resources** despite enough of its entries having been judged. A single
+accepted entry in the window keeps it productive. A Source cannot be judged Unproductive
+until it has a full window of attributed history — a new Source is in its **grace period**
+until then.
+_Avoid_: noisy feed, bad source.
+
+**Retired Source**:
+A **Source** taken out of Scout's polling because it was **Dead** or **Unproductive**. It
+stays on the Source list with the reason and date, so it is remembered rather than
+forgotten — and can be revived (e.g. a Dead Source whose feed moved).
+_Avoid_: deleted source, removed source.
+
+**Yield**:
+The **Resources** a **Source** has produced — the measure of whether it is
+**Unproductive**. Counted only from the point Resources began recording their Source;
+earlier Resources are unattributed.
 
 ## Relationships
 
 - A **Source** yields zero or more **Candidates** per Scout run.
 - A **Candidate** becomes a **Resource** when its Scout PR merges.
 - **Verify** acts only on existing **Resources**; **Scout** only adds new ones.
+- A **Resource** added by **Scout** is attributed to the **Source** it came from; this
+  attribution is what makes **Yield** measurable.
+- A **Source** can be **Dead**, **Unproductive**, both, or neither — the two are judged
+  independently.
+- Retiring a **Source** never removes the **Resources** it already yielded.
+- **Source discovery** never re-proposes a **Retired Source**.
+- **Source review** changes only the Source list; it never adds **Resources**. A Source
+  added by it contributes Resources through **Scout**'s next run.
+- **Source retirement** judges **Dead** from **Source health** and **Unproductive** from
+  **Yield**.
 - **Source discovery** feeds **Scout** by growing the **Source** list.
 
 ## Flagged ambiguities
@@ -57,3 +127,6 @@ which discovers **Resources** from *existing* Sources.
   only discipline and source breadth widen.
 - "research / deep research step" and "scout" both sound like discovery — resolved:
   **Scout** finds Resources from known Sources; **Source discovery** finds new Sources.
+- "candidate" was about to mean both a scouted entry and a feed under consideration —
+  resolved: **Candidate** stays the entry; a feed under consideration is a **Prospective
+  Source**.
