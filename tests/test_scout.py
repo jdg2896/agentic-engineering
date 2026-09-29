@@ -892,3 +892,23 @@ def test_read_source_drops_entries_on_or_before_last_checked_at() -> None:
         _dated_entry("https://a/older", published=(2026, 7, 1)),
     ]
     assert _read(entries) == []
+
+
+def test_read_source_dates_a_release_entry_by_updated_when_it_has_no_published() -> None:
+    # GitHub release Atom feeds carry only <updated>.
+    entries = [
+        _dated_entry("https://a/releases/v2", updated=(2026, 9, 1)),
+        _dated_entry("https://a/releases/v1", updated=(2026, 7, 1)),
+    ]
+    assert _read(entries) == ["https://a/releases/v2"]
+
+
+def test_read_source_prefers_published_even_when_updated_is_later() -> None:
+    # An old post edited after last_checked_at is not new.
+    entries = [_dated_entry("https://a/edited", published=(2026, 7, 1), updated=(2026, 9, 1))]
+    assert _read(entries) == []
+
+
+def test_read_source_skips_entries_with_no_date() -> None:
+    entries = [_dated_entry("https://a/undated"), _dated_entry("https://a/dated", updated=(2026, 9, 1))]
+    assert _read(entries) == ["https://a/dated"]

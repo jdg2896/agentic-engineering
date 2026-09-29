@@ -450,17 +450,26 @@ class SourceRead(NamedTuple):
     new_entries: list
 
 
+def entry_date(entry) -> date | None:
+    """An entry's date: `published`, else `updated` (all GitHub release feeds carry), else None."""
+    parsed = entry.get("published_parsed") or entry.get("updated_parsed")
+    return date(*parsed[:3]) if parsed else None
+
+
 def read_source(source: dict, parsed_feed, today: date) -> SourceRead:
     """Read one Source's already-parsed feed; does no network I/O.
 
-    New entries are those dated after the Source's `last_checked_at`.
+    New entries are those dated (see `entry_date`) after the Source's
+    `last_checked_at`. Undated entries are skipped rather than guessed, so an
+    undated feed cannot flood the judge with its whole history.
     """
     cutoff = date.fromisoformat(str(source["last_checked_at"]))
-    return SourceRead(new_entries=[
-        e for e in parsed_feed.entries
-        if e.get("published_parsed")
-        and date(*e.published_parsed[:3]) > cutoff
-    ])
+    new_entries = []
+    for entry in parsed_feed.entries:
+        dated = entry_date(entry)
+        if dated is not None and dated > cutoff:
+            new_entries.append(entry)
+    return SourceRead(new_entries=new_entries)
 
 
 def main() -> None:
