@@ -25,8 +25,9 @@ jobs:
     needs: check-pause
     if: needs.check-pause.outputs.paused != 'true'
     runs-on: ubuntu-latest
-    # Each Trial is up to 10 judge calls; this bounds a run stuck in judge retries.
-    timeout-minutes: 60
+    # Like Scout. source_review.py stops starting Trials after 35 minutes (and at 10
+    # Trials), so the PR steps always get to run well inside this.
+    timeout-minutes: 90
     permissions:
       contents: write
       pull-requests: write
@@ -79,10 +80,12 @@ jobs:
 
       # Plans the review (Trials call the judge, so this step alone gets the OAuth
       # token), evaluates the auto-merge gate (ADR 0002) against the pre-plan Source
-      # list, then applies the plan to sources.yaml. Writes the PR title/body/labels
-      # outside the checkout so they are never committed. A judge error or usage limit
-      # stops Trials but not the run: retirements and finished Trials still land, and
-      # the PR body says the run was partial.
+      # list, then applies the plan to sources.yaml and scout/prospects.yaml (the
+      # Prospective Source memory). Writes the PR title/body/labels outside the
+      # checkout so they are never committed. A judge error, usage limit or spent
+      # Trial budget stops Trials but not this step: retirements and finished Trials
+      # still land and the PR body says the run was partial. A judge error then fails
+      # the job in the last step, after the PR steps.
       - name: Run Source review
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -106,6 +109,8 @@ jobs:
           with open(env_file, "a") as f:
               f.write(f"YEAR_MONTH={datetime.now(timezone.utc):%Y-%m}\n")
               f.write(f"PLAN_EMPTY={'true' if summary['empty'] else 'false'}\n")
+              f.write(f"RUN_INCOMPLETE={'true' if summary['incomplete'] else 'false'}\n")
+              f.write(f"JUDGE_FAILED={'true' if summary['judge_failed'] else 'false'}\n")
               if not summary["empty"]:
                   # Title, body and labels are built and sanitized in source_review.py.
                   # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).
@@ -118,11 +123,12 @@ jobs:
                   f.write(f"{delim}\n")
           EOF
 
-      # Nothing to add, retire or decide: no new PR (sources.yaml was not written), and an
+      # Nothing to add, retire or reject: no new PR (nothing was written), and an
       # earlier held Source review PR is now stale evidence, so close it rather than
-      # leave it mergeable. No-op when there is none.
+      # leave it mergeable. No-op when there is none. Not after a partial run: Trials
+      # that did not run decided nothing, so an open PR is not shown to be stale.
       - name: Close superseded Source review PR
-        if: env.PLAN_EMPTY == 'true'
+        if: env.PLAN_EMPTY == 'true' && env.RUN_INCOMPLETE != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT: "Superseded: the ${{ env.YEAR_MONTH }} Source review planned no changes."
@@ -138,6 +144,10 @@ jobs:
           body: ${{ env.REVIEW_PR_BODY }}
           commit-message: "chore(source-review): monthly Source review ${{ env.YEAR_MONTH }}"
           labels: ${{ env.REVIEW_LABELS }}
+          # Only the files Source review writes.
+          add-paths: |
+            sources.yaml
+            scout/prospects.yaml
 
       # Labels are additive on an updated PR, so clear a hold left by an earlier run.
       - name: Enable auto-merge (gate passed)
@@ -159,3 +169,24 @@ jobs:
         run: |
           gh pr edit "$PR" --add-label auto-merge-skipped || true
           gh pr merge "$PR" --disable-auto || true
+
+      # A judge error must not look like a quiet month: after the PR steps (so
+      # retirements and decided work still land), fail the job with what to do. A
+      # usage limit is not a failure and stays a green warning.
+      - name: Fail on judge error
+        if: always() && env.JUDGE_FAILED == 'true'
+        run: |
+          uv run python3 - <<'EOF'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, "scripts")
+          import scout
+
+          summary = json.loads(Path(os.environ["RUNNER_TEMP"], "source_review.json").read_text())
+          hint = scout.sanitize_text(summary.get("judge_failure_hint") or "")
+          print(f"::error::A judge error stopped Source review's Trials. {hint}")
+          sys.exit(1)
+          EOF
