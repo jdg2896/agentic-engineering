@@ -178,3 +178,42 @@ def test_top_7_check_raises_with_useful_message_on_quarantined_slug() -> None:
     }
     with pytest.raises(ValueError, match=r"top_7 references quarantined.*y \(404\)"):
         render._check_top_7_not_quarantined(["x", "y"], by_id)
+
+
+# --- Link destination escaping (last line of defense for untrusted urls) ---
+
+INJECTED_URL = "https://good.example/post) — **Editor pick:** [Download](https://evil.example/pay"
+ESCAPED_INJECTED_URL = (
+    "https://good.example/post%29%20%E2%80%94%20**Editor%20pick:**%20%5BDownload%5D%28https://evil.example/pay"
+)
+
+
+def test_link_url_leaves_ordinary_urls_untouched() -> None:
+    url = "https://example.com/a-b_c.d~e/f?x=1&y=%5B;z=a+b,c*d!e$f'g@h#frag:1"
+    assert render.link_url(url) == url
+
+
+def test_link_url_percent_encodes_markdown_breaking_characters() -> None:
+    assert render.link_url(INJECTED_URL) == ESCAPED_INJECTED_URL
+    assert render.link_url('https://x/<a b="c">\t{|}^`\\') == "https://x/%3Ca%20b=%22c%22%3E%09%7B%7C%7D%5E%60%5C"
+
+
+def test_format_link_cannot_be_broken_out_of_by_its_url() -> None:
+    link = render.format_link({"title": "Post", "url": INJECTED_URL})
+    assert link == f"[Post]({ESCAPED_INJECTED_URL})"
+
+
+def test_top_7_line_escapes_its_url() -> None:
+    line = render.render_top_7_line({"title": "Post", "url": INJECTED_URL, "author": "A", "blurb": "b"})
+    assert line == f"[Post]({ESCAPED_INJECTED_URL}) — A. b"
+
+
+def test_worth_following_link_escapes_its_url(tmp_path, monkeypatch) -> None:
+    data = tmp_path / "resources.yaml"
+    data.write_text(
+        "sections: []\ntop_7: []\nresources: []\nworth_following:\n"
+        f"  - name: Feed\n    url: '{INJECTED_URL}'\n    blurb: b\n"
+    )
+    monkeypatch.setattr(render, "RESOURCES_PATH", data)
+
+    assert f"- [Feed]({ESCAPED_INJECTED_URL}) — b" in render.render()

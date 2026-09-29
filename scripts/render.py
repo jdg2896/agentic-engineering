@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
+from urllib.parse import quote
 
 import jinja2
 import yaml
@@ -15,8 +16,23 @@ TEMPLATES_DIR = ROOT / "templates"
 OUTPUT_PATH = ROOT / "README.md"
 
 
+# RFC 3986 reserved characters that are harmless in a Markdown link destination, plus
+# `%` so existing escapes survive. `()[]` are left out: they could end the link.
+_LINK_URL_SAFE = ":/?#@!$&'*+,;=%"
+
+
+def link_url(url: str) -> str:
+    """Percent-encode everything in `url` that could break out of a `[text](url)` link.
+
+    A last line of defense behind Scout's feed-URL validation: letters, digits,
+    `-._~` and `_LINK_URL_SAFE` pass through, so ordinary URLs are unchanged, while
+    whitespace, `()[]<>"`, backticks, backslashes and non-ASCII are encoded.
+    """
+    return quote(str(url), safe=_LINK_URL_SAFE)
+
+
 def format_link(resource: dict) -> str:
-    base = f"[{resource['title']}]({resource['url']})"
+    base = f"[{resource['title']}]({link_url(resource['url'])})"
     archived = " _(archived)_" if resource.get("archived") else ""
     return f"{base}{archived}"
 
@@ -58,7 +74,7 @@ def render_top_7_line(resource: dict) -> str:
     # top_7_title overrides the link text in the top-7 list when the section
     # listing and top-7 entry use different titles for the same URL.
     title = resource.get("top_7_title") or resource["title"]
-    link = f"[{title}]({resource['url']})"
+    link = f"[{title}]({link_url(resource['url'])})"
     author = resource.get("top_7_author") or resource.get("author")
     blurb = resource.get("top_7_blurb") or resource.get("blurb")
     return f"{link}{format_attribution(author, blurb)}"
@@ -144,6 +160,7 @@ def render() -> str:
         keep_trailing_newline=False,
         undefined=jinja2.StrictUndefined,
     )
+    env.filters["link_url"] = link_url
 
     def _render(name: str, **ctx: object) -> str:
         return env.get_template(name).render(**ctx).rstrip("\n")

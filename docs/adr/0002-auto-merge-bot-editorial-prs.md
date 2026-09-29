@@ -13,10 +13,12 @@ trips, via the existing `auto-merge-skipped` label + review path.
 - Breakers catch *anomalies*, not steady-state misjudgment, which is accepted as delegated:
   - **Scout:** hold if candidate count > cap (default 8; mass-include), or on structural
     errors: any candidate's `section` is not an existing section id, or its `type` is outside
-    the schema enum (hallucinated / malformed output).
+    the schema enum (hallucinated / malformed output), or its `url` fails `is_safe_url`
+    (Scout already skips such feed entries; this is a backstop against a regression).
   - **Verify:** hold on mass quarantine (more than 5 newly quarantined in one run), or on
     any cross-host migration (a redirect to a different host, ignoring `www.`, which could
-    be an expired domain now pointing elsewhere).
+    be an expired domain now pointing elsewhere), an https→http downgrade, or a migration
+    to a non-http(s) url.
     Recoveries and top-7 quarantines auto-merge and are called out in the PR body for
     post-hoc review.
 - Source-discovery is deferred to a separate spec; its breakers will be decided there.

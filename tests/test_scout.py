@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -296,8 +297,8 @@ def test_automerge_decision_reads_candidates_file_and_section_ids(tmp_path) -> N
     candidates = tmp_path / "candidates.yaml"
     candidates.write_text(
         "candidates:\n"
-        "  - {slug: a, section: patterns, type: article}\n"
-        "  - {slug: b, section: nope, type: article}\n"
+        "  - {slug: a, section: patterns, type: article, url: 'https://x/a'}\n"
+        "  - {slug: b, section: nope, type: article, url: 'https://x/b'}\n"
     )
 
     held = scout.automerge_decision(candidates, resources, cap=8)
@@ -360,14 +361,14 @@ def test_candidates_carry_sanitized_judge_text_but_raw_url() -> None:
         "tags": ["a\nb", "`t`"],
     })
     run = scout.judge_sources(
-        {"src-a": [_entry("https://a/1?x=[1]")]},
-        _stub_judge({"https://a/1?x=[1]": judgment}),
+        {"src-a": [_entry("https://a/1?x=%5B1%5D&y=*")]},
+        _stub_judge({"https://a/1?x=%5B1%5D&y=*": judgment}),
         known_urls=set(),
         existing_slugs=set(),
     )
 
     [c] = run.candidates
-    assert c["url"] == "https://a/1?x=[1]"
+    assert c["url"] == "https://a/1?x=%5B1%5D&y=*"
     assert c["title"] == "Evil __EOF__"
     assert c["author"] == "\\[me\\](https://x)"
     assert c["blurb"] == "b AUTO_MERGE_OK=true"
@@ -440,6 +441,237 @@ def test_logged_judge_and_feed_text_cannot_start_a_workflow_command(capsys) -> N
     )
 
     assert not any(line.startswith("::") for line in capsys.readouterr().out.splitlines())
+
+
+# --- Feed URL safety ---
+
+INJECTED_URL = "https://good.example/post) — **Editor pick:** [Download](https://evil.example/pay"
+
+
+def test_safe_url_accepts_ordinary_http_and_https_links() -> None:
+    assert scout.is_safe_url("https://example.com/blog/post?x=1&y=%5B#frag")
+    assert scout.is_safe_url("http://www.example.co.uk:8080/a/b")
+    assert scout.is_safe_url("https://a/1")
+
+
+def test_safe_url_rejects_markdown_link_injection() -> None:
+    assert not scout.is_safe_url(INJECTED_URL)
+
+
+def test_safe_url_rejects_non_http_schemes() -> None:
+    for url in ("javascript:alert(1)", "data:text/html,x", "file:///etc/passwd", "ftp://example.com/x", "//example.com/x"):
+        assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_markdown_html_and_quote_characters() -> None:
+    for ch in "()[]<>\"'`\\":
+        assert not scout.is_safe_url(f"https://example.com/a{ch}b"), ch
+
+
+def test_safe_url_rejects_whitespace_and_control_characters() -> None:
+    for url in ("https://example.com/a b", "https://example.com/a\nb", "https://example.com/a\tb", "https://example.com/\x00"):
+        assert not scout.is_safe_url(url), repr(url)
+
+
+def test_safe_url_rejects_userinfo_and_missing_host() -> None:
+    assert not scout.is_safe_url("https://good.example@evil.example/")
+    assert not scout.is_safe_url("https:///path-only")
+    assert not scout.is_safe_url("https://example.com:notaport/")
+
+
+def test_safe_url_rejects_ip_literal_and_internal_hosts() -> None:
+    for url in (
+        "http://169.254.169.254/latest/meta-data/",
+        "http://127.0.0.1/",
+        "http://2130706433/",
+        "http://0x7f.1/",
+        "http://[::1]/",
+        "http://localhost:8000/",
+        "http://api.localhost/",
+        "http://printer.local/",
+        "http://metadata.google.internal/",
+        "http://LOCALHOST./",
+        "http://router.home.arpa/",
+        "http://nas.lan/",
+        "http://lan/",
+    ):
+        assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_hosts_that_only_normalise_to_internal_ones() -> None:
+    for url in (
+        "https://%6c%6fcalhost/admin",
+        "https://127%2E0%2E0%2E1/",
+        "https://127。0。0。1/",
+        "https://ｌｏｃａｌｈｏｓｔ/",
+        "https://ⓛⓞⓒⓐⓛⓗⓞⓢⓣ/",
+        "https://localhost。/",
+    ):
+        assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_empty_and_hyphen_only_labels() -> None:
+    for url in ("https://-/", "https://a..b/", "https://-.example.com/"):
+        assert not scout.is_safe_url(url), url
+
+
+def test_safe_url_rejects_invisible_format_characters() -> None:
+    for ch in ("​", "‎", "‮", "﻿"):
+        assert not scout.is_safe_url(f"https://example.com/a{ch}b"), repr(ch)
+
+
+def test_safe_url_accepts_internationalised_domains() -> None:
+    assert scout.is_safe_url("https://bücher.example/katalog")
+    assert scout.is_safe_url("https://xn--bcher-kva.example/katalog")
+
+
+def test_safe_url_rejects_non_strings() -> None:
+    assert not scout.is_safe_url(None)
+    assert not scout.is_safe_url(["https://example.com/"])
+
+
+def test_unsafe_feed_url_is_skipped_before_the_judge_without_blocking_the_bump(capsys) -> None:
+    called: list[str] = []
+    stub = _stub_judge({"https://a/2": _judgment("include", "two")})
+
+    def judge(title, url, summary, source_id):
+        called.append(url)
+        return stub(title, url, summary, source_id)
+
+    run = scout.judge_sources(
+        {"src-a": [_entry(INJECTED_URL), _entry("javascript:alert(1)\n::error::x"), _entry("https://a/2")]},
+        judge,
+        known_urls=set(),
+        existing_slugs=set(),
+    )
+
+    assert called == ["https://a/2"]
+    assert run.errors == []
+    assert run.evaluated == 1
+    assert [c["url"] for c in run.candidates] == ["https://a/2"]
+    assert run.rejected == []
+    assert run.fully_judged == {"src-a"}
+    out = capsys.readouterr().out
+    assert "skip (unsafe url)" in out
+    assert not any(line.startswith("::") for line in out.splitlines())
+
+
+def test_gate_holds_a_candidate_with_an_unsafe_url() -> None:
+    bad = {**_candidate(slug="bad"), "url": INJECTED_URL}
+    ip = {**_candidate(slug="ip"), "url": "http://169.254.169.254/"}
+
+    decision = scout.evaluate_scout_automerge([_candidate(slug="ok"), bad, ip], SECTIONS, TYPES)
+
+    assert decision.auto_merge_ok is False
+    assert decision.reasons == ["candidate `bad` has an unsafe url", "candidate `ip` has an unsafe url"]
+    assert decision.labels == ["automated", "scout", "auto-merge-skipped"]
+
+
+def test_gate_holds_a_candidate_with_no_url() -> None:
+    no_url = {k: v for k, v in _candidate(slug="nourl").items() if k != "url"}
+
+    assert scout.evaluate_scout_automerge([no_url], SECTIONS, TYPES).reasons == [
+        "candidate `nourl` has an unsafe url"
+    ]
+
+
+def test_judge_error_is_logged_on_one_line(capsys) -> None:
+    run = scout.judge_sources(
+        {"src-a": [_entry("https://a/1", title="t\n::warning::w")]},
+        _stub_judge({"https://a/1": RuntimeError("boom\n::add-mask::secret")}),
+        known_urls=set(),
+        existing_slugs=set(),
+    )
+
+    [err] = run.errors
+    assert "\n" not in err and "\r" not in err
+    assert "boom" in err
+
+
+def test_safe_slug_increments_past_taken_suffixes() -> None:
+    assert scout.safe_slug("a", set()) == "a"
+    assert scout.safe_slug("a", {"a"}) == "a-2"
+    assert scout.safe_slug("a", {"a", "a-2", "a-3"}) == "a-4"
+
+
+def test_same_slug_three_times_in_one_run_gets_unique_ids() -> None:
+    judge = _stub_judge({f"https://a/{i}": _judgment("include", "dup") for i in range(3)})
+    run = scout.judge_sources(
+        {"src-a": [_entry(f"https://a/{i}") for i in range(3)]},
+        judge,
+        known_urls=set(),
+        existing_slugs={"dup-2"},
+    )
+
+    assert [c["slug"] for c in run.candidates] == ["dup", "dup-3", "dup-4"]
+
+
+# --- Gate reasons and the Scout PR body carry model text, so must stay inert ---
+
+HOSTILE_SECTION = "nope`\n\n## INJECTED heading\n[Download SDK](https://evil.example/pay)\n::warning::x"
+
+
+def test_gate_reason_for_a_hostile_section_is_single_line_and_escaped() -> None:
+    bad = {**_candidate(section=HOSTILE_SECTION, type_="po`d\ncast", slug="bad`\nslug"), "url": "https://x/bad"}
+
+    reasons = scout.evaluate_scout_automerge([bad], SECTIONS, TYPES).reasons
+
+    assert reasons == [
+        "candidate `bad' slug` has unknown section "
+        "`nope' ## INJECTED heading \\[Download SDK\\](https://evil.example/pay) ::warning::x`",
+        "candidate `bad' slug` has unknown type `po'd cast`",
+    ]
+
+
+def _full_candidate(**overrides) -> dict:
+    c = {
+        "slug": "good", "source_id": "src-a", "url": "https://ok.example/p", "title": "Good",
+        "author": "A", "section": "patterns", "type": "article", "license": None,
+        "blurb": "b", "tags": [], "rationale": "r",
+    }
+    c.update(overrides)
+    return c
+
+
+def test_pr_body_lists_candidates_under_an_auto_merge_banner() -> None:
+    body = scout.pr_body([_full_candidate()], {"auto_merge_ok": True, "reasons": [], "labels": []})
+
+    assert body == (
+        "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
+        "\n"
+        "## Candidates (1)\n"
+        "\n"
+        "- [ ] **[Good](https://ok.example/p)** — `patterns` · `article`\n"
+        "      Source: `src-a` | Proposed slug: `good`\n"
+        "      Blurb: _b_\n"
+        "      Rationale: _r_"
+    )
+
+
+def test_pr_body_with_no_candidates_is_bookkeeping() -> None:
+    body = scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []})
+
+    assert body.startswith("> **Auto-merge enabled**")
+    assert "_No new candidates this week." in body
+    assert "## Candidates" not in body
+
+
+def test_pr_body_withholds_unsafe_urls_and_neutralises_hostile_fields() -> None:
+    bad = _full_candidate(slug="bad", url=INJECTED_URL, section=HOSTILE_SECTION, type="x`\ny")
+    decision = scout.evaluate_scout_automerge([bad], SECTIONS, TYPES)._asdict()
+    decision["reasons"].append("smuggled\n## heading\n::error::x")
+
+    body = scout.pr_body([bad], decision)
+
+    # No live link at all: the only `](` left are backslash-escaped model text.
+    assert not re.search(r"(?<!\\)\]\(", body)
+    assert "**Good (unsafe url withheld)** — " in body
+    assert not any(line.startswith(("## INJECTED", "## heading", "::", "[")) for line in body.splitlines())
+    banner, blank, *_ = body.splitlines()
+    assert banner.startswith("> **Auto-merge skipped:** candidate `bad` has unknown section `nope' ## INJECTED")
+    assert banner.endswith("; smuggled ## heading ::error::x.")
+    assert blank == ""
+    assert "`x' y`" in body
 
 
 # --- candidates.yaml ---
@@ -563,3 +795,69 @@ def test_main_fails_when_the_usage_limit_is_hit_before_any_judgment(tmp_path, mo
     assert not paths["candidates"].exists()
     assert {name: path.read_text() for name, path in paths.items() if path.exists()} == before
     assert "usage limit" in capsys.readouterr().err
+
+
+# --- Usage-limit stop meets the hardening ---
+
+
+def test_pr_body_adds_the_partial_run_note_after_the_banner() -> None:
+    body = scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []}, "hit the\nlimit")
+
+    banner, blank, note, advice, *_ = body.splitlines()
+    assert banner.startswith("> **Auto-merge enabled**")
+    assert blank == ""
+    assert note == (
+        "> **Partial run:** the judge hit the Claude usage limit, so some entries"
+        " were left for the next run. hit the limit"
+    )
+    assert advice.startswith("> Merge this PR before the next scheduled run")
+    assert "_No new candidates this week." in body
+
+
+def test_pr_body_has_no_partial_run_note_for_a_complete_run() -> None:
+    assert "Partial run" not in scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []})
+
+
+def test_quota_stop_still_skips_unsafe_urls_before_judging() -> None:
+    calls: list[str] = []
+
+    def judge(title, url, summary, source_id):
+        calls.append(url)
+        raise QUOTA
+
+    entries = {"src-a": [{"link": INJECTED_URL, "title": "t"}, {"link": "https://ok.example/p", "title": "t"}]}
+    run = scout.judge_sources(entries, judge, set(), set())
+
+    assert calls == ["https://ok.example/p"]
+    assert run.quota_exhausted is not None
+    assert run.errors == []
+
+
+HOSTILE_QUOTA = scout.judge.JudgeQuotaError("You've hit your session limit\n::error::injected\r\n[x](https://evil)")
+
+
+def test_main_quota_warning_and_incomplete_reason_are_single_line(tmp_path, monkeypatch, capsys) -> None:
+    paths = _scout_repo(tmp_path, monkeypatch, [_judgment("reject"), HOSTILE_QUOTA])
+
+    scout.main()
+
+    lines = capsys.readouterr().out.splitlines()
+    assert not any(line.startswith("::error::") for line in lines)
+    assert [line for line in lines if line.startswith("::")] == [
+        next(line for line in lines if line.startswith("::warning::Judging stopped"))
+    ]
+    reason = yaml.safe_load(paths["candidates"].read_text())["incomplete"]
+    assert "\n" not in reason and "\r" not in reason
+    assert not re.search(r"(?<!\\)\]\(", reason)
+
+
+def test_main_quota_error_with_no_progress_is_single_line(tmp_path, monkeypatch, capsys) -> None:
+    _scout_repo(tmp_path, monkeypatch, [HOSTILE_QUOTA])
+
+    with pytest.raises(SystemExit):
+        scout.main()
+
+    lines = capsys.readouterr().err.splitlines()
+    assert [line for line in lines if line.startswith("::")] == [
+        next(line for line in lines if line.startswith("::error::The Claude usage limit"))
+    ]

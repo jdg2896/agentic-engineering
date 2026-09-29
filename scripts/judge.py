@@ -46,6 +46,20 @@ AUTH_HINT = (
 )
 
 
+_WHITESPACE_RE = re.compile(r"\s+")
+
+
+def _one_line(value: object, max_len: int = 500) -> str:
+    """Collapse whitespace and drop control characters so CLI/model text stays on one log line.
+
+    Judge errors are printed as `::error::` / `::warning::` lines, where a newline
+    would let the rest of the text start its own workflow command. A local helper,
+    since scout.py imports this module and not the other way round.
+    """
+    text = _WHITESPACE_RE.sub(" ", str(value))
+    return "".join(ch for ch in text if ch.isprintable()).strip()[:max_len]
+
+
 class JudgeError(Exception):
     """The judge produced no usable judgment."""
 
@@ -136,10 +150,10 @@ def parse_judgment(stdout: str) -> dict:
         raise JudgeError(f"Claude Code CLI output is not a JSON object: {stdout[:200]!r}")
     if envelope.get("is_error"):
         if _is_auth_failure(envelope):
-            raise JudgeAuthError(f"{envelope.get('result')} {AUTH_HINT}")
+            raise JudgeAuthError(f"{_one_line(envelope.get('result'))} {AUTH_HINT}")
         if _mentions_quota_exhausted(str(envelope.get("result", ""))):
-            raise JudgeQuotaError(f"Claude Code CLI error: {envelope.get('result')}")
-        raise JudgeError(f"Claude Code CLI error: {envelope.get('result') or envelope.get('subtype')}")
+            raise JudgeQuotaError(f"Claude Code CLI error: {_one_line(envelope.get('result'))}")
+        raise JudgeError(f"Claude Code CLI error: {_one_line(envelope.get('result') or envelope.get('subtype'))}")
     judgment = envelope.get("structured_output")
     if judgment is None:
         raise JudgeError(f"Claude Code CLI returned no structured_output (result: {envelope.get('result')!r})")
@@ -173,7 +187,7 @@ def run_claude(prompt: str, system: str) -> str:
         raise JudgeError(f"Claude Code CLI timed out after {CLI_TIMEOUT_SECONDS}s") from exc
     # On API errors the CLI exits non-zero but still prints the JSON envelope; parse that.
     if proc.returncode != 0 and not proc.stdout.strip():
-        message = f"Claude Code CLI exited {proc.returncode}: {proc.stderr.strip()[:500]}"
+        message = f"Claude Code CLI exited {proc.returncode}: {_one_line(proc.stderr)}"
         if _mentions_auth_failure(proc.stderr):
             raise JudgeAuthError(f"{message} {AUTH_HINT}")
         if _mentions_quota_exhausted(proc.stderr):
@@ -217,7 +231,8 @@ def judge_entry(
                 raise
             delay = attempt * RETRY_BACKOFF_SECONDS
             print(
-                f"::warning::judge attempt {attempt}/{MAX_ATTEMPTS} failed for {url}: {exc}; "
+                f"::warning::judge attempt {attempt}/{MAX_ATTEMPTS} failed for {_one_line(url, 200)}: "
+                f"{_one_line(exc)}; "
                 f"retrying in {delay}s",
                 flush=True,
             )

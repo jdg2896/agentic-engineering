@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import functools
+import ipaddress
 import json
 import os
 import re
@@ -15,8 +16,10 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import NamedTuple
+from urllib.parse import urlsplit
 
 import feedparser
+import idna
 import yaml as pyyaml
 from ruamel.yaml import YAML
 
@@ -85,9 +88,69 @@ def build_system_prompt(sections: list, resources: list) -> str:
 
 
 def safe_slug(base: str, existing: set[str]) -> str:
+    """Return `base`, or the first free `base-2`, `base-3`, ... not in `existing`."""
     if base not in existing:
         return base
-    return base + "-2"
+    n = 2
+    while f"{base}-{n}" in existing:
+        n += 1
+    return f"{base}-{n}"
+
+
+# Characters that could end a Markdown link destination or start HTML/code in the README.
+_URL_FORBIDDEN_CHARS = frozenset("()[]<>\"'`\\")
+# Matched against "." + host, so each also blocks the bare name (e.g. `localhost`).
+_INTERNAL_HOST_SUFFIXES = (".localhost", ".local", ".internal", ".home.arpa", ".lan")
+_NUMERIC_LABEL_RE = re.compile(r"^(?:\d+|0x[0-9a-f]*)$")
+
+
+def is_safe_url(url: object) -> bool:
+    """True if a feed URL is safe to store as a Resource url and render as a link. Pure.
+
+    Feed links are untrusted, so this allows only plain public web links: an http(s)
+    scheme and a hostname; no whitespace, control characters or characters that
+    could break out of a Markdown link (`()[]<>"'` backtick, backslash); no invisible
+    format characters (zero-width, bidi controls); no userinfo (`user@host` misleads
+    about the real host) and no percent-escapes in the host; and no IP-literal,
+    numeric (e.g. `2130706433`), `localhost`, `.local`, `.internal`, `.home.arpa` or
+    `.lan` hosts. The host is checked after IDNA (UTS 46) normalisation, since HTTP
+    clients map e.g. fullwidth `ｌｏｃａｌｈｏｓｔ` or `127。0。0。1` to the ASCII host.
+    """
+    if not isinstance(url, str) or not url:
+        return False
+    if any(
+        ch.isspace() or unicodedata.category(ch) in ("Cc", "Cf") or ch in _URL_FORBIDDEN_CHARS
+        for ch in url
+    ):
+        return False
+    try:
+        parts = urlsplit(url)
+        _ = parts.port  # raises ValueError on a malformed port
+    except ValueError:
+        return False
+    if parts.scheme.lower() not in ("http", "https") or "@" in parts.netloc or "%" in parts.netloc:
+        return False
+    try:
+        # Also rejects empty labels (`a..b`) and labels starting or ending with `-`.
+        host = idna.encode(parts.hostname or "", uts46=True).decode("ascii").rstrip(".")
+    except (idna.IDNAError, UnicodeError):
+        return False
+    if not host or any(not label.strip("-") for label in host.split(".")):
+        return False
+    try:
+        ipaddress.ip_address(host)
+        return False
+    except ValueError:
+        pass
+    # A numeric last label makes browsers read the host as IPv4 (e.g. `0x7f.1`).
+    if _NUMERIC_LABEL_RE.fullmatch(host.rsplit(".", 1)[-1]):
+        return False
+    return not ("." + host).endswith(_INTERNAL_HOST_SUFFIXES)
+
+
+def _code_span_text(value: object, max_len: int = 80) -> str:
+    """Model text made safe to sit inside a Markdown `code span` on one line."""
+    return sanitize_text(str(value).replace("`", "'"), max_len)
 
 
 _WHITESPACE_RE = re.compile(r"\s+")
@@ -150,6 +213,11 @@ def judge_sources(
     judgments made so far stand. Entries in `known_urls` are skipped. Judging also
     stops once `limit` entries are judged. Sources left unfinished by any stop are
     not in `fully_judged`.
+
+    Entries whose link fails `is_safe_url` are skipped before the judge is called,
+    like known URLs: they are not errors, are not recorded as rejects, and do not
+    keep their Source out of `fully_judged`, since a hostile link is never worth
+    retrying.
     """
     run = ScoutRun()
     slugs = set(existing_slugs)
@@ -157,6 +225,9 @@ def judge_sources(
         for entry in entries:
             url = entry.get("link", "")
             if not url:
+                continue
+            if not is_safe_url(url):
+                print(f"    skip (unsafe url): {sanitize_text(url, 200)}")
                 continue
             if url in known_urls:
                 print(f"    skip (known): {sanitize_text(url)}")
@@ -176,7 +247,11 @@ def judge_sources(
                 return run
             except Exception as exc:
                 # Any error fails the run, so further judge calls would only burn quota.
-                run.errors.append(f"source {source_id}: judge error for '{title}' ({url}): {exc}")
+                # Sanitized: errors are printed as `::error::` lines, so no newline may survive.
+                run.errors.append(
+                    f"source {source_id}: judge error for '{sanitize_text(title, 200)}'"
+                    f" ({sanitize_text(url, 200)}): {sanitize_text(str(exc), 1000)}"
+                )
                 run.auth_failed = isinstance(exc, JudgeAuthError)
                 return run
             run.evaluated += 1
@@ -248,12 +323,65 @@ def evaluate_scout_automerge(
     sections = set(valid_section_ids)
     types = set(valid_types)
     for c in candidates:
+        # Reasons are joined into the PR body, so model-supplied values are neutralised.
+        slug = _code_span_text(c.get("slug"))
         if c.get("section") not in sections:
-            reasons.append(f"candidate `{c.get('slug')}` has unknown section `{c.get('section')}`")
+            reasons.append(f"candidate `{slug}` has unknown section `{_code_span_text(c.get('section'))}`")
         if c.get("type") not in types:
-            reasons.append(f"candidate `{c.get('slug')}` has unknown type `{c.get('type')}`")
+            reasons.append(f"candidate `{slug}` has unknown type `{_code_span_text(c.get('type'))}`")
+        if not is_safe_url(c.get("url")):
+            # judge_sources already drops these; holding here guards against a regression.
+            reasons.append(f"candidate `{slug}` has an unsafe url")
     labels = list(BASE_LABELS) if not reasons else [*BASE_LABELS, SKIPPED_LABEL]
     return Decision(not reasons, reasons, labels)
+
+
+NO_CANDIDATES_NOTE = (
+    "_No new candidates this week. seen.yaml records the rejects; last\\_checked\\_at is bumped "
+    "only on Sources whose feed was fetched and whose new entries were all judged._"
+)
+
+
+def pr_body(candidates: list[dict], decision: dict, incomplete: str | None = None) -> str:
+    """The Scout PR body: an auto-merge banner, then one checklist row per Candidate. Pure.
+
+    Title, blurb and rationale were sanitized in judge_sources. The url is re-checked
+    (an unsafe one is withheld, not linked), slug/source/section/type are made inert
+    for their code spans, and each gate reason is collapsed onto one line.
+
+    `incomplete` is the reason a quota-stopped run recorded in candidates.yaml
+    (already sanitized by `write_candidates`); when set, a partial-run note follows
+    the banner, telling the reviewer to merge before the next run.
+    """
+    if decision["auto_merge_ok"]:
+        prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
+    else:
+        # The gate already neutralised model text in its reasons; just keep each on one line.
+        reasons = "; ".join(" ".join(str(r).split()) for r in decision["reasons"])
+        prefix = f"> **Auto-merge skipped:** {reasons}.\n"
+    if incomplete:
+        prefix += (
+            "\n> **Partial run:** the judge hit the Claude usage limit, so some entries "
+            f"were left for the next run. {' '.join(str(incomplete).split())}\n"
+            "> Merge this PR before the next scheduled run: that run starts from main, "
+            "so until this lands it re-judges the same entries. For a large backlog, "
+            "re-dispatch the workflow with a higher `candidate_cap`.\n"
+        )
+    if not candidates:
+        return prefix + "\n" + NO_CANDIDATES_NOTE
+    rows = []
+    for c in candidates:
+        if is_safe_url(c.get("url")):
+            link = f"[{c['title']}]({c['url']})"
+        else:
+            link = f"{c['title']} (unsafe url withheld)"
+        rows.append(
+            f"- [ ] **{link}** — `{_code_span_text(c['section'])}` · `{_code_span_text(c['type'])}`\n"
+            f"      Source: `{_code_span_text(c['source_id'])}` | Proposed slug: `{_code_span_text(c['slug'])}`\n"
+            f"      Blurb: _{c['blurb']}_\n"
+            f"      Rationale: _{c['rationale']}_"
+        )
+    return prefix + "\n" + f"## Candidates ({len(candidates)})\n\n" + "\n\n".join(rows)
 
 
 def write_candidates(path: Path, run: ScoutRun) -> None:
@@ -383,7 +511,7 @@ def main() -> None:
             ]
             print(f"  [{source_id}] {len(new_entries[source_id])} new entry/entries since {cutoff}")
         except Exception as exc:
-            print(f"::error::source {source_id}: {exc}", file=sys.stderr)
+            print(f"::error::source {source_id}: {sanitize_text(str(exc))}", file=sys.stderr)
 
     run = judge_sources(
         new_entries,

@@ -6,6 +6,7 @@ dependencies = [
     "pyyaml",
     "requests",
     "feedparser",
+    "idna>=3.15",
     "jinja2",
     "ruamel.yaml",
 ]

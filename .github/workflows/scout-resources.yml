@@ -138,34 +138,12 @@ jobs:
 
               with open("resources.yaml", "w") as f:
                   ryaml.dump(res_data, f)
-
-              rows = []
-              for c in candidates:
-                  rows.append(
-                      f"- [ ] **[{c['title']}]({c['url']})** — `{c['section']}` · `{c['type']}`\n"
-                      f"      Source: `{c['source_id']}` | Proposed slug: `{c['slug']}`\n"
-                      f"      Blurb: _{c['blurb']}_\n"
-                      f"      Rationale: _{c['rationale']}_"
-                  )
-
-              body = f"## Candidates ({n})\n\n" + "\n\n".join(rows)
           else:
               title = f"Scout bookkeeping — {year_week} (no candidates{', partial run' if incomplete else ''})"
-              body = "_No new candidates this week. seen.yaml records the rejects; last\\_checked\\_at is bumped only on Sources whose feed was fetched and whose new entries were all judged._"
 
-          if decision["auto_merge_ok"]:
-              prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
-          else:
-              prefix = "> **Auto-merge skipped:** " + "; ".join(decision["reasons"]) + ".\n"
-          if incomplete:
-              prefix += (
-                  "\n> **Partial run:** the judge hit the Claude usage limit, so some entries "
-                  f"were left for the next run. {incomplete}\n"
-                  "> Merge this PR before the next scheduled run: that run starts from main, "
-                  "so until this lands it re-judges the same entries. For a large backlog, "
-                  "re-dispatch the workflow with a higher `candidate_cap`.\n"
-              )
-          body = prefix + "\n" + body
+          # Pure and tested in scout.py: withholds unsafe urls, neutralises model text,
+          # and adds the partial-run note when judging stopped on the usage limit.
+          body = scout.pr_body(candidates, decision, incomplete)
 
           env_file = os.environ["GITHUB_ENV"]
           # Random delimiter: a body line equal to a fixed one could inject env vars (e.g. AUTO_MERGE_OK).

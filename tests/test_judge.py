@@ -215,6 +215,45 @@ def test_cli_exit_with_other_stderr_raises_plain_judge_error(monkeypatch) -> Non
     assert not isinstance(exc_info.value, judge.JudgeAuthError)
 
 
+# --- Error messages reach `::error::` / `::warning::` log lines, so stay single-line ---
+
+
+def _single_line(text: str) -> bool:
+    return "\n" not in text and "\r" not in text
+
+
+def test_cli_error_message_is_single_line() -> None:
+    stdout = _envelope(is_error=True, api_error_status=529, result="Overloaded\n::error::boom\r\nx", structured_output=None)
+    with pytest.raises(judge.JudgeError) as exc_info:
+        judge.parse_judgment(stdout)
+    assert _single_line(str(exc_info.value))
+    assert "Overloaded ::error::boom x" in str(exc_info.value)
+
+
+def test_auth_error_message_is_single_line() -> None:
+    stdout = _envelope(is_error=True, api_error_status=401, result="Failed to authenticate.\n::add-mask::x", structured_output=None)
+    with pytest.raises(judge.JudgeAuthError) as exc_info:
+        judge.parse_judgment(stdout)
+    assert _single_line(str(exc_info.value))
+
+
+def test_cli_exit_stderr_message_is_single_line(monkeypatch) -> None:
+    _fake_cli(monkeypatch, 1, "", "Error: line one\n::error::line two")
+    with pytest.raises(judge.JudgeError) as exc_info:
+        judge.run_claude("prompt", "SYSTEM")
+    assert _single_line(str(exc_info.value))
+
+
+def test_retry_warning_is_a_single_line_even_with_hostile_url_and_error(capsys) -> None:
+    run, _ = _scripted_run(judge.JudgeError("bad\n::error::injected"), _envelope())
+
+    judge.judge_entry("SYSTEM", "t", "https://x.example/a\n::add-mask::y", "s", "src", run=run, sleep=lambda _: None)
+
+    lines = capsys.readouterr().out.splitlines()
+    assert len(lines) == 1
+    assert lines[0].startswith("::warning::judge attempt 1/")
+
+
 SESSION_LIMIT = "You've hit your session limit · resets 3pm (UTC)"
 
 
@@ -297,3 +336,11 @@ def test_cli_exit_with_usage_limit_on_stderr_raises_quota_error_without_retry(mo
         judge.judge_entry("SYSTEM", "A title", "https://example.com/a", "s", "src", sleep=sleeps.append)
     assert len(calls) == 1
     assert sleeps == []
+
+
+def test_quota_error_message_is_single_line() -> None:
+    stdout = _envelope(is_error=True, result=f"{SESSION_LIMIT}\n::error::boom\r\nx", structured_output=None)
+    with pytest.raises(judge.JudgeQuotaError) as exc_info:
+        judge.parse_judgment(stdout)
+    assert _single_line(str(exc_info.value))
+    assert "session limit · resets 3pm (UTC) ::error::boom x" in str(exc_info.value)
