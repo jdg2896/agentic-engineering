@@ -281,7 +281,7 @@ def test_gate_default_types_are_the_judgment_schema_enum() -> None:
 
 def test_appending_candidates_never_touches_top_7() -> None:
     data = {"top_7": ["keep-me"], "resources": [{"id": "keep-me"}]}
-    candidate = {**_candidate(slug="new"), "title": "T", "author": "A", "blurb": "b", "tags": ["x"]}
+    candidate = {**_candidate(slug="new"), "source_id": "s", "title": "T", "author": "A", "blurb": "b", "tags": ["x"]}
 
     scout.append_candidates(data, [candidate], "2026-09-28")
 
@@ -289,6 +289,30 @@ def test_appending_candidates_never_touches_top_7() -> None:
     assert [r["id"] for r in data["resources"]] == ["keep-me", "new"]
     assert not any(k.startswith("top_7") for k in data["resources"][1])
     assert data["resources"][1]["added_at"] == "2026-09-28"
+
+
+def test_appended_resources_are_attributed_to_the_source_they_were_judged_from() -> None:
+    run = scout.judge_sources(
+        {
+            "src-a": [_entry("https://a/1")],
+            "src-b": [_entry("https://b/1"), _entry("https://b/2")],
+        },
+        _stub_judge({
+            "https://a/1": _judgment("include", "from-a"),
+            "https://b/1": _judgment("reject"),
+            "https://b/2": _judgment("include", "from-b"),
+        }),
+        known_urls=set(),
+        existing_slugs={"hand-curated"},
+    )
+    data = {"top_7": ["hand-curated"], "resources": [{"id": "hand-curated", "section": "patterns"}]}
+
+    scout.append_candidates(data, run.candidates, "2026-09-29")
+
+    attribution = {r["id"]: r.get("source_id") for r in data["resources"]}
+    assert attribution == {"hand-curated": None, "from-a": "src-a", "from-b": "src-b"}
+    assert "source_id" not in data["resources"][0]
+    assert data["top_7"] == ["hand-curated"]
 
 
 def test_automerge_decision_reads_candidates_file_and_section_ids(tmp_path) -> None:

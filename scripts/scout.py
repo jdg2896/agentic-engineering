@@ -421,7 +421,9 @@ def append_candidates(resources_data: dict, candidates: list[dict], today: str) 
     """Append Candidates to `resources_data["resources"]` as new Resources.
 
     Only the `resources` list is written: Scout never adds to or edits `top_7`,
-    which stays hand-curated (ADR-0002).
+    which stays hand-curated (ADR-0002). Each new Resource keeps its Candidate's
+    `source_id`, so Yield per Source is measurable; existing Resources are never
+    given one.
     """
     for c in candidates:
         resources_data["resources"].append({
@@ -436,6 +438,7 @@ def append_candidates(resources_data: dict, candidates: list[dict], today: str) 
             "cluster": None,
             "tags": c.get("tags", []),
             "added_at": today,
+            "source_id": c["source_id"],
             "verified_at": None,
             "archived": False,
             "paywall": False,
