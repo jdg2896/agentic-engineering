@@ -111,8 +111,17 @@ _Avoid_: deleted source, removed source.
 
 **Yield**:
 The **Resources** a **Source** has produced — the measure of whether it is
-**Unproductive**. Counted only from the point Resources began recording their Source;
-earlier Resources are unattributed.
+**Unproductive** (within a recent window) and whether it is **Worth following** (over its
+lifetime). Resources added by **Scout** record their Source; earlier Resources count
+toward a Source only when their link belongs to exactly that one Source's site, and are
+otherwise unattributed.
+
+**Worth following**:
+The guide's reader-facing list of **Sources** that give ongoing signal: every Source that
+is not **Retired** and has a lifetime **Yield** of at least three **Resources**. It is
+derived, never curated — a Source joins the moment it reaches that Yield and leaves the
+moment it is Retired; a site that is not a Source (e.g. one with no feed) is never on it.
+_Avoid_: recommended feeds, follow list.
 
 ## Relationships
 
@@ -130,6 +139,8 @@ earlier Resources are unattributed.
 - **Source retirement** judges **Dead** from **Source health** and **Unproductive** from
   **Yield**.
 - **Source discovery** feeds **Scout** by growing the **Source** list.
+- **Worth following** is derived from **Yield** and **Source retirement** alone: retiring a
+  Source removes it from the list, and nothing else does.
 - **Topic fit** is judged only in a **Trial**; **Source retirement** never retires a Source
   for lacking it.
 
