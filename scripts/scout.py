@@ -77,7 +77,7 @@ def build_system_prompt(sections: list, resources: list) -> str:
         "- Papers must have practical infrastructure implications, not pure ML theory",
         "- Tools must be production-ready or notable open-source research artefacts",
         "- Content must be about building, evaluating, operating, or securing agentic systems — any engineering discipline (FE, BE, infra, QA, data)",
-        "- Vendor blog posts are acceptable only if they contain reproducible techniques or architecture decisions",
+        "- Vendor blog posts are held to the same content bar as any other entry — include only if they contain reproducible techniques or architecture decisions",
         "- Reject if a substantially similar resource already exists in resources.yaml",
         "- News/announcements (new model release, funding round) → reject unless the announcement post itself contains technical content",
         "- GitHub release notes → include only if the release introduces a meaningful new capability (not just patch/bugfix)",
