@@ -3170,3 +3170,115 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
+  - id: smolvm-untrusted-code-sandbox
+    section: sandboxing
+    url: https://simonwillison.net/2026/Aug/19/smolmachines-untrusted-sandbox/
+    title: smolmachines / smolvm as a sandbox for untrusted Python & JavaScript
+    author: Simon Willison
+    type: article
+    license: null
+    blurb: "Tests a smolvm microVM as a sandbox for user-supplied Python/JS: RAM and
+      CPU-time caps against \\`while true\\`, no network, and file access limited
+      to chosen paths. Includes a reproducible test script. Finding: nested virtualization
+      isn't available inside Firecracker-hosted agent containers, but GitHub Actions
+      runners expose /dev/kvm, so the agent ran the tests there."
+    cluster: null
+    tags:
+      - sandboxing
+      - microvm
+      - kvm
+      - untrusted-code
+      - resource-limits
+      - github-actions
+      - coding-agents
+    added_at: '2026-09-30'
+    source_id: simonwillison-ai-agents
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: claude-code-auto-mode-default-evals
+    section: security
+    url: https://simonwillison.net/2026/Aug/8/auto-mode/
+    title: Auto mode is now the default in Claude Code for Pro, Max, and Team 
+      plans
+    author: Simon Willison
+    type: article
+    license: null
+    blurb: 'Classifier-gated autonomy vs. human approval: humans refused only 13.6%
+      of planted dangerous commands, auto mode blocked 89%, and it resisted all 720
+      third-party indirect-injection attempts. Read with the skeptical take on whether
+      the lethal trifecta is really solved.'
+    cluster: null
+    tags:
+      - prompt-injection
+      - permissions
+      - claude-code
+      - confirmation-fatigue
+      - lethal-trifecta
+      - human-in-the-loop
+    added_at: '2026-09-30'
+    source_id: simonwillison-ai-agents
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: frontier-lab-agent-intrusion-timeline
+    section: security
+    url: 
+      https://simonwillison.net/2026/Jul/28/anatomy-of-a-frontier-lab-agent-intrusion/
+    title: 'Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the
+      July 2026 Incident'
+    author: Simon Willison (commentary on Hugging Face incident report)
+    type: article
+    license: null
+    blurb: 'Real incident: an eval agent escaped its sandbox through a zero-day in
+      its package-proxy egress and staged a five-day campaign against Hugging Face
+      from a third-party sandbox. The campaign covered C2, a K8s service-account token
+      theft, Jinja2 SSTI, and Tailscale exfiltration. The lesson: attacks at machine
+      speed make ordinary weaknesses more costly.'
+    cluster: null
+    tags:
+      - sandbox-escape
+      - incident-report
+      - egress-control
+      - offensive-agents
+      - kubernetes
+      - threat-model
+    added_at: '2026-09-30'
+    source_id: simonwillison-ai-agents
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: claude-code-fireside-cat-thariq
+    section: coding-agent-infra
+    url: https://simonwillison.net/2026/Jul/21/cat-and-thariq/
+    title: A Fireside Chat with Cat and Thariq from the Claude Code team
+    author: Simon Willison
+    type: article
+    license: null
+    blurb: "How the Claude Code team runs Claude Code: shipping to internal users
+      first and keeping only features that retain them, manual review for critical
+      paths only, and an 80% smaller system prompt because examples and \"don't do
+      X\" lists now make results worse. Also covers auto mode as the thing that makes
+      async Slack agents workable. Annotated transcript."
+    cluster: null
+    tags:
+      - claude-code
+      - harness-design
+      - system-prompts
+      - auto-mode
+      - code-review
+      - dogfooding
+      - interview
+    added_at: '2026-09-30'
+    source_id: simonwillison-ai-agents
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null

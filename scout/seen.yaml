@@ -1496,3 +1496,111 @@ seen:
     title: AI-Native Products Have Different Unit Economics
     source_id: glbai-com
     rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/29/openai-devday-2026-live-blog/
+    title: OpenAI DevDay 2026 live blog
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/24/harder/
+    title: Note on 24th September 2026
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/
+    title: 'SF October 14th: A Birds of a Feather Session on Agentic Engineering'
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/20/llm-keys-ui/
+    title: llm-keys-ui 0.1
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/18/thariq-shihipar/
+    title: Quoting Thariq Shihipar
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/11/boris-cherny/
+    title: Quoting Boris Cherny
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/10/shopify-react-native/
+    title: Native is now the future of mobile at Shopify
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/9/blender-viewer/
+    title: .blend URL Viewer
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: 
+      https://simonwillison.net/2026/Sep/6/research-acceleration-the-view-inside-openai/
+    title: 'Research acceleration: The view inside OpenAI'
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/5/blender-coding-agents-macos/
+    title: Using Blender with coding agents on macOS
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Sep/2/rick-brewster/
+    title: Quoting Rick Brewster
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/28/just-a-rumour-of-a-bug/
+    title: Just a rumour of a bug is enough to find a security exploit these 
+      days
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/26/paul-dix/
+    title: Quoting Paul Dix
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/22/more-than-just-code-review/
+    title: More than just code review
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/21/stop-making-tuis/
+    title: Stop Making TUIs
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/20/bun-webview-json-api/
+    title: A shot-scraper-style JSON API on Bun 1.4's new Bun.WebView
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: 
+      https://simonwillison.net/2026/Aug/19/conceptual-integrity-and-counting-lines-of-code/
+    title: Conceptual integrity and counting lines of code
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/16/qwen-38-27b/
+    title: Qwen 3.8 27B is excellent, but it defaults to wildly overthinking 
+      things
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/12/alchemy-utils/
+    title: alchemy-utils 0.1a0
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/7/moonlight-mayhem/
+    title: Moonlight & Mayhem (Raccoon Heist by Codex + GPT-5.6 Sol Ultra)
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/5/muse-code-and-muse-spark-12/
+    title: Introducing Muse Code and Muse Spark 1.2
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/5/raccoon-heist/
+    title: One-shotting a Raccoon Heist game using Claude Fable 5
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/4/steve-yegge/
+    title: Quoting Steve Yegge
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Aug/3/david-crawshaw/
+    title: Quoting David Crawshaw's prompt
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/
+    title: Reverse-engineering is cheap now
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
+  - url: https://simonwillison.net/2026/Jul/16/bad-codex-bug/
+    title: Quoting Thibault Sottiaux
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-09-30'
