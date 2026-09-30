@@ -2973,3 +2973,200 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
+  - id: agent-harness-distillation
+    section: coding-agent-infra
+    url: https://arize.com/blog/agent-harness-distillation/
+    title: Are agent harnesses dying? What harness distillation changes
+    author: Arize AI
+    type: article
+    license: null
+    blurb: Generic scaffolding gets trained into models; the harness that 
+      survives is the part bound to your tools, data, users, and environment.
+    cluster: null
+    tags:
+      - harness-design
+      - distillation
+      - scaffolding
+      - architecture
+    added_at: '2026-09-30'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: jev-llm-judge-consistency
+    section: eval-frameworks
+    url: https://arize.com/blog/jev-llm-judge-consistency/
+    title: What Jev's probabilities reveal that repeated LLM judgments miss
+    author: Arize AI
+    type: article
+    license: null
+    blurb: 'Judge flip rate as a first-class metric: probability-based scoring vs.
+      five LLM judges across ten Phoenix evaluators, with accuracy, cost and latency
+      trade-offs.'
+    cluster: null
+    tags:
+      - llm-as-judge
+      - evaluation
+      - judge-consistency
+      - phoenix
+      - cost-latency
+    added_at: '2026-09-30'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: arize-phoenix-ui-code-mode
+    section: tools-mcp
+    url: https://arize.com/blog/code-mode-in-the-browser/
+    title: How we built UI Code Mode into Arize Phoenix
+    author: Arize AI
+    type: article
+    license: null
+    blurb: Replacing 58 UI-driving tools with two tools plus an in-browser 
+      JavaScript sandbox. Covers the design reasoning, how it works and what it 
+      cost.
+    cluster: null
+    tags:
+      - code-mode
+      - tool-design
+      - browser-sandbox
+      - tool-consolidation
+      - case-study
+    added_at: '2026-09-30'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: mcp-python-sdk-v2
+    section: tools-mcp
+    url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.0
+    title: MCP Python SDK v2.0.0
+    author: Model Context Protocol
+    type: repo
+    license: MIT
+    blurb: Official Python SDK for the stateless 2026-07-28 MCP revision, and it
+      still serves 2025-era clients from the same server. FastMCP is renamed 
+      MCPServer and gets a first-class Client. Tools use multi-round-trip 
+      requests and Resolve() dependency injection now that servers can't call 
+      back to the client. OTel tracing is on by default, and stdio and OAuth are
+      hardened.
+    cluster: null
+    tags:
+      - mcp
+      - python
+      - sdk
+      - protocol
+      - opentelemetry
+      - oauth
+    added_at: '2026-09-30'
+    source_id: github-com-modelcontextprotocol-python-sdk
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: zcode-silent-git-history-upload
+    section: security
+    url: https://glbai.com/en/posts/zcode-silent-git-history-upload/
+    title: Developers Asked Where ZCode Was Sending Their Git History. Zhipu 
+      Launched Another Model.
+    author: glbai.com
+    type: article
+    license: null
+    blurb: 'Read-only forensic teardown of a coding agent client (ZCode 3.12.3): a
+      748 MiB encrypted repo snapshot that is 98.9% .git, traced along a full credential-to-OSS
+      upload path. A worked example of auditing what your coding agent harness actually
+      sends off the machine.'
+    cluster: null
+    tags:
+      - coding-agents
+      - data-exfiltration
+      - supply-chain
+      - forensics
+      - privacy
+      - trust-boundaries
+    added_at: '2026-09-30'
+    source_id: glbai-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: feishu-api-export-bypass
+    section: security
+    url: https://glbai.com/en/posts/feishu-cli-download-permission/
+    title: Why Feishu/Lark Documents Can Still Be Exported via API After 
+      Downloads Are Disabled
+    author: glbai.com
+    type: article
+    license: null
+    blurb: "Field test: UI-level \"no download/export/print\" doesn't bind OpenAPI.
+      App scopes, access identity and wiki tokens decide what an agent's CLI/MCP tools
+      can pull, so the harness has to enforce its own data controls."
+    cluster: null
+    tags:
+      - data-exfiltration
+      - permissions
+      - mcp
+      - tool-misuse
+      - enterprise
+      - harness-controls
+    added_at: '2026-09-30'
+    source_id: glbai-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: mewdesign-loop-engineering
+    section: coding-agent-infra
+    url: https://glbai.com/en/posts/mewdesign-loop-engineering-practice/
+    title: 'Loop Engineering in Practice: How I Let AI Work on Its Own in a Million-Scale
+      ARR Product'
+    author: glbai.com (MewDesign)
+    type: article
+    license: null
+    blurb: 'Five autonomous agent loops on a production codebase: GitHub, Skills,
+      and a harness with explicit permissions and evidence gates.'
+    cluster: null
+    tags:
+      - harness-design
+      - autonomous-loops
+      - permissions
+      - case-study
+      - coding-agents
+    added_at: '2026-09-30'
+    source_id: glbai-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: loop-engineering-explained
+    section: coding-agent-infra
+    url: https://glbai.com/en/posts/loop-engineering-explained/
+    title: What Is Loop Engineering? What a Year of Building MewDesign Taught Me
+    author: glbai.com
+    type: article
+    license: null
+    blurb: Stop hand-prompting the coding agent; engineer the loop that drives 
+      it. Grounded in a year of shipping one product.
+    cluster: null
+    tags:
+      - loop-engineering
+      - coding-agents
+      - harness-design
+      - practitioner-experience
+    added_at: '2026-09-30'
+    source_id: glbai-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null

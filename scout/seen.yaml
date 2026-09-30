@@ -1380,3 +1380,119 @@ seen:
     title: 'Hidden Gems: Part 4'
     source_id: zed-blog
     rejected_at: '2026-09-29'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.273
+    title: 0.3.273
+    source_id: inspect-ai-releases
+    rejected_at: '2026-09-30'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1550
+    title: 'stagehand-python@4.2.0a0.dev1550: docs: Prose guide fix and clarify purpose
+      of template (#3077)'
+    source_id: stagehand-releases
+    rejected_at: '2026-09-30'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1549
+    title: 'stagehand-python@4.2.0a0.dev1549: Release browse@0.11.1 (#3041)'
+    source_id: stagehand-releases
+    rejected_at: '2026-09-30'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1548
+    title: 'stagehand-python@4.2.0a0.dev1548: docs: Update Stagehand deployment docs
+      with Functions support (#3056)'
+    source_id: stagehand-releases
+    rejected_at: '2026-09-30'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1547
+    title: 'stagehand-python@4.2.0a0.dev1547: fix(cli): Functions CLI updates for
+      `init` and `publish` (#3055)'
+    source_id: stagehand-releases
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/wearedevelopers-north-america-ai-agents-2026/
+    title: What everyone was talking about at WeAreDevelopers World Congress 
+      North America
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/anthropic-says-it-fixed-claudes-writing/
+    title: Anthropic says it fixed Claude’s writing. I ran the evals to check.
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/arize-ax-jev-as-a-judge/
+    title: Evaluate production traces with Jev-as-a-Judge directly in Arize AX
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/jev-remote-evaluator/
+    title: How to build a remote evaluator in Arize AX with Jev
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/jev-as-a-judge/
+    title: 'Jev vs. LLM-as-a-Judge: Accuracy and cost benchmarks'
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/llm-guardrails-jev/
+    title: 'Real-time LLM guardrails with Jev: comparing latency and cost'
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://arize.com/blog/building-tools-for-ai-agents/
+    title: What changes when AI agents use your software
+    source_id: arize-com
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.2.0
+    title: v2.2.0
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.30.0
+    title: v1.30.0
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.1
+    title: v2.0.1
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.1.1
+    title: v2.1.1
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.1.0
+    title: v2.1.0
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.29.1
+    title: v1.29.1
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.29.0
+    title: v1.29.0
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: 
+      https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.0rc1
+    title: v2.0.0rc1
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: 
+      https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.0b2
+    title: v2.0.0b2
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-09-30'
+  - url: https://glbai.com/en/posts/fde-in-china-considerations/
+    title: Things to Consider Before Being an FDE in China
+    source_id: glbai-com
+    rejected_at: '2026-09-30'
+  - url: https://glbai.com/en/posts/codex-built-a-share-quant-strategy/
+    title: 'Codex Series 01: I Gave an A-Share Account to AI. One Month Later, It
+      Doubled'
+    source_id: glbai-com
+    rejected_at: '2026-09-30'
+  - url: https://glbai.com/en/posts/qishifu-demo-day-mew-design-global-growth/
+    title: 'Going Global on Zero Budget: How We Reached Paid Users in 80+ Countries
+      with SEO'
+    source_id: glbai-com
+    rejected_at: '2026-09-30'
+  - url: https://glbai.com/en/posts/ai-design-agents-html-design/
+    title: Why AI Design Agents Should Speak HTML
+    source_id: glbai-com
+    rejected_at: '2026-09-30'
+  - url: https://glbai.com/en/posts/ai-native-products-token-economics/
+    title: AI-Native Products Have Different Unit Economics
+    source_id: glbai-com
+    rejected_at: '2026-09-30'

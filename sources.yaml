@@ -5,7 +5,7 @@ sources:
     type: atom
     url: https://simonwillison.net/tags/ai-agents/atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -17,7 +17,7 @@ sources:
     type: rss
     url: https://hamel.dev/index.xml
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -29,7 +29,7 @@ sources:
     type: rss
     url: https://eugeneyan.com/rss/
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -51,7 +51,7 @@ sources:
     type: rss
     url: https://embracethered.com/blog/index.xml
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -64,8 +64,8 @@ sources:
     url: https://blog.cloudflare.com/tag/ai-agents/rss
     cadence: weekly
     last_checked_at: 2026-09-29
-    consecutive_failures: 1
-    failing_since: &id001 2026-09-29
+    consecutive_failures: 2
+    failing_since: 2026-09-29
     last_http_status: 404
     newest_entry_at: null
     enabled: true
@@ -75,11 +75,11 @@ sources:
     type: rss
     url: https://www.langchain.com/blog/rss.xml
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-28
+    newest_entry_at: 2026-09-29
     enabled: true
     notes: null
 
@@ -88,8 +88,8 @@ sources:
     url: https://cognition.ai/rss.xml
     cadence: weekly
     last_checked_at: 2026-09-29
-    consecutive_failures: 1
-    failing_since: *id001
+    consecutive_failures: 2
+    failing_since: 2026-09-29
     last_http_status: 301
     newest_entry_at: null
     enabled: true
@@ -101,7 +101,7 @@ sources:
     type: github-releases
     url: https://github.com/langchain-ai/langgraph/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -113,7 +113,7 @@ sources:
     type: github-releases
     url: https://github.com/openai/openai-agents-python/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -125,11 +125,11 @@ sources:
     type: github-releases
     url: https://github.com/UKGovernmentBEIS/inspect_ai/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-28
+    newest_entry_at: 2026-09-30
     enabled: true
     notes: null
 
@@ -137,7 +137,7 @@ sources:
     type: github-releases
     url: https://github.com/letta-ai/letta/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -159,7 +159,7 @@ sources:
     type: github-releases
     url: https://github.com/google/adk-python/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -171,7 +171,7 @@ sources:
     type: github-releases
     url: https://github.com/huggingface/smolagents/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -183,7 +183,7 @@ sources:
     type: github-releases
     url: https://github.com/modelcontextprotocol/servers/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -197,11 +197,11 @@ sources:
     type: atom
     url: https://vercel.com/atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-28
+    newest_entry_at: 2026-09-29
     enabled: true
     notes: null
 
@@ -209,11 +209,11 @@ sources:
     type: rss
     url: https://openai.com/news/rss.xml
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-28
+    newest_entry_at: 2026-09-29
     enabled: true
     notes: null
 
@@ -221,7 +221,7 @@ sources:
     type: rss
     url: https://zed.dev/blog.rss
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -233,7 +233,7 @@ sources:
     type: github-releases
     url: https://github.com/browser-use/browser-use/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -245,7 +245,7 @@ sources:
     type: github-releases
     url: https://github.com/microsoft/playwright/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -257,11 +257,11 @@ sources:
     type: github-releases
     url: https://github.com/browserbase/stagehand/releases.atom
     cadence: weekly
-    last_checked_at: 2026-09-29
+    last_checked_at: 2026-09-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-28
+    newest_entry_at: 2026-09-30
     enabled: true
     notes: null
 
@@ -269,7 +269,11 @@ sources:
     type: rss
     url: https://arize.com/feed/
     cadence: weekly
-    last_checked_at: 2026-03-30
+    last_checked_at: 2026-09-30
+    consecutive_failures: 0
+    failing_since: null
+    last_http_status: 200
+    newest_entry_at: 2026-09-29
     enabled: true
     notes: Added by Source review from Citation mining
     added_at: 2026-09-30
@@ -279,7 +283,11 @@ sources:
     type: github-releases
     url: https://github.com/modelcontextprotocol/python-sdk/releases.atom
     cadence: weekly
-    last_checked_at: 2026-03-30
+    last_checked_at: 2026-09-30
+    consecutive_failures: 0
+    failing_since: null
+    last_http_status: 200
+    newest_entry_at: 2026-09-07
     enabled: true
     notes: Added by Source review from Citation mining
     added_at: 2026-09-30
@@ -289,7 +297,11 @@ sources:
     type: rss
     url: https://glbai.com/en/rss.xml
     cadence: weekly
-    last_checked_at: 2026-03-30
+    last_checked_at: 2026-09-30
+    consecutive_failures: 0
+    failing_since: null
+    last_http_status: 200
+    newest_entry_at: 2026-09-18
     enabled: true
     notes: 'Added by Source review from Source suggestion #131'
     added_at: 2026-09-30
