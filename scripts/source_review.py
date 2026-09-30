@@ -121,14 +121,22 @@ class ProspectiveSource(NamedTuple):
     citations: tuple[str, ...] = ()  # ids of the Resources citing it (Citation mining)
 
 
+class TrialInclude(NamedTuple):
+    """An entry a Trial's judge included: its title and why, both sanitized judge text,
+    and its url, which passed `is_safe_url`."""
+
+    title: str
+    url: str
+    rationale: str
+
+
 class TrialEvidence(NamedTuple):
     """What a Trial found: its entries in the window and the judge's verdicts on them."""
 
     in_window: int  # dated entries in the 6-month window (the Trial judges up to 10)
     judged: int
-    # (title, url) of each entry judged `include`; the title is sanitized judge text and
-    # the url passed `is_safe_url`. Evidence only: never written to resources.yaml.
-    included: tuple[tuple[str, str], ...]
+    # Each entry judged `include`. Evidence only: never written to resources.yaml.
+    included: tuple[TrialInclude, ...]
 
 
 class Addition(NamedTuple):
@@ -565,7 +573,8 @@ def _trial(
     budget.trials += 1
     run = scout.judge_sources({source_id: in_window[:TRIAL_SIZE]}, budgeted, set(), set())
     evidence = TrialEvidence(
-        len(in_window), run.evaluated, tuple((c["title"], c["url"]) for c in run.candidates)
+        len(in_window), run.evaluated,
+        tuple(TrialInclude(c["title"], c["url"], c["rationale"]) for c in run.candidates),
     )
     if run.quota_exhausted is not None:
         if budget.ran_out:
@@ -1526,6 +1535,27 @@ def _free_text(text: object) -> str:
     return scout.defuse_references(_one_line(text))
 
 
+# A judge rationale shown in the PR body is cut to this many characters (before
+# defusing), so an Addition with many included entries cannot crowd out the rest.
+RATIONALE_MAX_CHARS = 300
+
+
+def _rationale_line(text: object, label: str = "Rationale") -> str:
+    """`label: _text_` for a judge rationale, or "" when there is none.
+
+    `text` is already-sanitized judge text: it is put on one line, cut to
+    RATIONALE_MAX_CHARS (never through a backslash escape), and defused, so it cannot
+    close an issue, mention anyone or start a `::` workflow command.
+    """
+    text = _one_line(text)
+    if len(text) > RATIONALE_MAX_CHARS:
+        cut = text[:RATIONALE_MAX_CHARS]
+        if (len(cut) - len(cut.rstrip("\\"))) % 2:
+            cut = cut[:-1]  # a lone backslash would escape whatever follows it
+        text = cut.rstrip() + "…"
+    return f"{label}: _{scout.defuse_references(text)}_" if text else ""
+
+
 def _url_span(url: object) -> str:
     """A url as an inert code span, or a placeholder when it is not safe to show.
 
@@ -1576,8 +1606,12 @@ def _addition_row(a: Addition) -> str:
         f"  Feed: {_url_span(a.source.get('url'))} ({sanitize_text(a.source.get('type'), 10)})",
         f"  {_trial_line(a.trial)}:",
     ]
-    # Titles were sanitized by judge_sources; sanitizing again would double the escapes.
-    lines += [f"  - {_free_text(title)} — {_url_span(url)}" for title, url in a.trial.included]
+    # Titles and rationales were sanitized by judge_sources; sanitizing again would
+    # double the escapes.
+    for entry in a.trial.included:
+        lines.append(f"  - {_free_text(entry.title)} — {_url_span(entry.url)}")
+        if rationale := _rationale_line(entry.rationale):
+            lines.append(f"    {rationale}")
     return "\n".join(lines)
 
 
