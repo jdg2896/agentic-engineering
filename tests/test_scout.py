@@ -1046,7 +1046,31 @@ def test_main_fails_when_the_usage_limit_is_hit_before_any_judgment(tmp_path, mo
     assert exc_info.value.code == 1
     assert not paths["candidates"].exists()
     assert {name: path.read_text() for name, path in paths.items() if path.exists()} == before
-    assert "usage limit" in capsys.readouterr().err
+    lines = capsys.readouterr().err.splitlines()
+    assert [line for line in lines if line.startswith("::")] == [
+        "::error::Nothing was judged: judging stopped on the Claude usage limit (Claude Code CLI error: "
+        "You've hit your session limit · resets 3pm (UTC)); no files written. The subscription quota is "
+        "shared with interactive use (docs/adr/0001-oauth-token-for-ci.md); re-run once it resets."
+    ]
+
+
+def test_a_long_usage_limit_message_is_trimmed_so_the_reason_keeps_its_closing_bracket(tmp_path) -> None:
+    def judge(title, url, summary, source_id):
+        raise scout.judge.JudgeQuotaError("You've hit your session limit " + "x" * 2000)
+
+    run = scout.judge_sources(BUDGET_ENTRIES, judge, set(), set())
+    path = tmp_path / "candidates.yaml"
+    scout.write_candidates(path, run)
+
+    reason = scout.load_incomplete_reason(path)
+    assert reason.startswith("the Claude usage limit (You've hit your session limit xxx")
+    assert reason.endswith("x)")
+
+
+def test_a_call_budget_of_one_reads_in_the_singular() -> None:
+    run = scout.judge_sources(BUDGET_ENTRIES, _counting_judge([]), set(), set(), max_calls=1)
+
+    assert run.stopped_early == "Scout's call budget of 1 judge call"
 
 
 # --- Usage-limit stop meets the hardening ---
@@ -1089,7 +1113,7 @@ def _usage_limit_stop() -> scout.ScoutRun:
 @pytest.mark.parametrize(
     ("stopped_run", "expected"),
     [
-        (_call_budget_stop, "judging stopped on Scout's call budget of 1 judge calls,"),
+        (_call_budget_stop, "judging stopped on Scout's call budget of 1 judge call,"),
         (_time_budget_stop, "judging stopped on Scout's time budget of 60 minutes of judging,"),
         (_usage_limit_stop, "judging stopped on the Claude usage limit (You've hit your session limit ::error::"),
     ],
@@ -1155,7 +1179,7 @@ def test_main_quota_error_with_no_progress_is_single_line(tmp_path, monkeypatch,
 
     lines = capsys.readouterr().err.splitlines()
     assert [line for line in lines if line.startswith("::")] == [
-        next(line for line in lines if line.startswith("::error::The Claude usage limit"))
+        next(line for line in lines if line.startswith("::error::Nothing was judged: judging stopped on the Claude usage limit"))
     ]
 
 

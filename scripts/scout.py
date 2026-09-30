@@ -220,6 +220,11 @@ def judge_failure_hint(run: ScoutRun) -> str:
     )
 
 
+# The usage-limit error text kept in a stop reason: well under sanitize_text's default
+# 500, so the reason around it survives being sanitized whole.
+USAGE_LIMIT_MESSAGE_LEN = 300
+
+
 def judge_sources(
     new_entries: dict[str, list],
     judge: Callable[[str, str, str, str], dict],
@@ -269,7 +274,8 @@ def judge_sources(
                 print(f"\n  --limit {limit} reached, stopping early.")
                 return run
             if max_calls is not None and run.evaluated >= max_calls:
-                run.stopped_early = f"Scout's call budget of {max_calls} judge calls"
+                calls = "judge call" if max_calls == 1 else "judge calls"
+                run.stopped_early = f"Scout's call budget of {max_calls} {calls}"
                 return run
             if max_seconds is not None and clock() - start >= max_seconds:
                 run.stopped_early = f"Scout's time budget of {max_seconds / 60:g} minutes of judging"
@@ -282,7 +288,10 @@ def judge_sources(
             try:
                 result = judge(title, url, summary, source_id)
             except JudgeQuotaError as exc:
-                run.stopped_early = f"the Claude usage limit ({exc})"
+                # Trimmed here, not only when written, so truncating the whole reason
+                # later can never cut its closing bracket.
+                message = " ".join(str(exc).split())[:USAGE_LIMIT_MESSAGE_LEN]
+                run.stopped_early = f"the Claude usage limit ({message})"
                 run.usage_limit_hit = True
                 return run
             except Exception as exc:
@@ -717,8 +726,8 @@ def main() -> None:
         # No progress at all: nothing to keep, and a green run would hide that the
         # quota (shared with interactive use, ADR-0001) is gone.
         print(
-            f"::error::The Claude usage limit is exhausted and nothing was judged "
-            f"({sanitize_text(run.stopped_early)}); no files written. The subscription "
+            f"::error::Nothing was judged: judging stopped on {sanitize_text(run.stopped_early)}; "
+            "no files written. The subscription "
             "quota is shared with interactive use (docs/adr/0001-oauth-token-for-ci.md); "
             "re-run once it resets.",
             file=sys.stderr,
