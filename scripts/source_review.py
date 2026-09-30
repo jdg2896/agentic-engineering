@@ -202,7 +202,8 @@ class ReviewPlan:
     def is_empty(self) -> bool:
         """Nothing to add, retire or reject: the run opens no PR.
 
-        A rejection counts: its PR records it and closes its suggestion issue.
+        A rejection counts: its PR records it, which is what later closes its suggestion
+        issue (`reconcile_suggestions`).
         """
         return not self.retirements and not self.additions and not self.rejected
 
@@ -712,6 +713,55 @@ def suggestions_from_issues(issues: list) -> list[dict]:
     return suggestions
 
 
+# The `notes` `_new_source` writes on a Source added from a Source suggestion.
+_ADDED_FROM_SUGGESTION_RE = re.compile(r"^Added by Source review from Source suggestion #(\d+)$")
+
+
+def reconcile_suggestions(
+    suggestions: list[dict], sources: list[dict], memory: Iterable[dict]
+) -> tuple[list[dict], list[dict]]:
+    """Split open Source suggestions into those still to Trial and those to close.
+
+    A Source review PR is opened and auto-merged with the workflow's GITHUB_TOKEN, so
+    its `Closes #n` lines are best effort only (#136). The decision itself is on main
+    once the PR merges: an Addition as a Source whose `notes` name the suggestion, a
+    Rejection as a Prospective Source memory entry with its issue number. A suggestion
+    still open with such a record is decided: it is closed and never Trialled again
+    (to ask again, file a new suggestion). Returns `(undecided, closes)`, where each
+    close is `{"number": int, "comment": str}`; the comment names only a sanitized
+    Source id or rejection reason.
+    """
+    added: dict[int, str] = {}
+    for source in sources:
+        match = _ADDED_FROM_SUGGESTION_RE.match(str(source.get("notes") or ""))
+        if match:
+            added.setdefault(int(match.group(1)), str(source.get("id")))
+    rejected: dict[int, str] = {}
+    for entry in memory:
+        number = entry.get("suggestion")
+        if entry.get("channel") == "suggestion" and type(number) is int:
+            rejected.setdefault(number, str(entry.get("reason")))
+    undecided, closes = [], []
+    for suggestion in suggestions:
+        number = suggestion["number"]
+        if number in added:
+            closes.append({
+                "number": number,
+                "comment": f"Source review added this Source suggestion as "
+                           f"`{sanitize_text(added[number], 120)}` in sources.yaml; closing it.",
+            })
+        elif number in rejected:
+            closes.append({
+                "number": number,
+                "comment": f"Source review rejected this Source suggestion "
+                           f"(`{sanitize_text(rejected[number], 40)}`, recorded in "
+                           "scout/prospects.yaml); closing it. File a new suggestion to ask again.",
+            })
+        else:
+            undecided.append(suggestion)
+    return undecided, closes
+
+
 def _suggested_prospects(suggestions: list[dict]) -> list[ProspectiveSource]:
     """Source suggestions as Prospective Sources. The workflow already kept only the
     owner's and collaborators' (see `suggestions_from_issues`); a suggestion with no
@@ -740,7 +790,9 @@ def discover_sources(
     - No url → `no-url`; a url failing `is_safe_url` → `unsafe-url`.
     - A Prospective Source not from a Source suggestion whose Source key is in `memory`
       (lasting rejections from recent runs, see `update_prospect_memory`) is skipped
-      silently. A suggestion is always tried: the owner asked again.
+      silently. An undecided suggestion is always tried, even for a remembered site:
+      the owner asked again. (A decided one never gets here, see
+      `reconcile_suggestions`.)
     - Same Source key (`source_key`) as any Source on the list, enabled or Retired, or
       as anything already considered this run → `duplicate`. Checked on the url, and
       again on the page's and feed's final urls after resolution.
@@ -1159,8 +1211,9 @@ def review_sources(
     with the same system prompt), which only Source discovery calls, and `clock` (the
     Trial time budget). Nothing passed in is modified.
 
-    Source discovery: each Source suggestion (`{"number", "url"}`, already limited to
-    the owner's and collaborators', see `suggestions_from_issues`) is a Prospective
+    Source discovery: each undecided Source suggestion (`{"number", "url"}`, already
+    limited to the owner's and collaborators', see `suggestions_from_issues`, with
+    those already decided on main removed by `reconcile_suggestions`) is a Prospective
     Source, run through `discover_sources` with `memory` (the Prospective Source
     memory's `rejected` entries). Its url must pass `is_safe_url` and not share a
     Source key (`source_key`) with any Source on the list, enabled or Retired; its
@@ -1575,7 +1628,8 @@ def _outcome_rows(outcomes: list, verb: str, rest: str) -> str:
 def _fit_body(body: str, closes: str) -> str:
     """`body` then the `closes` lines, within MAX_BODY_CHARS: an over-long body is cut
     at a line break with a notice (and any open `<details>` closed), never the
-    closing lines, which must reach GitHub for the suggestion issues to close."""
+    closing lines (best effort: the next run closes decided suggestions anyway, see
+    `reconcile_suggestions`)."""
     tail = f"\n\n{closes}" if closes else ""
     if len(body) + len(tail) <= MAX_BODY_CHARS:
         return body + tail
@@ -1888,8 +1942,9 @@ PROSPECTS_PATH = scout.ROOT / "scout" / "prospects.yaml"
 _PROSPECTS_TEMPLATE = """\
 # Source discovery's Prospective Source memory, written by Source review only
 # (scripts/source_review.py); Scout never reads it. Each lasting rejection is kept
-# for 6 months, so Citation mining does not re-Trial the same site every month; a
-# Source suggestion is always tried again.
+# for 6 months, so Citation mining does not re-Trial the same site every month; an
+# undecided Source suggestion is always tried, while one recorded here (by its issue
+# number) is decided and closed instead.
 rejected: []
 """
 
@@ -1924,7 +1979,11 @@ def main() -> None:
     memory = prospects_data.get("rejected") or []
     sources = sources_data["sources"]
     resources = resources_data["resources"]
-    suggestions = _load_suggestions(args.suggestions)
+    # Suggestions decided by an earlier, merged Source review are closed, not Trialled
+    # again: GitHub may not act on the `Closes` lines of a PR opened with GITHUB_TOKEN.
+    suggestions, close_suggestions = reconcile_suggestions(
+        _load_suggestions(args.suggestions), sources, memory
+    )
 
     # The unchanged Scout judge, with the system prompt Scout builds; the Topic fit
     # judge takes the same prompt, for the guide's sections and inclusion criteria.
@@ -1941,7 +2000,8 @@ def main() -> None:
     # otherwise emit a `::` workflow command.
     enabled = sum(1 for s in sources if s.get("enabled", True))
     print(
-        f"Reviewed {enabled} enabled Source(s) and {len(suggestions)} Source suggestion(s): "
+        f"Reviewed {enabled} enabled Source(s) and {len(suggestions)} undecided Source "
+        f"suggestion(s) ({len(close_suggestions)} already decided, to close): "
         f"{len(plan.retirements)} to retire, {len(plan.additions)} to add, "
         f"{len(plan.rejected)} rejected, {len(plan.untried)} not decided."
     )
@@ -1955,6 +2015,8 @@ def main() -> None:
     for r in [*plan.rejected, *plan.untried]:
         print(f"  [{sanitize_text(r.reason, 40)}] {_channel(r.prospect)}: "
               f"{sanitize_text(r.prospect.url, 200)} {_one_line(r.detail)}")
+    for c in close_suggestions:
+        print(f"  [close] Source suggestion #{c['number']}: already decided on main")
     for u in plan.untried:
         print(f"::warning::{_channel(u.prospect)} not decided ({sanitize_text(u.reason, 40)}); "
               "it is tried again next run.", flush=True)
@@ -1975,6 +2037,8 @@ def main() -> None:
         "auth_failed": plan.auth_failed,
         "judge_failure_hint": plan.judge_failure,
         "citation_mining": plan.mining._asdict() if plan.mining is not None else None,
+        # Open suggestions whose decision is already on main; the workflow closes them.
+        "close_suggestions": close_suggestions,
     }
     if plan.is_empty:
         print("Nothing to add, retire or reject; no PR.")
