@@ -833,7 +833,8 @@ def test_a_trial_judges_up_to_10_entries_from_the_last_6_months_newest_first() -
     (addition,) = plan.additions
     assert addition.trial == source_review.TrialEvidence(
         in_window=12, judged=10,
-        included=(("Post 3", "https://blog.example/p3", "because Post 3"),),
+        included=(source_review.TrialInclude(
+            title="Post 3", url="https://blog.example/p3", rationale="because Post 3"),),
     )
 
 
@@ -1229,8 +1230,8 @@ def test_hostile_judge_text_is_sanitized_in_trial_evidence() -> None:
 
     plan = _discover([_suggest(1, FEED)], {FEED: feed}, judge)
 
-    ((title, _url, _rationale),) = plan.additions[0].trial.included
-    assert title == "Evil \\<img src=x\\> \\[click\\](https://evil) ::error::x"
+    (entry,) = plan.additions[0].trial.included
+    assert entry.title == "Evil \\<img src=x\\> \\[click\\](https://evil) ::error::x"
 
 
 def test_discovery_writes_no_resources_and_leaves_its_inputs_unmodified() -> None:
@@ -1476,7 +1477,7 @@ def _addition(source_id: str, url: str | None = None):
     return source_review.Addition(
         source,
         source_review.ProspectiveSource(source["url"], "suggestion", suggestion=1),
-        source_review.TrialEvidence(3, 3, (("t", "https://x.example/t", "r"),)),
+        source_review.TrialEvidence(3, 3, (source_review.TrialInclude("t", "https://x.example/t", "r"),)),
     )
 
 
@@ -1674,12 +1675,23 @@ def test_pr_body_shows_a_hostile_rationale_inert_on_one_line() -> None:
 
 
 def test_pr_body_cuts_a_long_rationale_at_the_maximum_length() -> None:
-    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge_with_rationale("a" * 480))
+    # sanitize_text keeps 500 characters, but its escapes make this one 700 long.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("a" * 300 + "<" * 200))
 
     body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
 
     (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
-    assert line == f"    Rationale: _{'a' * source_review.RATIONALE_MAX_CHARS}…_"
+    assert line == "    Rationale: _" + "a" * 300 + "\\<" * 100 + "…_"
+    assert source_review.RATIONALE_MAX_CHARS == 500
+
+
+def test_pr_body_shows_a_rationale_of_sanitize_texts_full_length_uncut() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge_with_rationale("a" * 500))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert f"    Rationale: _{'a' * 500}_" in body.splitlines()
 
 
 def test_pr_body_never_cuts_a_rationale_through_an_escape() -> None:

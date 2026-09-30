@@ -1537,15 +1537,18 @@ def _free_text(text: object) -> str:
 
 # A judge rationale shown in the PR body is cut to this many characters (before
 # defusing), so an Addition with many included entries cannot crowd out the rest.
-RATIONALE_MAX_CHARS = 300
+# 500 is `sanitize_text`'s default length: judge rationales often run 350-500
+# characters and end on their verdict, so only the escapes it adds are ever cut.
+RATIONALE_MAX_CHARS = 500
 
 
 def _rationale_line(text: object, label: str = "Rationale") -> str:
     """`label: _text_` for a judge rationale, or "" when there is none.
 
-    `text` is already-sanitized judge text: it is put on one line, cut to
-    RATIONALE_MAX_CHARS (never through a backslash escape), and defused, so it cannot
-    close an issue, mention anyone or start a `::` workflow command.
+    Precondition: `text` was already sanitized by `sanitize_text` (as `judge_sources`
+    does), which escapes Markdown links and HTML; this does not sanitize again. It is
+    put on one line, cut to RATIONALE_MAX_CHARS (never through a backslash escape), and
+    defused, so it cannot close an issue, mention anyone or start a `::` workflow command.
     """
     text = _one_line(text)
     if len(text) > RATIONALE_MAX_CHARS:
