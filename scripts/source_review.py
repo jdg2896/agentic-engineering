@@ -147,6 +147,13 @@ class Addition(NamedTuple):
     trial: TrialEvidence
 
 
+# Why a Prospective Source was rejected, as recorded in the Prospective Source memory.
+REJECTION_REASONS = frozenset({
+    "no-url", "unsafe-url", "duplicate", "unreachable", "no-feed", "no-recent-entries",
+    "no-include",
+})
+
+
 class Rejection(NamedTuple):
     """A lasting verdict: a Prospective Source that is not added, and why.
 
@@ -154,9 +161,7 @@ class Rejection(NamedTuple):
     """
 
     prospect: ProspectiveSource
-    # no-url | unsafe-url | duplicate | unreachable | no-feed | no-recent-entries |
-    # no-include
-    reason: str
+    reason: str  # one of REJECTION_REASONS
     detail: str = ""  # sanitized when made
     trial: TrialEvidence | None = None
 
@@ -1195,6 +1200,7 @@ def update_prospect_memory(memory: list[dict], plan: ReviewPlan) -> list[dict]:
     cutoff = _months_before(plan.today, TRIAL_WINDOW_MONTHS)
     kept = [m for m in memory if _date_field(m.get("rejected_at")) > cutoff]
     for r in plan.rejected:
+        assert r.reason in REJECTION_REASONS, f"unknown rejection reason {r.reason!r}"
         safe = is_safe_url(r.prospect.url)
         kept.append({
             "key": source_key(r.prospect.url) if safe else None,
