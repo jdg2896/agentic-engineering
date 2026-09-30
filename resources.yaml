@@ -121,42 +121,6 @@ top_7:
   - openai-practical-guide
   - applied-llms-year
 
-worth_following:
-  - name: Anthropic Engineering
-    url: https://www.anthropic.com/engineering
-    blurb: Engineering posts from the model-maker — agents, tooling, and 
-      operational patterns.
-    verified_at: &id001 2026-09-28
-  - name: Cognition blog
-    url: https://cognition.com/blog
-    blurb: Case studies on building Devin; the productive disagreement to "Don't
-      Build Multi-Agents."
-    verified_at: *id001
-  - name: Simon Willison
-    url: https://simonwillison.net/
-    blurb: The field's running curator — daily-ish takes on LLMs, agents, and 
-      prompt injection.
-    verified_at: *id001
-  - name: Embrace The Red
-    url: https://embracethered.com/blog/
-    blurb: Johann Rehberger's red-team blog — concrete agent exploits and bypass
-      techniques.
-    verified_at: *id001
-  - name: Cloudflare AI agents tag
-    url: https://blog.cloudflare.com/tag/ai-agents/
-    blurb: Agent-runtime and infra posts from Cloudflare's edge platform.
-    first_dead_at: &id002 2026-05-03
-    quarantined_at: &id003 2026-05-25
-    quarantine_reason: '404'
-  - name: LangChain blog
-    url: https://www.langchain.com/blog
-    blurb: Framework updates, multi-agent patterns, and ecosystem news.
-    verified_at: *id001
-  - name: Hamel's blog
-    url: https://hamel.dev/
-    blurb: Applied LLM engineering and evals from a practitioner perspective.
-
-    verified_at: *id001
 resources:
   # ----------------------------------------------------------------------
   # Section 1: foundations
@@ -172,7 +136,7 @@ resources:
     cluster: null
     tags: [canonical, mental-model]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: &id001 2026-09-28
     archived: false
     paywall: false
     superseded_by: null
@@ -1040,8 +1004,8 @@ resources:
     superseded_by: null
     notes: null
 
-    first_dead_at: *id002
-    quarantined_at: *id003
+    first_dead_at: &id002 2026-05-03
+    quarantined_at: &id003 2026-05-25
     quarantine_reason: soft_404
   - id: letta-docs
     section: memory-systems

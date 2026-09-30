@@ -157,13 +157,8 @@ def check_url(resource: dict) -> dict:
     return result
 
 
-def _slugify(name: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-    return slug or "wf"
-
-
 def collect_targets(data) -> list[dict]:
-    """Build a flat list of verification targets from both resources and worth_following."""
+    """Build a flat list of verification targets from the resources."""
     targets: list[dict] = []
     for r in data.get("resources") or []:
         targets.append({
@@ -171,13 +166,6 @@ def collect_targets(data) -> list[dict]:
             "url": r["url"],
             "paywall": r.get("paywall", False),
             "kind": "resource",
-        })
-    for r in data.get("worth_following") or []:
-        targets.append({
-            "id": f"wf:{_slugify(r['name'])}",
-            "url": r["url"],
-            "paywall": False,
-            "kind": "worth_following",
         })
     return targets
 
@@ -246,7 +234,7 @@ def compute_state_changes(yaml_data, results: list[dict], today: date) -> list[d
     Returns a list of change dicts (one per result that matched a YAML entry):
       {
         "entry": <ruamel CommentedMap>,
-        "kind": "resource"|"worth_following",
+        "kind": "resource",
         "id": str,
         "url": str,
         "top_7": bool,
@@ -258,17 +246,13 @@ def compute_state_changes(yaml_data, results: list[dict], today: date) -> list[d
       }
     """
     resources_by_id = {r["id"]: r for r in (yaml_data.get("resources") or [])}
-    wf_by_url = {w["url"]: w for w in (yaml_data.get("worth_following") or [])}
     top_7_set = set(yaml_data.get("top_7") or [])
 
     changes: list[dict] = []
     for result in results:
         kind = result.get("kind", "resource")
         rid = result["id"]
-        if kind == "resource":
-            entry = resources_by_id.get(rid)
-        else:
-            entry = wf_by_url.get(result["url"])
+        entry = resources_by_id.get(rid)
         if entry is None:
             continue
 
@@ -486,7 +470,7 @@ def main(argv: list[str] | None = None) -> None:
 
     targets = collect_targets(data)
     total = min(args.limit, len(targets)) if args.limit else len(targets)
-    print(f"Verifying {total} targets (resources + worth_following)...")
+    print(f"Verifying {total} resources...")
 
     results = run_verification(targets, args.limit)
     today = date.today()
