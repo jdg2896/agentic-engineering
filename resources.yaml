@@ -2700,7 +2700,6 @@ resources:
       - automated-evals
       - ground-truth
     added_at: '2026-09-29'
-    source_id: hamel-husain
     verified_at: null
     archived: false
     paywall: false
