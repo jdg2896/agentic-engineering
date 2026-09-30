@@ -1457,18 +1457,20 @@ def test_the_checked_in_memory_is_well_formed() -> None:
     assert list(memory) == ["rejected"]
     assert isinstance(memory["rejected"], list)
     for entry in memory["rejected"]:
-        assert set(entry) == {"key", "url", "channel", "suggestion", "reason", "rejected_at"}
-        assert entry["channel"] in ("suggestion", "citation")
-        assert (entry["suggestion"] is None) == (entry["channel"] == "citation")
-        assert entry["reason"] in (
-            "no-url", "unsafe-url", "duplicate", "unreachable", "no-feed",
-            "no-recent-entries", "no-include",
-        )
-        assert (entry["key"] is None) == (entry["url"] is None)
-        if entry["url"] is not None:
-            assert source_review.is_safe_url(entry["url"])
-            assert entry["key"] == source_review.source_key(entry["url"])
-        source_review._date_field(entry["rejected_at"])  # raises if malformed
+        who = f"prospect memory entry {entry.get('key') or entry.get('suggestion')!r}"
+        assert set(entry) == {"key", "url", "channel", "suggestion", "reason", "rejected_at"}, who
+        assert entry["channel"] in ("suggestion", "citation"), who
+        if entry["channel"] == "citation":
+            assert entry["suggestion"] is None, who
+        else:
+            assert isinstance(entry["suggestion"], int), who
+        assert entry["reason"] in source_review.REJECTION_REASONS, who
+        if entry["url"] is None:
+            assert entry["key"] is None, who
+        else:
+            assert source_review.is_safe_url(entry["url"]), who
+            assert entry["key"] == source_review.source_key(entry["url"]), who
+        assert isinstance(entry["rejected_at"], date), who
 
 
 def test_updating_the_checked_in_memory_keeps_its_header() -> None:
