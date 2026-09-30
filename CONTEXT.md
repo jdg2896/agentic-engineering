@@ -18,6 +18,8 @@ The guide's **topic** is fixed: agentic systems. It is *not* a general "AI engin
 - The single inclusion test is unchanged: _does it carry a reproducible technique or
   architecture decision for building/operating an agentic system?_ Capability
   announcements and vibes essays are rejected regardless of source.
+- **English-language only** — the guide includes only Resources written in English; a
+  non-English entry is rejected on that ground alone, whatever its content.
 
 ## Language
 
@@ -65,9 +67,16 @@ override.
 
 **Trial**:
 How a **Prospective Source** is validated: a sample of its recent entries is put through
-the same editorial judge **Scout** uses. It is added only if the Trial shows it is alive
-and would have yielded at least one **Resource** — the same bar that keeps a Source from
-being **Unproductive**.
+the same editorial judge **Scout** uses. It is added only if the Trial shows it is alive,
+would have yielded at least one **Resource** — the same bar that keeps a Source from
+being **Unproductive** — and has **Topic fit**.
+
+**Topic fit**:
+Whether a **Prospective Source**, as a whole, is about agentic systems — judged once per
+**Trial**, over the Trial's sample. A feed can yield an occasional **Resource** and still
+lack Topic fit (e.g. a general ML-serving release feed); one that lacks it is rejected as
+off-topic.
+_Avoid_: relevance, source verdict.
 
 **Source retirement**:
 The half of **Source review** that turns **Dead** or **Unproductive Sources** into
@@ -121,6 +130,8 @@ earlier Resources are unattributed.
 - **Source retirement** judges **Dead** from **Source health** and **Unproductive** from
   **Yield**.
 - **Source discovery** feeds **Scout** by growing the **Source** list.
+- **Topic fit** is judged only in a **Trial**; **Source retirement** never retires a Source
+  for lacking it.
 
 ## Flagged ambiguities
 

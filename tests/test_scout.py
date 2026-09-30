@@ -1485,3 +1485,27 @@ def test_main_warns_about_every_failed_fetch_in_one_single_line_format(tmp_path,
         "::warning::source gone: feed fetch failed (HTTP status 404); 3 failed run(s) in a row",
         "::warning::source down: feed fetch failed (reset ::error::injected); 1 failed run(s) in a row",
     ]
+
+
+def _inclusion_criteria(prompt: str) -> str:
+    return prompt.split("## Inclusion criteria", 1)[1]
+
+
+def test_system_prompt_rejects_non_english_entries_as_an_inclusion_rule() -> None:
+    criteria = _inclusion_criteria(scout.build_system_prompt([], [])).lower()
+
+    assert "must be written in english" in criteria
+    assert "non-english" in criteria
+    assert "for that reason alone" in criteria
+
+
+def test_system_prompt_says_author_and_source_standing_are_not_criteria() -> None:
+    criteria = _inclusion_criteria(scout.build_system_prompt([], [])).lower()
+
+    assert "author" in criteria
+    assert "personal blog" in criteria
+    assert "company blog" in criteria
+    assert "vendor blog" in criteria
+    assert "well known" in criteria
+    assert "not criteria" in criteria
+    assert "only the content" in criteria
