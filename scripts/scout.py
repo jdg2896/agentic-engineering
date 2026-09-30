@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sys
+import time
 import unicodedata
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
@@ -225,6 +226,9 @@ def judge_sources(
     known_urls: set[str],
     existing_slugs: set[str],
     limit: int | None = None,
+    max_calls: int | None = None,
+    max_seconds: float | None = None,
+    clock: Callable[[], float] = time.monotonic,
 ) -> ScoutRun:
     """Judge each Source's new entries and record which Sources were fully judged.
 
@@ -236,6 +240,12 @@ def judge_sources(
     stops once `limit` entries are judged. Sources left unfinished by any stop are
     not in `fully_judged`.
 
+    The optional budget caps one run's judging: at most `max_calls` judge calls and
+    no call started once `max_seconds` of `clock` have passed since judging began.
+    It is checked before each judge call, so skipped entries cost nothing, and a
+    spent budget stops judging like the usage limit, recorded in `stopped_early`.
+    With neither set there is no budget (Source review's Trials rely on that).
+
     Entries whose link fails `is_safe_url` are skipped before the judge is called,
     like known URLs: they are not errors, are not recorded as rejects, and do not
     keep their Source out of `fully_judged`, since a hostile link is never worth
@@ -243,6 +253,7 @@ def judge_sources(
     """
     run = ScoutRun()
     slugs = set(existing_slugs)
+    start = clock() if max_seconds is not None else 0.0
     for source_id, entries in new_entries.items():
         for entry in entries:
             url = entry.get("link", "")
@@ -256,6 +267,12 @@ def judge_sources(
                 continue
             if limit is not None and run.evaluated >= limit:
                 print(f"\n  --limit {limit} reached, stopping early.")
+                return run
+            if max_calls is not None and run.evaluated >= max_calls:
+                run.stopped_early = f"Scout's call budget of {max_calls} judge calls"
+                return run
+            if max_seconds is not None and clock() - start >= max_seconds:
+                run.stopped_early = f"Scout's time budget of {max_seconds / 60:g} minutes of judging"
                 return run
             title = entry.get("title", "(untitled)")
             content_list = entry.get("content", [])
@@ -318,6 +335,15 @@ def judge_sources(
         run.fully_judged.add(source_id)
     return run
 
+
+# One run's judge budget, whichever runs out first. The call budget bounds how much of
+# the subscription quota, shared with interactive use (ADR-0001), one backlog can draw;
+# the time budget keeps judging (an Opus-class judge call takes roughly 30-60 s) well
+# inside the workflow's 90-minute timeout, leaving room to write files and open the PR.
+# A spent budget stops the run cleanly; the unjudged remainder is picked up next run.
+# Retune both from real judge.MODEL timings when the model changes.
+JUDGE_CALL_BUDGET = 100
+JUDGE_TIME_BUDGET_SECONDS = 60 * 60
 
 CANDIDATE_CAP = 8
 BASE_LABELS = ["automated", "scout"]
@@ -663,6 +689,8 @@ def main() -> None:
         known_urls=seen_urls | existing_urls,
         existing_slugs=existing_slugs,
         limit=args.limit,
+        max_calls=JUDGE_CALL_BUDGET,
+        max_seconds=JUDGE_TIME_BUDGET_SECONDS,
     )
 
     print(
