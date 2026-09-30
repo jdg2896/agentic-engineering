@@ -1462,12 +1462,14 @@ def test_read_source_records_nothing_for_a_feed_with_no_title_or_link() -> None:
 
 
 def test_read_source_sanitizes_a_hostile_feed_title_to_one_capped_line() -> None:
-    hostile = "Blog\n::error::pwned\r\n[x](https://evil.example) <script>`x`</script>"
+    hostile = "Blog\n::error::pwned\r\n[x](https://evil.example) <script>`x`</script> &#64;me"
 
     title = _meta(_titled(hostile, "https://a.example/")).feed_title
 
     assert "\n" not in title and "\r" not in title
-    assert title == "Blog ::error::pwned \\[x\\](https://evil.example) \\<script\\>\\`x\\`\\</script\\>"
+    assert title == (
+        "Blog ::error::pwned \\[x\\](https://evil.example) \\<script\\>\\`x\\`\\</script\\> \\&#64;me"
+    )
     assert _meta(_titled("x" * 1000)).feed_title == "x" * scout.FEED_TITLE_MAX_LEN
 
 
