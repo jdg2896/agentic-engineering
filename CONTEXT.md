@@ -18,6 +18,8 @@ The guide's **topic** is fixed: agentic systems. It is *not* a general "AI engin
 - The single inclusion test is unchanged: _does it carry a reproducible technique or
   architecture decision for building/operating an agentic system?_ Capability
   announcements and vibes essays are rejected regardless of source.
+- **English-language only** — the guide includes only Resources written in English; a
+  non-English entry is rejected on that ground alone, whatever its content.
 
 ## Language
 
