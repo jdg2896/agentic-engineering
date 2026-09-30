@@ -568,6 +568,42 @@ def test_applying_a_retirement_disables_the_source_and_records_date_and_reason()
     assert out.count("enabled: true") == 1
 
 
+def _with_feed_meta(text: str) -> str:
+    """SOURCES_YAML with the feed title and site link Scout records after the health facts."""
+    return text.replace(
+        "    newest_entry_at: 2026-09-20\n",
+        "    newest_entry_at: 2026-09-20\n    feed_title: Alive Blog\n    site_url: https://alive.example/\n",
+    ).replace(
+        "    newest_entry_at: 2026-07-30\n",
+        "    newest_entry_at: 2026-07-30\n    feed_title: Broken Blog\n    site_url: https://broken.example/\n",
+    )
+
+
+def test_applying_a_plan_round_trips_the_feed_title_and_site_link() -> None:
+    text = _with_feed_meta(SOURCES_YAML)
+    plan = _review([dict(s) for s in source_review.round_trip_yaml().load(text)["sources"]])
+    assert _retired(plan) == {"broken": "dead-broken"}
+
+    out = _apply_to_yaml(text, plan)
+
+    # The retired Source loses its health but keeps its name and link; the other is untouched.
+    assert out == text.replace(
+        "    consecutive_failures: 5\n"
+        "    failing_since: 2026-08-25\n"
+        "    last_http_status: 404\n"
+        "    newest_entry_at: 2026-07-30\n"
+        "    feed_title: Broken Blog\n"
+        "    site_url: https://broken.example/\n"
+        "    enabled: true\n",
+        "    feed_title: Broken Blog\n"
+        "    site_url: https://broken.example/\n"
+        "    enabled: false\n"
+        "    retired_at: 2026-09-29\n"
+        "    retired_reason: dead-broken\n",
+    )
+    assert _apply_to_yaml(text, source_review.ReviewPlan(today=TODAY)) == text
+
+
 def test_applying_an_empty_plan_changes_nothing() -> None:
     assert _apply_to_yaml(SOURCES_YAML, source_review.ReviewPlan(today=TODAY)) == SOURCES_YAML
 

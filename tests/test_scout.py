@@ -1406,6 +1406,122 @@ def test_record_health_overwrites_previous_health_in_place() -> None:
     assert "    newest_entry_at: 2026-09-28\n    enabled: true\n" in out.getvalue()
 
 
+# --- read_source: the feed's own title and site link ---
+
+
+def _meta(parsed_feed, **prior) -> scout.FeedMeta | None:
+    source = {"id": "src-a", "url": "https://a/feed", "last_checked_at": "2026-08-01", **prior}
+    return scout.read_source(source, parsed_feed, TODAY).meta
+
+
+def _titled(title=None, link=None, status=200) -> SimpleNamespace:
+    """A successfully parsed feed whose channel has the given title and link."""
+    channel = {k: v for k, v in (("title", title), ("link", link)) if v is not None}
+    feed = _parsed([_dated_entry("https://a/1", published=(2026, 9, 1))], status=status)
+    feed.feed = scout.feedparser.FeedParserDict(channel)
+    return feed
+
+
+def test_read_source_records_the_feed_title_and_site_link() -> None:
+    meta = _meta(_titled("Hamel's Blog", "https://hamel.dev/"))
+
+    assert meta == scout.FeedMeta(feed_title="Hamel's Blog", site_url="https://hamel.dev/")
+
+
+def test_read_source_keeps_a_plain_http_site_link() -> None:
+    assert _meta(_titled("t", "http://blog.example/")).site_url == "http://blog.example/"
+
+
+def test_read_source_records_nothing_for_a_feed_with_no_title_or_link() -> None:
+    assert _meta(_titled()) == scout.FeedMeta(feed_title=None, site_url=None)
+    assert _meta(_titled("  \n ", "")) == scout.FeedMeta(feed_title=None, site_url=None)
+    # A result with no channel at all.
+    assert _meta(_parsed([_dated_entry("https://a/1", published=(2026, 9, 1))])) == scout.FeedMeta(None, None)
+
+
+def test_read_source_sanitizes_a_hostile_feed_title_to_one_capped_line() -> None:
+    hostile = "Blog\n::error::pwned\r\n[x](https://evil.example) <script>`x`</script>"
+
+    title = _meta(_titled(hostile, "https://a.example/")).feed_title
+
+    assert "\n" not in title and "\r" not in title
+    assert title == "Blog ::error::pwned \\[x\\](https://evil.example) \\<script\\>\\`x\\`\\</script\\>"
+    assert _meta(_titled("x" * 1000)).feed_title == "x" * scout.FEED_TITLE_MAX_LEN
+
+
+@pytest.mark.parametrize(
+    "link",
+    [
+        "javascript:alert(1)",
+        "http://localhost/",
+        "https://127.0.0.1/",
+        "/",
+        "https://a.example/)[x](https://evil",
+        "https://user@a.example/",
+    ],
+)
+def test_read_source_leaves_an_unsafe_site_link_unset(link) -> None:
+    assert _meta(_titled("Blog", link)) == scout.FeedMeta(feed_title="Blog", site_url=None)
+
+
+@pytest.mark.parametrize("failure", ["raised", "http-404", "malformed-empty"])
+def test_read_source_records_no_feed_meta_when_the_read_failed(failure) -> None:
+    if failure == "raised":
+        parsed_feed = OSError("connection reset")
+    elif failure == "http-404":
+        parsed_feed = _titled("New name", "https://new.example/", status=404)
+    else:
+        parsed_feed = _parsed([], bozo=True)
+        parsed_feed.feed = scout.feedparser.FeedParserDict(title="New name")
+
+    assert _meta(parsed_feed, feed_title="Old name", site_url="https://old.example/") is None
+
+
+# --- record_feed_meta: feed title and site link onto a sources.yaml entry ---
+
+
+def test_record_feed_meta_writes_fields_after_the_health_facts() -> None:
+    ryaml = scout.round_trip_yaml()
+    data = ryaml.load(SOURCES_YAML)
+    source = data["sources"][0]
+    scout.record_health(source, scout.SourceHealth(0, None, 200, scout.date(2026, 9, 28)))
+
+    scout.record_feed_meta(source, scout.FeedMeta("A Blog", "https://a.example/"))
+    out = io.StringIO()
+    ryaml.dump(data, out)
+
+    assert out.getvalue() == (
+        "sources:\n"
+        "  # ── Author / blog feeds ──\n"
+        "  - id: src-a\n"
+        "    type: rss\n"
+        "    url: https://a/feed\n"
+        "    last_checked_at: 2026-09-22\n"
+        "    consecutive_failures: 0\n"
+        "    failing_since: null\n"
+        "    last_http_status: 200\n"
+        "    newest_entry_at: 2026-09-28\n"
+        "    feed_title: A Blog\n"
+        "    site_url: https://a.example/\n"
+        "    enabled: true\n"
+        "    notes: null\n"
+    )
+
+
+def test_record_feed_meta_overwrites_previous_values_in_place() -> None:
+    ryaml = scout.round_trip_yaml()
+    data = ryaml.load(SOURCES_YAML)
+    source = data["sources"][0]
+    scout.record_health(source, scout.SourceHealth(0, None, 200, None))
+    scout.record_feed_meta(source, scout.FeedMeta("Old", "https://old.example/"))
+
+    scout.record_feed_meta(source, scout.FeedMeta("New", None))
+    out = io.StringIO()
+    ryaml.dump(data, out)
+
+    assert "    newest_entry_at: null\n    feed_title: New\n    site_url: null\n    enabled: true\n" in out.getvalue()
+
+
 # --- main(): Source health on every run ---
 
 
@@ -1485,6 +1601,43 @@ def test_main_warns_about_every_failed_fetch_in_one_single_line_format(tmp_path,
         "::warning::source gone: feed fetch failed (HTTP status 404); 3 failed run(s) in a row",
         "::warning::source down: feed fetch failed (reset ::error::injected); 1 failed run(s) in a row",
     ]
+
+
+def test_main_records_feed_meta_on_success_and_keeps_it_on_a_failed_read(tmp_path, monkeypatch) -> None:
+    paths = _scout_repo(tmp_path, monkeypatch, [_judgment("reject"), _judgment("reject")])
+    paths["sources"].write_text(
+        "sources:\n"
+        "  - {id: src-a, url: 'https://a/feed', last_checked_at: 2026-08-01, enabled: true}\n"
+        "  - {id: down, url: 'https://down/feed', last_checked_at: 2026-08-01, enabled: true,"
+        " feed_title: Down Blog, site_url: 'https://down.example/'}\n"
+        "  - {id: gone, url: 'https://gone/feed', last_checked_at: 2026-08-01, enabled: true,"
+        " feed_title: Gone Blog, site_url: 'https://gone.example/'}\n"
+        "  - {id: retired, url: 'https://retired/feed', last_checked_at: 2026-08-01, enabled: false,"
+        " feed_title: Retired Blog, site_url: 'https://retired.example/'}\n"
+    )
+
+    def parse(url, agent=None):
+        if url == "https://down/feed":
+            raise OSError("connection reset")
+        if url == "https://gone/feed":
+            return _titled("Renamed", "https://renamed.example/", status=404)
+        if url == "https://retired/feed":
+            return _titled("Revived", "https://revived.example/")
+        feed = SimpleNamespace(entries=[_feed_entry("https://a/1"), _feed_entry("https://a/2")], status=200, bozo=False)
+        feed.feed = scout.feedparser.FeedParserDict(title="A\nBlog", link="https://a.example/")
+        return feed
+
+    monkeypatch.setattr(scout.feedparser, "parse", parse)
+
+    scout.main()
+
+    stored = _stored_sources(paths)
+    assert (stored["src-a"]["feed_title"], stored["src-a"]["site_url"]) == ("A Blog", "https://a.example/")
+    assert (stored["down"]["feed_title"], stored["down"]["site_url"]) == ("Down Blog", "https://down.example/")
+    assert (stored["gone"]["feed_title"], stored["gone"]["site_url"]) == ("Gone Blog", "https://gone.example/")
+    assert (stored["retired"]["feed_title"], stored["retired"]["site_url"]) == (
+        "Retired Blog", "https://retired.example/"
+    )
 
 
 def _inclusion_criteria(prompt: str) -> str:
