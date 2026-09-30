@@ -3,15 +3,15 @@ sources:
 
   - id: simonwillison-ai-agents
     type: atom
-    url: https://simonwillison.net/tags/ai-agents/atom
+    url: https://simonwillison.net/tags/coding-agents.atom
     cadence: weekly
-    last_checked_at: 2026-09-30
+    last_checked_at: 2026-03-30
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-05-13
+    newest_entry_at: null
     enabled: true
-    notes: null
+    notes: 'Moved from the ai-agents tag (silent since 2026-05-13) to coding-agents, where Simon now tags agent posts'
 
   - id: hamel-husain
     type: rss
