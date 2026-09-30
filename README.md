@@ -122,7 +122,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Who Validates the Validators? (EvalGen)](https://arxiv.org/abs/2404.12272) — Shankar et al. Critical paper on grader drift.
 - [Judging LLM-as-a-Judge (MT-Bench)](https://arxiv.org/abs/2306.05685) — The original position/verbosity/self-preference bias paper.
 - [Low-Hanging Fruit for RAG Search](https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/) — Jason Liu. Retrieval-side instrumentation.
-- [Do Automated Evals Work?](https://hamel.dev/) — Hamel Husain. Empirical comparison of 100 human-annotated traces against automated eval systems — ground truth on where LLM judges agree with humans and where they diverge.
+- [Do Automated Evals Work?](https://parlance-labs.com/blog/posts/auto-evals/) — Hamel Husain. Empirical comparison of 100 human-annotated traces against automated eval systems — ground truth on where LLM judges agree with humans and where they diverge.
 - ["It's Hard to Eval" Is a Product Smell](https://hamel.dev/blog/posts/eval-smell/) — Hamel Husain. "Hard to eval" is a product flaw: unverifiable outputs are bad UX and bad eval signal. Three worked examples — data agent, PE curriculum tool, workers'-comp report — redesign monolithic outputs to surface provenance, diffs, and contradictions, turning full-document grading into scoped unit tests as a side effect.
 
 ## 9. Evaluation — frameworks & benchmarks
