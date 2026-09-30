@@ -567,7 +567,7 @@ def _trial(
     evidence = TrialEvidence(
         len(in_window), run.evaluated, tuple((c["title"], c["url"]) for c in run.candidates)
     )
-    if run.quota_exhausted is not None:
+    if run.stopped_early is not None:
         if budget.ran_out:
             raise _TrialStop(
                 Untried(prospect, "time-budget", trial=evidence),
@@ -576,8 +576,8 @@ def _trial(
             )
         raise _TrialStop(
             Untried(prospect, "usage-limit", trial=evidence),
-            "Trials stopped on the Claude usage limit; the remaining Prospective Sources "
-            f"are tried next run. {sanitize_text(run.quota_exhausted, 300)}",
+            f"Trials stopped on {sanitize_text(run.stopped_early, 300)}; the remaining "
+            "Prospective Sources are tried next run.",
         )
     if run.errors:
         hint = scout.judge_failure_hint(run)

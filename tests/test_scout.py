@@ -168,14 +168,16 @@ def test_usage_limit_stops_judging_but_keeps_the_judgments_made_so_far() -> None
 
     assert called == ["https://a/1", "https://b/1", "https://b/2"]
     assert run.errors == []
-    assert run.quota_exhausted is not None and "session limit" in run.quota_exhausted
+    assert run.stopped_early is not None
+    assert run.stopped_early.startswith("the Claude usage limit (") and "session limit" in run.stopped_early
+    assert run.usage_limit_hit is True
     assert run.fully_judged == {"src-a"}
     assert run.evaluated == 2
     assert [c["url"] for c in run.candidates] == ["https://a/1"]
     assert [r["url"] for r in run.rejected] == ["https://b/1"]
 
 
-def test_non_quota_judge_errors_leave_quota_exhausted_unset() -> None:
+def test_non_quota_judge_errors_are_not_an_early_stop() -> None:
     for exc in (scout.judge.JudgeError("timed out"), scout.judge.JudgeAuthError("401")):
         run = scout.judge_sources(
             {"src-a": [_entry("https://a/1")]},
@@ -185,7 +187,8 @@ def test_non_quota_judge_errors_leave_quota_exhausted_unset() -> None:
         )
 
         assert len(run.errors) == 1
-        assert run.quota_exhausted is None
+        assert run.stopped_early is None
+        assert run.usage_limit_hit is False
 
 
 def test_limit_leaves_unfinished_sources_unbumped() -> None:
@@ -763,7 +766,7 @@ def test_load_incomplete_reason_is_none_for_a_complete_or_missing_file(tmp_path)
 
 def test_candidates_file_round_trips_the_sanitized_incomplete_reason(tmp_path) -> None:
     path = tmp_path / "candidates.yaml"
-    run = scout.ScoutRun(candidates=[{"slug": "a"}], quota_exhausted="limit\n::error::[x](y)")
+    run = scout.ScoutRun(candidates=[{"slug": "a"}], stopped_early="limit\n::error::[x](y)")
 
     scout.write_candidates(path, run)
 
@@ -866,14 +869,16 @@ def test_main_fails_when_the_usage_limit_is_hit_before_any_judgment(tmp_path, mo
 
 
 def test_pr_body_adds_the_partial_run_note_after_the_banner() -> None:
-    body = scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []}, "hit the\nlimit")
+    body = scout.pr_body(
+        [], {"auto_merge_ok": True, "reasons": [], "labels": []}, "the Claude usage limit (hit the\nlimit)"
+    )
 
     banner, blank, note, advice, *_ = body.splitlines()
     assert banner.startswith("> **Auto-merge enabled**")
     assert blank == ""
     assert note == (
-        "> **Partial run:** the judge hit the Claude usage limit, so some entries"
-        " were left for the next run. hit the limit"
+        "> **Partial run:** judging stopped on the Claude usage limit (hit the limit),"
+        " so some entries were left for the next run."
     )
     assert advice.startswith("> Merge this PR before the next scheduled run")
     assert "_No new candidates this week." in body
@@ -894,7 +899,7 @@ def test_quota_stop_still_skips_unsafe_urls_before_judging() -> None:
     run = scout.judge_sources(entries, judge, set(), set())
 
     assert calls == ["https://ok.example/p"]
-    assert run.quota_exhausted is not None
+    assert run.stopped_early is not None
     assert run.errors == []
 
 
