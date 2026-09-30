@@ -165,16 +165,18 @@ def sanitize_text(value: str, max_len: int = 500) -> str:
     """Neutralise judge free-text before it reaches resources.yaml, the README or a PR body.
 
     Collapses whitespace (newlines included) to single spaces, drops control
-    characters, truncates to `max_len`, then backslash-escapes backslashes and
-    Markdown link / HTML characters, and strips. `&` is escaped too (`\\&` renders as
-    a literal `&`), so an entity such as `&#64;user` or `&#35;12` cannot decode into
-    a mention or issue reference that `defuse_references` never saw. Truncating first
-    means no escape is ever split, so the result may exceed `max_len` by its escapes.
-    Pure.
+    characters, cuts text longer than `max_len` to `max_len` ending in "…", then
+    backslash-escapes backslashes and Markdown link / HTML characters. `&` is escaped
+    too (`\\&` renders as a literal `&`), so an entity such as `&#64;user` or `&#35;12`
+    cannot decode into a mention or issue reference that `defuse_references` never saw.
+    Cutting first means no escape is ever split, so the result may exceed `max_len` by
+    its escapes. Pure.
     """
     text = _WHITESPACE_RE.sub(" ", str(value))
-    text = "".join(ch for ch in text if unicodedata.category(ch) != "Cc")
-    return text.strip()[:max_len].strip().translate(_MARKDOWN_SIGNIFICANT)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Cc").strip()
+    if len(text) > max_len:
+        text = text[:max_len - 1].rstrip() + "…"
+    return text.translate(_MARKDOWN_SIGNIFICANT)
 
 
 _ZWSP = "​"
