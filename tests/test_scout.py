@@ -382,19 +382,50 @@ def test_sanitize_escapes_markdown_links_and_html() -> None:
     assert out == "\\[click\\](https://evil.example) \\<img src=x\\> \\`code\\`"
 
 
-def test_sanitize_truncates_to_max_len() -> None:
-    assert scout.sanitize_text("x" * 600) == "x" * 500
-    assert scout.sanitize_text("abcdef", max_len=3) == "abc"
+def test_sanitize_marks_a_cut_with_an_ellipsis_within_max_len() -> None:
+    assert scout.sanitize_text("x" * 600) == "x" * 499 + "…"
+    assert scout.sanitize_text("abcdef", max_len=3) == "ab…"
+
+
+def test_sanitize_keeps_text_of_exactly_max_len_uncut() -> None:
+    assert scout.sanitize_text("x" * 500) == "x" * 500
+    assert scout.sanitize_text("abc", max_len=3) == "abc"
+
+
+def test_sanitize_leaves_no_space_before_the_ellipsis() -> None:
+    assert scout.sanitize_text("ab cdef", max_len=4) == "ab…"
 
 
 def test_sanitize_truncates_before_escaping_so_no_escape_is_split() -> None:
-    assert scout.sanitize_text("ab[cd", max_len=3) == "ab\\["
+    assert scout.sanitize_text("ab[cd", max_len=4) == "ab\\[…"
 
 
 def test_sanitize_escapes_backslashes_so_pre_escaped_links_stay_dead() -> None:
     out = scout.sanitize_text("\\[x\\](https://evil) \\<b>")
     # Each backslash is doubled and each [ < still carries its own escape.
     assert out == "\\\\\\[x\\\\\\](https://evil) \\\\\\<b\\>"
+
+
+@pytest.mark.parametrize(
+    "raw", ["&#64;octocat", "&#35;12", "Fixes &#35;12", "&commat;x", "&num;12", "Fixes &num;12"]
+)
+def test_sanitized_entities_cannot_decode_into_mentions_or_references(raw: str) -> None:
+    # GitHub decodes HTML entities in PR bodies, so a named entity such as
+    # `&commat;x` or `&num;12` would render as `@x` or `#12` after defuse_references
+    # had already looked for a literal `@` or `#`.
+    out = scout.defuse_references(scout.sanitize_text(raw))
+    # `\&` is a CommonMark backslash escape: it renders as a literal `&`, so the
+    # entity text shows as typed instead of decoding.
+    assert out.replace("\u200b", "") == raw.replace("&", "\\&")
+    assert re.search(r"(?<!\\)&", out) is None
+
+
+def test_sanitize_escapes_ampersands_readably() -> None:
+    assert scout.sanitize_text("AT&T & friends") == "AT\\&T \\& friends"
+
+
+def test_sanitize_truncates_before_escaping_an_ampersand() -> None:
+    assert scout.sanitize_text("ab&cd", max_len=4) == "ab\\&…"
 
 
 def test_candidates_carry_sanitized_judge_text_but_raw_url() -> None:

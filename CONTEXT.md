@@ -141,6 +141,9 @@ _Avoid_: recommended feeds, follow list.
 - **Source discovery** feeds **Scout** by growing the **Source** list.
 - **Worth following** is derived from **Yield** and **Source retirement** alone: retiring a
   Source removes it from the list, and nothing else does.
+- A **Source suggestion** is decided once its Trial's outcome (an addition or a lasting
+  rejection) lands on main; the next **Source review** closes it and never Trials it
+  again. Asking again means filing a new suggestion.
 - **Topic fit** is judged only in a **Trial**; **Source retirement** never retires a Source
   for lacking it.
 
