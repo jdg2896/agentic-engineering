@@ -168,14 +168,16 @@ def test_usage_limit_stops_judging_but_keeps_the_judgments_made_so_far() -> None
 
     assert called == ["https://a/1", "https://b/1", "https://b/2"]
     assert run.errors == []
-    assert run.quota_exhausted is not None and "session limit" in run.quota_exhausted
+    assert run.stopped_early is not None
+    assert run.stopped_early.startswith("the Claude usage limit (") and "session limit" in run.stopped_early
+    assert run.usage_limit_hit is True
     assert run.fully_judged == {"src-a"}
     assert run.evaluated == 2
     assert [c["url"] for c in run.candidates] == ["https://a/1"]
     assert [r["url"] for r in run.rejected] == ["https://b/1"]
 
 
-def test_non_quota_judge_errors_leave_quota_exhausted_unset() -> None:
+def test_non_quota_judge_errors_are_not_an_early_stop() -> None:
     for exc in (scout.judge.JudgeError("timed out"), scout.judge.JudgeAuthError("401")):
         run = scout.judge_sources(
             {"src-a": [_entry("https://a/1")]},
@@ -185,7 +187,8 @@ def test_non_quota_judge_errors_leave_quota_exhausted_unset() -> None:
         )
 
         assert len(run.errors) == 1
-        assert run.quota_exhausted is None
+        assert run.stopped_early is None
+        assert run.usage_limit_hit is False
 
 
 def test_limit_leaves_unfinished_sources_unbumped() -> None:
@@ -205,6 +208,7 @@ def test_limit_leaves_unfinished_sources_unbumped() -> None:
     assert run.evaluated == 2
     assert run.errors == []
     assert run.fully_judged == {"src-a"}
+    assert run.stopped_early is None  # a manual, local option: no `incomplete` reason
 
 
 def test_known_urls_are_skipped_without_blocking_the_bump() -> None:
@@ -763,7 +767,7 @@ def test_load_incomplete_reason_is_none_for_a_complete_or_missing_file(tmp_path)
 
 def test_candidates_file_round_trips_the_sanitized_incomplete_reason(tmp_path) -> None:
     path = tmp_path / "candidates.yaml"
-    run = scout.ScoutRun(candidates=[{"slug": "a"}], quota_exhausted="limit\n::error::[x](y)")
+    run = scout.ScoutRun(candidates=[{"slug": "a"}], stopped_early="limit\n::error::[x](y)")
 
     scout.write_candidates(path, run)
 
@@ -778,6 +782,145 @@ def test_complete_run_writes_no_incomplete_key(tmp_path) -> None:
 
     assert "incomplete" not in path.read_text()
     assert scout.load_incomplete_reason(path) is None
+
+
+# --- judge_sources: the per-run judge budget ---
+
+
+def _counting_judge(calls: list[str], on_call=None):
+    """Judge that rejects everything and records each call's url; `on_call` runs after each."""
+
+    def judge(title, url, summary, source_id):
+        calls.append(url)
+        if on_call is not None:
+            on_call()
+        return _judgment("reject")
+
+    return judge
+
+
+BUDGET_ENTRIES = {
+    "src-a": [_entry("https://a/1"), _entry("https://a/2")],
+    "src-b": [_entry("https://b/1"), _entry("https://b/2")],
+    "src-c": [_entry("https://c/1")],
+}
+
+
+def test_call_budget_stops_before_the_next_call_and_keeps_the_judgments_made() -> None:
+    calls: list[str] = []
+
+    run = scout.judge_sources(BUDGET_ENTRIES, _counting_judge(calls), set(), set(), max_calls=3)
+
+    assert calls == ["https://a/1", "https://a/2", "https://b/1"]
+    assert run.evaluated == 3
+    assert [r["url"] for r in run.rejected] == calls
+    assert run.fully_judged == {"src-a"}
+    assert run.errors == []
+    assert run.stopped_early == "Scout's call budget of 3 judge calls"
+    assert run.usage_limit_hit is False
+
+
+def _ticking_clock(start: float, per_call: float):
+    """A fake clock reading `start` when judging begins, advanced `per_call` seconds by each judge call."""
+    now = [start]
+
+    def tick() -> None:
+        now[0] += per_call
+
+    return (lambda: now[0]), tick
+
+
+def test_time_budget_stops_once_the_clock_passes_it_even_with_calls_to_spare() -> None:
+    # Judging starts at t=5000 (feeds were fetched before), and each call takes 10 minutes.
+    clock, tick = _ticking_clock(5000.0, 600.0)
+    calls: list[str] = []
+
+    run = scout.judge_sources(
+        BUDGET_ENTRIES, _counting_judge(calls, tick), set(), set(),
+        max_calls=100, max_seconds=1500, clock=clock,
+    )
+
+    # Calls start at 0, 10 and 20 minutes of judging; at 30 minutes no call may start.
+    assert calls == ["https://a/1", "https://a/2", "https://b/1"]
+    assert run.evaluated == 3
+    assert run.fully_judged == {"src-a"}
+    assert run.stopped_early == "Scout's time budget of 25 minutes of judging"
+    assert run.usage_limit_hit is False
+
+
+def test_whichever_budget_runs_out_first_stops_the_run() -> None:
+    # Calls every 10 minutes: 2 calls run out before 60 minutes, 60 minutes before 10 calls.
+    clock, tick = _ticking_clock(0.0, 600.0)
+    calls: list[str] = []
+    run = scout.judge_sources(
+        BUDGET_ENTRIES, _counting_judge(calls, tick), set(), set(),
+        max_calls=2, max_seconds=3600, clock=clock,
+    )
+    assert run.evaluated == 2
+    assert run.stopped_early == "Scout's call budget of 2 judge calls"
+
+    clock, tick = _ticking_clock(0.0, 600.0)
+    calls = []
+    run = scout.judge_sources(
+        BUDGET_ENTRIES, _counting_judge(calls, tick), set(), set(),
+        max_calls=10, max_seconds=1200, clock=clock,
+    )
+    assert run.evaluated == 2
+    assert run.stopped_early == "Scout's time budget of 20 minutes of judging"
+
+
+def test_entries_skipped_before_the_judge_do_not_use_up_the_call_budget() -> None:
+    calls: list[str] = []
+    entries = {
+        "src-a": [
+            _entry("https://a/known"),
+            {"link": INJECTED_URL, "title": "t"},
+            {"title": "no link"},
+            _entry("https://a/1"),
+        ],
+        "src-b": [_entry("https://b/known"), _entry("https://b/1")],
+    }
+
+    run = scout.judge_sources(
+        entries, _counting_judge(calls), {"https://a/known", "https://b/known"}, set(), max_calls=2
+    )
+
+    assert calls == ["https://a/1", "https://b/1"]
+    assert run.fully_judged == {"src-a", "src-b"}
+    assert run.stopped_early is None
+
+
+def test_a_budget_that_is_never_reached_changes_nothing() -> None:
+    calls: list[str] = []
+
+    run = scout.judge_sources(BUDGET_ENTRIES, _counting_judge(calls), set(), set(), max_calls=5)
+
+    assert run.evaluated == 5
+    assert run.fully_judged == set(BUDGET_ENTRIES)
+    assert run.stopped_early is None
+
+
+def test_with_no_budget_every_entry_is_judged_and_the_clock_is_never_read() -> None:
+    calls: list[str] = []
+
+    def clock() -> float:
+        raise AssertionError("no budget, so the clock must not be read")
+
+    run = scout.judge_sources(BUDGET_ENTRIES, _counting_judge(calls), set(), set(), clock=clock)
+
+    assert run.evaluated == 5
+    assert run.fully_judged == set(BUDGET_ENTRIES)
+    assert run.stopped_early is None
+
+
+def test_limit_still_stops_without_an_incomplete_reason_even_under_a_budget() -> None:
+    calls: list[str] = []
+
+    run = scout.judge_sources(BUDGET_ENTRIES, _counting_judge(calls), set(), set(), limit=2, max_calls=2)
+
+    assert run.evaluated == 2
+    assert run.fully_judged == {"src-a"}
+    assert run.stopped_early is None
 
 
 # --- main(): the quota path end to end ---
@@ -849,6 +992,50 @@ def test_main_keeps_partial_progress_when_the_usage_limit_is_hit(tmp_path, monke
     assert "::warning::" in capsys.readouterr().out
 
 
+def test_main_keeps_partial_progress_when_the_call_budget_is_spent(tmp_path, monkeypatch, capsys) -> None:
+    monkeypatch.setattr(scout, "JUDGE_CALL_BUDGET", 3)
+    paths = _scout_repo(
+        tmp_path,
+        monkeypatch,
+        [_judgment("include", "one"), _judgment("reject"), _judgment("reject"), _judgment("reject")],
+    )
+
+    scout.main()  # returns normally: exit 0
+
+    candidates = yaml.safe_load(paths["candidates"].read_text())
+    assert [c["url"] for c in candidates["candidates"]] == ["https://a/1"]
+    assert candidates["incomplete"] == "Scout's call budget of 3 judge calls"
+    assert [s["url"] for s in yaml.safe_load(paths["seen"].read_text())["seen"]] == ["https://a/2", "https://b/1"]
+    stored = _stored_sources(paths)
+    assert str(stored["src-a"]["last_checked_at"]) != "2026-08-01"
+    assert str(stored["src-b"]["last_checked_at"]) == "2026-08-01"
+    for source_id in ("src-a", "src-b"):
+        assert stored[source_id]["consecutive_failures"] == 0
+        assert str(stored[source_id]["newest_entry_at"]) == "2026-09-01"
+    lines = capsys.readouterr().out.splitlines()
+    assert [line for line in lines if line.startswith("::")] == [
+        "::warning::Judging stopped on Scout's call budget of 3 judge calls. The 3 judgment(s) made are "
+        "saved; unfinished Sources keep their last_checked_at, so the unjudged remainder is picked up next run."
+    ]
+
+
+def test_main_time_budget_stop_is_not_a_failure_even_with_nothing_judged(tmp_path, monkeypatch, capsys) -> None:
+    # Unlike the usage limit, a spent budget says nothing about the quota, so it never fails the run.
+    monkeypatch.setattr(scout, "JUDGE_TIME_BUDGET_SECONDS", 0)
+    paths = _scout_repo(tmp_path, monkeypatch, [])
+
+    scout.main()
+
+    assert yaml.safe_load(paths["candidates"].read_text())["incomplete"] == (
+        "Scout's time budget of 0 minutes of judging"
+    )
+    stored = _stored_sources(paths)
+    assert {str(s["last_checked_at"]) for s in stored.values()} == {"2026-08-01"}
+    assert all(s["consecutive_failures"] == 0 for s in stored.values())
+    out = capsys.readouterr().out
+    assert "::warning::Judging stopped on Scout's time budget of 0 minutes of judging. The 0 judgment(s)" in out
+
+
 def test_main_fails_when_the_usage_limit_is_hit_before_any_judgment(tmp_path, monkeypatch, capsys) -> None:
     paths = _scout_repo(tmp_path, monkeypatch, [QUOTA])
     before = {name: path.read_text() for name, path in paths.items() if path.exists()}
@@ -859,24 +1046,92 @@ def test_main_fails_when_the_usage_limit_is_hit_before_any_judgment(tmp_path, mo
     assert exc_info.value.code == 1
     assert not paths["candidates"].exists()
     assert {name: path.read_text() for name, path in paths.items() if path.exists()} == before
-    assert "usage limit" in capsys.readouterr().err
+    lines = capsys.readouterr().err.splitlines()
+    assert [line for line in lines if line.startswith("::")] == [
+        "::error::Nothing was judged: judging stopped on the Claude usage limit (Claude Code CLI error: "
+        "You've hit your session limit · resets 3pm (UTC)); no files written. The subscription quota is "
+        "shared with interactive use (docs/adr/0001-oauth-token-for-ci.md); re-run once it resets."
+    ]
+
+
+def test_a_long_usage_limit_message_is_trimmed_so_the_reason_keeps_its_closing_bracket(tmp_path) -> None:
+    def judge(title, url, summary, source_id):
+        raise scout.judge.JudgeQuotaError("You've hit your session limit " + "x" * 2000)
+
+    run = scout.judge_sources(BUDGET_ENTRIES, judge, set(), set())
+    path = tmp_path / "candidates.yaml"
+    scout.write_candidates(path, run)
+
+    reason = scout.load_incomplete_reason(path)
+    assert reason.startswith("the Claude usage limit (You've hit your session limit xxx")
+    assert reason.endswith("x)")
+
+
+def test_a_call_budget_of_one_reads_in_the_singular() -> None:
+    run = scout.judge_sources(BUDGET_ENTRIES, _counting_judge([]), set(), set(), max_calls=1)
+
+    assert run.stopped_early == "Scout's call budget of 1 judge call"
 
 
 # --- Usage-limit stop meets the hardening ---
 
 
 def test_pr_body_adds_the_partial_run_note_after_the_banner() -> None:
-    body = scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []}, "hit the\nlimit")
+    body = scout.pr_body(
+        [], {"auto_merge_ok": True, "reasons": [], "labels": []}, "the Claude usage limit (hit the\nlimit)"
+    )
 
     banner, blank, note, advice, *_ = body.splitlines()
     assert banner.startswith("> **Auto-merge enabled**")
     assert blank == ""
     assert note == (
-        "> **Partial run:** the judge hit the Claude usage limit, so some entries"
-        " were left for the next run. hit the limit"
+        "> **Partial run:** judging stopped on the Claude usage limit (hit the limit),"
+        " so some entries were left for the next run."
     )
     assert advice.startswith("> Merge this PR before the next scheduled run")
     assert "_No new candidates this week." in body
+
+
+def _call_budget_stop() -> scout.ScoutRun:
+    return scout.judge_sources(BUDGET_ENTRIES, _counting_judge([]), set(), set(), max_calls=1)
+
+
+def _time_budget_stop() -> scout.ScoutRun:
+    clock, tick = _ticking_clock(0.0, 3600.0)
+    return scout.judge_sources(
+        BUDGET_ENTRIES, _counting_judge([], tick), set(), set(), max_seconds=3600, clock=clock
+    )
+
+
+def _usage_limit_stop() -> scout.ScoutRun:
+    def judge(title, url, summary, source_id):
+        raise HOSTILE_QUOTA
+
+    return scout.judge_sources(BUDGET_ENTRIES, judge, set(), set())
+
+
+@pytest.mark.parametrize(
+    ("stopped_run", "expected"),
+    [
+        (_call_budget_stop, "judging stopped on Scout's call budget of 1 judge call,"),
+        (_time_budget_stop, "judging stopped on Scout's time budget of 60 minutes of judging,"),
+        (_usage_limit_stop, "judging stopped on the Claude usage limit (You've hit your session limit ::error::"),
+    ],
+    ids=["call-budget", "time-budget", "usage-limit"],
+)
+def test_pr_body_partial_run_note_names_what_stopped_the_run(tmp_path, stopped_run, expected) -> None:
+    run = stopped_run()
+    path = tmp_path / "candidates.yaml"
+    scout.write_candidates(path, run)
+
+    body = scout.pr_body([], {"auto_merge_ok": True, "reasons": [], "labels": []}, scout.load_incomplete_reason(path))
+
+    note = next(line for line in body.splitlines() if line.startswith("> **Partial run:**"))
+    assert note.startswith(f"> **Partial run:** {expected}")
+    assert note.endswith("so some entries were left for the next run.")
+    assert not re.search(r"(?<!\\)\]\(", note)
+    assert "\n::" not in body
+    assert "> Merge this PR before the next scheduled run" in body
 
 
 def test_pr_body_has_no_partial_run_note_for_a_complete_run() -> None:
@@ -894,7 +1149,7 @@ def test_quota_stop_still_skips_unsafe_urls_before_judging() -> None:
     run = scout.judge_sources(entries, judge, set(), set())
 
     assert calls == ["https://ok.example/p"]
-    assert run.quota_exhausted is not None
+    assert run.stopped_early is not None
     assert run.errors == []
 
 
@@ -924,7 +1179,7 @@ def test_main_quota_error_with_no_progress_is_single_line(tmp_path, monkeypatch,
 
     lines = capsys.readouterr().err.splitlines()
     assert [line for line in lines if line.startswith("::")] == [
-        next(line for line in lines if line.startswith("::error::The Claude usage limit"))
+        next(line for line in lines if line.startswith("::error::Nothing was judged: judging stopped on the Claude usage limit"))
     ]
 
 

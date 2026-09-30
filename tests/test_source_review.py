@@ -1021,6 +1021,34 @@ def test_a_topic_fit_usage_limit_stops_trials_and_keeps_completed_ones() -> None
     assert plan.judge_failure is None
 
 
+def test_a_usage_limit_on_topic_fit_or_on_an_entry_stops_trials_the_same_way() -> None:
+    limit = source_review.scout.JudgeQuotaError("You've hit your\nsession limit")
+    on_topic_fit = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED}, _judge(),
+                             topic_fit=_topic_fit(fail=limit))
+    on_entry = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED},
+                         _judge(fail_on={"Evals in prod": limit}))
+
+    assert on_topic_fit.incomplete == on_entry.incomplete == (
+        "Trials stopped on the Claude usage limit (You've hit your session limit); the "
+        "remaining Prospective Sources are tried next run."
+    )
+    assert [u.reason for u in on_topic_fit.untried] == [u.reason for u in on_entry.untried] == [
+        "usage-limit"
+    ]
+    assert on_topic_fit.judge_failure is on_entry.judge_failure is None
+
+
+def test_record_judge_failure_marks_a_usage_limit_as_an_early_stop() -> None:
+    run = source_review.scout.ScoutRun()
+
+    source_review.scout.record_judge_failure(
+        run, source_review.scout.JudgeQuotaError("hit your\nlimit"), "ctx")
+
+    assert run.stopped_early == "the Claude usage limit (hit your limit)"
+    assert run.usage_limit_hit is True
+    assert run.errors == [] and run.auth_failed is False
+
+
 def test_the_topic_fit_call_counts_against_the_time_budget() -> None:
     now = [0.0]
     second, third = "https://two.example/feed", "https://three.example/feed"
