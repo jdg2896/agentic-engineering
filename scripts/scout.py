@@ -157,7 +157,7 @@ def _code_span_text(value: object, max_len: int = 80) -> str:
 
 
 _WHITESPACE_RE = re.compile(r"\s+")
-_MARKDOWN_SIGNIFICANT = str.maketrans({c: "\\" + c for c in "\\[]<>`"})
+_MARKDOWN_SIGNIFICANT = str.maketrans({c: "\\" + c for c in "\\[]<>`&"})
 _SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 
 
@@ -166,8 +166,13 @@ def sanitize_text(value: str, max_len: int = 500) -> str:
 
     Collapses whitespace (newlines included) to single spaces, drops control
     characters, truncates to `max_len`, then backslash-escapes backslashes and
-    Markdown link / HTML characters, and strips. Truncating first means no escape is
-    ever split, so the result may exceed `max_len` by its escapes. Pure.
+    Markdown link / HTML characters, and strips. `&` is escaped too (`\\&` renders as
+    a literal `&`), so a named entity such as `&commat;user` or `&num;12` cannot decode
+    into a mention or issue reference that `defuse_references` never saw. This alone
+    is not enough for PR bodies: `\\&#64;` still leaves a bare `#64`, which GitHub
+    links, so PR text must also go through `defuse_references`. Truncating first
+    means no escape is ever split, so the result may exceed `max_len` by its escapes.
+    Pure.
     """
     text = _WHITESPACE_RE.sub(" ", str(value))
     text = "".join(ch for ch in text if unicodedata.category(ch) != "Cc")
