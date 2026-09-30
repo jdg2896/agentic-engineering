@@ -264,3 +264,23 @@ sources:
     newest_entry_at: 2026-09-28
     enabled: true
     notes: null
+
+  - id: arize-com
+    type: rss
+    url: https://arize.com/feed/
+    cadence: weekly
+    last_checked_at: 2026-03-30
+    enabled: true
+    notes: Added by Source review from Citation mining
+    added_at: 2026-09-30
+    added_by: source-review
+
+  - id: github-com-modelcontextprotocol-python-sdk
+    type: github-releases
+    url: https://github.com/modelcontextprotocol/python-sdk/releases.atom
+    cadence: weekly
+    last_checked_at: 2026-03-30
+    enabled: true
+    notes: Added by Source review from Citation mining
+    added_at: 2026-09-30
+    added_by: source-review

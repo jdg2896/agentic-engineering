@@ -45,3 +45,129 @@ rejected:
     suggestion: null
     reason: no-feed
     rejected_at: 2026-09-29
+  - key: github.com/berriai/litellm
+    url: https://github.com/berriai/litellm
+    channel: citation
+    suggestion: null
+    reason: no-include
+    rejected_at: 2026-09-30
+  - key: huggingface.co
+    url: https://huggingface.co/blog
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: research.google
+    url: https://research.google/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: trychroma.com
+    url: https://www.trychroma.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: applied-llms.org
+    url: https://applied-llms.org/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: datatracker.ietf.org
+    url: https://datatracker.ietf.org/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: jsonrpc.org
+    url: https://www.jsonrpc.org/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: aws.amazon.com
+    url: https://aws.amazon.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: chatgpt.com
+    url: https://chatgpt.com/
+    channel: citation
+    suggestion: null
+    reason: unreachable
+    rejected_at: 2026-09-30
+  - key: claude.md
+    url: https://claude.md/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: developers.cloudflare.com
+    url: https://developers.cloudflare.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: getzep.com
+    url: https://www.getzep.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: git-lfs.com
+    url: https://git-lfs.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: github.com/arize-ai/openinference
+    url: https://github.com/arize-ai/openinference
+    channel: citation
+    suggestion: null
+    reason: no-include
+    rejected_at: 2026-09-30
+  - key: github.com/boundaryml/baml
+    url: https://github.com/boundaryml/baml
+    channel: citation
+    suggestion: null
+    reason: no-include
+    rejected_at: 2026-09-30
+  - key: github.com/google-research/google-research
+    url: https://github.com/google-research/google-research
+    channel: citation
+    suggestion: null
+    reason: no-recent-entries
+    rejected_at: 2026-09-30
+  - key: github.com/nmslib/hnswlib
+    url: https://github.com/nmslib/hnswlib
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: github.com/openai/swarm
+    url: https://github.com/openai/swarm
+    channel: citation
+    suggestion: null
+    reason: no-recent-entries
+    rejected_at: 2026-09-30
+  - key: github.com/sgl-project/sglang
+    url: https://github.com/sgl-project/sglang
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: github.com/ukplab/sentence-transformers
+    url: https://github.com/ukplab/sentence-transformers
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: github.com/vllm-project/vllm
+    url: https://github.com/vllm-project/vllm
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
