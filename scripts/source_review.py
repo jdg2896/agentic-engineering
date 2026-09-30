@@ -32,18 +32,21 @@ from typing import NamedTuple
 from urllib.parse import urljoin, urlsplit
 
 import feedparser
-import idna
 
 import judge
 from judge import JudgeQuotaError
 import scout
-from scout import (
+from scout import (  # Platform, PLATFORMS and source_key re-exported for callers and tests
+    PATH_TENANTED_HOSTS,
+    PLATFORMS,
     SKIPPED_LABEL,
     Decision,
+    Platform,
     SourceHealth,
     is_safe_url,
     round_trip_yaml,
     sanitize_text,
+    source_key,
 )
 
 # A Source is Dead-broken once its failure streak spans at least this many days AND
@@ -305,83 +308,6 @@ def _unproductive_evidence(
 
 
 # ── Source discovery ─────────────────────────────────────────────────────────
-
-class Platform(NamedTuple):
-    """How a host that serves many people's content is divided into Sources and sites."""
-
-    # Path-tenanted: each Source is identified by this many first path segments
-    # (github.com/<owner>/<repo>, medium.com/<author>); 0 when the host is one Source.
-    depth: int = 0
-    # Each tenant's feed is served at /feed/<tenant>, so a leading `feed` segment is skipped.
-    feed_prefix: bool = False
-    # First path segments that are the platform's own pages, not a tenant.
-    non_tenant: frozenset[str] = frozenset()
-    # A shared parent: each subdomain (alice.github.io) belongs to a different person.
-    shared_parent: bool = False
-    # Only links under this path cite the host's own posts (huggingface.co/blog); its
-    # other pages (models, datasets) are not citations. The Trial starts there too.
-    blog_path: str | None = None
-
-
-_GITHUB_PAGES = frozenset({
-    "about", "account", "apps", "codespaces", "collections", "contact", "copilot",
-    "customer-stories", "enterprise", "events", "explore", "features", "git-guides", "login",
-    "marketplace", "new", "notifications", "open-source", "orgs", "partners", "pricing",
-    "readme", "resources", "search", "security", "settings", "signup", "site", "solutions",
-    "sponsors", "team", "topics", "trending", "users",
-})
-_SHARED = Platform(shared_parent=True)
-# Hosts that serve many people's content. Every other host is one Source and one site.
-PLATFORMS: dict[str, Platform] = {
-    "github.com": Platform(2, non_tenant=_GITHUB_PAGES),
-    "gitlab.com": Platform(2, non_tenant=frozenset({
-        "-", "dashboard", "explore", "groups", "help", "projects", "search", "users",
-    })),
-    "medium.com": Platform(1, feed_prefix=True, shared_parent=True, non_tenant=frozenset({
-        "about", "m", "me", "membership", "plans", "policy", "search", "tag", "topics",
-    })),
-    "dev.to": Platform(1, feed_prefix=True, non_tenant=frozenset({
-        "about", "enter", "latest", "search", "settings", "t", "tags", "top",
-    })),
-    "feeds.feedburner.com": Platform(1),
-    "huggingface.co": Platform(blog_path="/blog"),
-    "cloud.google.com": Platform(blog_path="/blog"),
-    **{host: _SHARED for host in (
-        "github.io", "gitlab.io", "substack.com", "ghost.io", "notion.site", "micro.blog",
-        "tumblr.com", "beehiiv.com", "readthedocs.io", "webflow.io", "wordpress.com",
-        "blogspot.com", "hashnode.dev", "bearblog.dev", "netlify.app", "vercel.app",
-        "pages.dev",
-    )},
-}
-# Path-tenanted hosts and how many path segments identify a tenant.
-PATH_TENANTED_HOSTS = {host: p.depth for host, p in PLATFORMS.items() if p.depth}
-
-
-def source_key(url: object) -> str | None:
-    """What makes two feeds the same Source: the host, IDNA-normalised, lower-case and
-    `www.`-stripped, plus for a path-tenanted host (`PLATFORMS`) its first lower-case
-    path segments. None when `url` has no parseable host.
-
-    Used by discovery's dedup, the gate's duplicate breaker, new Source ids, and the
-    Prospective Source memory, so they can never disagree.
-    """
-    try:
-        parts = urlsplit(str(url))
-        host = parts.hostname or ""
-        host = idna.encode(host, uts46=True).decode("ascii") if host else ""
-    except (ValueError, idna.IDNAError, UnicodeError):
-        return None
-    host = host.rstrip(".").lower().removeprefix("www.")
-    if not host:
-        return None
-    platform = PLATFORMS.get(host, Platform())
-    if not platform.depth:
-        return host
-    segments = [s.lower() for s in parts.path.split("/") if s]
-    if platform.feed_prefix and segments[:1] == ["feed"]:
-        segments = segments[1:]
-    return "/".join([host, *segments[:platform.depth]])
-
 
 _FEED_TYPES = frozenset({"application/rss+xml", "application/atom+xml"})
 

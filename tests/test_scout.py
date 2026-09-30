@@ -1431,8 +1431,8 @@ def test_record_health_overwrites_previous_health_in_place() -> None:
 # --- read_source: the feed's own title and site link ---
 
 
-def _meta(parsed_feed, **prior) -> scout.FeedMeta | None:
-    source = {"id": "src-a", "url": "https://a/feed", "last_checked_at": "2026-08-01", **prior}
+def _meta(parsed_feed, url="https://a.example/feed", **prior) -> scout.FeedMeta | None:
+    source = {"id": "src-a", "url": url, "last_checked_at": "2026-08-01", **prior}
     return scout.read_source(source, parsed_feed, TODAY).meta
 
 
@@ -1445,13 +1445,47 @@ def _titled(title=None, link=None, status=200) -> SimpleNamespace:
 
 
 def test_read_source_records_the_feed_title_and_site_link() -> None:
-    meta = _meta(_titled("Hamel's Blog", "https://hamel.dev/"))
+    meta = _meta(_titled("Hamel's Blog", "https://hamel.dev/"), url="https://hamel.dev/index.xml")
 
     assert meta == scout.FeedMeta(feed_title="Hamel's Blog", site_url="https://hamel.dev/")
 
 
 def test_read_source_keeps_a_plain_http_site_link() -> None:
-    assert _meta(_titled("t", "http://blog.example/")).site_url == "http://blog.example/"
+    assert _meta(_titled("t", "http://a.example/")).site_url == "http://a.example/"
+
+
+@pytest.mark.parametrize(
+    ("feed_url", "link"),
+    [
+        ("https://simonwillison.net/tags/coding-agents.atom", "https://simonwillison.net/tags/coding-agents/"),
+        ("https://www.langchain.com/blog/rss.xml", "https://langchain.com/blog"),
+        ("https://langchain.com/blog/rss.xml", "https://www.langchain.com/"),
+        ("https://blog.cloudflare.com/tag/ai-agents/rss", "https://cloudflare.com/"),
+        ("https://x.com/feed", "https://blog.x.com/"),
+        ("https://github.com/langchain-ai/langgraph/releases.atom", "https://github.com/langchain-ai/langgraph/releases"),
+        ("https://medium.com/feed/@alice", "https://medium.com/@alice?source=rss"),
+    ],
+)
+def test_read_source_keeps_a_site_link_on_the_sources_own_site(feed_url, link) -> None:
+    assert _meta(_titled("Blog", link), url=feed_url).site_url == link
+
+
+@pytest.mark.parametrize(
+    ("feed_url", "link"),
+    [
+        ("https://hamel.dev/index.xml", "https://hamel-dev.example/"),  # a foreign host
+        ("https://blog.x.com/feed", "https://evil.x.com/"),  # a sibling, not the site itself
+        ("https://github.com/langchain-ai/langgraph/releases.atom", "https://github.com/evil/langgraph"),
+        ("https://github.com/langchain-ai/langgraph/releases.atom", "https://github.com/"),
+        ("https://medium.com/feed/@alice", "https://medium.com/@mallory"),
+        ("https://alice.github.io/feed.xml", "https://mallory.github.io/"),
+        ("https://alice.github.io/feed.xml", "https://github.io/"),
+        ("https://alice.substack.com/feed", "https://substack.com/"),
+        ("https://huggingface.co/blog/feed.xml", "https://evil.huggingface.co/"),
+    ],
+)
+def test_read_source_leaves_a_site_link_off_the_sources_own_site_unset(feed_url, link) -> None:
+    assert _meta(_titled("Blog", link), url=feed_url) == scout.FeedMeta(feed_title="Blog", site_url=None)
 
 
 def test_read_source_records_nothing_for_a_feed_with_no_title_or_link() -> None:
@@ -1631,7 +1665,7 @@ def test_main_records_feed_meta_on_success_and_keeps_it_on_a_failed_read(tmp_pat
     paths = _scout_repo(tmp_path, monkeypatch, [_judgment("reject"), _judgment("reject")])
     paths["sources"].write_text(
         "sources:\n"
-        "  - {id: src-a, url: 'https://a/feed', last_checked_at: 2026-08-01, enabled: true}\n"
+        "  - {id: src-a, url: 'https://a.example/feed', last_checked_at: 2026-08-01, enabled: true}\n"
         "  - {id: down, url: 'https://down/feed', last_checked_at: 2026-08-01, enabled: true,"
         " feed_title: Down Blog, site_url: 'https://down.example/'}\n"
         "  - {id: gone, url: 'https://gone/feed', last_checked_at: 2026-08-01, enabled: true,"

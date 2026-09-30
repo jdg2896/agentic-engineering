@@ -544,6 +544,86 @@ class SourceHealth(NamedTuple):
     newest_entry_at: date | None  # newest dated entry ever seen, of any age
 
 
+# ── Source keys: which feeds and links belong to the same Source ────────────
+
+class Platform(NamedTuple):
+    """How a host that serves many people's content is divided into Sources and sites."""
+
+    # Path-tenanted: each Source is identified by this many first path segments
+    # (github.com/<owner>/<repo>, medium.com/<author>); 0 when the host is one Source.
+    depth: int = 0
+    # Each tenant's feed is served at /feed/<tenant>, so a leading `feed` segment is skipped.
+    feed_prefix: bool = False
+    # First path segments that are the platform's own pages, not a tenant.
+    non_tenant: frozenset[str] = frozenset()
+    # A shared parent: each subdomain (alice.github.io) belongs to a different person.
+    shared_parent: bool = False
+    # Only links under this path cite the host's own posts (huggingface.co/blog); its
+    # other pages (models, datasets) are not citations. The Trial starts there too.
+    blog_path: str | None = None
+
+
+_GITHUB_PAGES = frozenset({
+    "about", "account", "apps", "codespaces", "collections", "contact", "copilot",
+    "customer-stories", "enterprise", "events", "explore", "features", "git-guides", "login",
+    "marketplace", "new", "notifications", "open-source", "orgs", "partners", "pricing",
+    "readme", "resources", "search", "security", "settings", "signup", "site", "solutions",
+    "sponsors", "team", "topics", "trending", "users",
+})
+_SHARED = Platform(shared_parent=True)
+# Hosts that serve many people's content. Every other host is one Source and one site.
+PLATFORMS: dict[str, Platform] = {
+    "github.com": Platform(2, non_tenant=_GITHUB_PAGES),
+    "gitlab.com": Platform(2, non_tenant=frozenset({
+        "-", "dashboard", "explore", "groups", "help", "projects", "search", "users",
+    })),
+    "medium.com": Platform(1, feed_prefix=True, shared_parent=True, non_tenant=frozenset({
+        "about", "m", "me", "membership", "plans", "policy", "search", "tag", "topics",
+    })),
+    "dev.to": Platform(1, feed_prefix=True, non_tenant=frozenset({
+        "about", "enter", "latest", "search", "settings", "t", "tags", "top",
+    })),
+    "feeds.feedburner.com": Platform(1),
+    "huggingface.co": Platform(blog_path="/blog"),
+    "cloud.google.com": Platform(blog_path="/blog"),
+    **{host: _SHARED for host in (
+        "github.io", "gitlab.io", "substack.com", "ghost.io", "notion.site", "micro.blog",
+        "tumblr.com", "beehiiv.com", "readthedocs.io", "webflow.io", "wordpress.com",
+        "blogspot.com", "hashnode.dev", "bearblog.dev", "netlify.app", "vercel.app",
+        "pages.dev",
+    )},
+}
+# Path-tenanted hosts and how many path segments identify a tenant.
+PATH_TENANTED_HOSTS = {host: p.depth for host, p in PLATFORMS.items() if p.depth}
+
+
+def source_key(url: object) -> str | None:
+    """What makes two feeds the same Source: the host, IDNA-normalised, lower-case and
+    `www.`-stripped, plus for a path-tenanted host (`PLATFORMS`) its first lower-case
+    path segments. None when `url` has no parseable host.
+
+    Used by discovery's dedup, the gate's duplicate breaker, new Source ids, the
+    Prospective Source memory, and Scout's check that a feed's site link is its own,
+    so they can never disagree.
+    """
+    try:
+        parts = urlsplit(str(url))
+        host = parts.hostname or ""
+        host = idna.encode(host, uts46=True).decode("ascii") if host else ""
+    except (ValueError, idna.IDNAError, UnicodeError):
+        return None
+    host = host.rstrip(".").lower().removeprefix("www.")
+    if not host:
+        return None
+    platform = PLATFORMS.get(host, Platform())
+    if not platform.depth:
+        return host
+    segments = [s.lower() for s in parts.path.split("/") if s]
+    if platform.feed_prefix and segments[:1] == ["feed"]:
+        segments = segments[1:]
+    return "/".join([host, *segments[:platform.depth]])
+
+
 FEED_TITLE_MAX_LEN = 120
 
 
@@ -551,11 +631,14 @@ class FeedMeta(NamedTuple):
     """The feed's own name and home link from a successful read; stored on the Source.
 
     Not Source health: Source review drops health when it retires a Source, but a
-    Retired Source keeps these, so a revived one reappears under its name.
+    Retired Source keeps these, so a revived one reappears under its name. The title is
+    stored as escaped Markdown (`sanitize_text`), like a Resource's title.
     """
 
     feed_title: str | None  # the feed's title, sanitized to one capped line; None if it has none
-    site_url: str | None  # the feed's site link; None if it has none or it fails `is_safe_url`
+    # The feed's site link; None if it has none, fails `is_safe_url`, or is off the
+    # Source's own site (see `_on_own_site`).
+    site_url: str | None
 
 
 class SourceRead(NamedTuple):
@@ -566,12 +649,30 @@ class SourceRead(NamedTuple):
     meta: FeedMeta | None = None  # None when the read failed: stored values stay as they are
 
 
-def _feed_meta(parsed_feed) -> FeedMeta:
+def _on_own_site(link: str, feed_url: object) -> bool:
+    """True if `link` is on the site of the Source whose feed is at `feed_url`. Pure.
+
+    Same Source key, or, off the multi-tenant `PLATFORMS`, one host a subdomain of the
+    other (`blog.x.com` and `x.com`). A feed's own link is untrusted: this stops a hostile
+    feed pointing the Source's name at another site, or another GitHub owner/repo.
+    """
+    link_key, own_key = source_key(link), source_key(feed_url)
+    if link_key is None or own_key is None:
+        return False
+    if link_key == own_key:
+        return True
+    if any(key in PLATFORMS or "/" in key for key in (link_key, own_key)):
+        return False
+    return link_key.endswith("." + own_key) or own_key.endswith("." + link_key)
+
+
+def _feed_meta(parsed_feed, feed_url: object) -> FeedMeta:
     """The title and site link a parsed feed gives for itself. Feed text is untrusted."""
     channel = getattr(parsed_feed, "feed", None) or {}
     title = sanitize_text(channel.get("title") or "", FEED_TITLE_MAX_LEN)
     link = str(channel.get("link") or "").strip()
-    return FeedMeta(feed_title=title or None, site_url=link if is_safe_url(link) else None)
+    safe = is_safe_url(link) and _on_own_site(link, feed_url)
+    return FeedMeta(feed_title=title or None, site_url=link if safe else None)
 
 
 def entry_date(entry) -> date | None:
@@ -637,7 +738,7 @@ def read_source(source: dict, parsed_feed, today: date) -> SourceRead:
         last_http_status=getattr(parsed_feed, "status", None),
         newest_entry_at=max(dates, default=None),
     )
-    return SourceRead(new_entries=new_entries, health=health, meta=_feed_meta(parsed_feed))
+    return SourceRead(new_entries=new_entries, health=health, meta=_feed_meta(parsed_feed, source.get("url")))
 
 
 def _write_after(source: dict, anchor: str, fields: NamedTuple) -> None:
