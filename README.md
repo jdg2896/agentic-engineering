@@ -214,9 +214,10 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## Worth following for ongoing signal
 
-- [Anthropic Engineering](https://www.anthropic.com/engineering) — Engineering posts from the model-maker — agents, tooling, and operational patterns.
-- [Cognition blog](https://cognition.com/blog) — Case studies on building Devin; the productive disagreement to "Don't Build Multi-Agents."
-- [Simon Willison](https://simonwillison.net/) — The field's running curator — daily-ish takes on LLMs, agents, and prompt injection.
-- [Embrace The Red](https://embracethered.com/blog/) — Johann Rehberger's red-team blog — concrete agent exploits and bypass techniques.
-- [LangChain blog](https://www.langchain.com/blog) — Framework updates, multi-agent patterns, and ecosystem news.
-- [Hamel's blog](https://hamel.dev/) — Applied LLM engineering and evals from a practitioner perspective.
+- [embracethered.com](https://embracethered.com) — 6 Resources in the guide, mostly Security for agents
+- [langchain.com](https://www.langchain.com) — 6 Resources in the guide, mostly Tool integration & MCP
+- [simonwillison.net](https://simonwillison.net) — 6 Resources in the guide, mostly Security for agents
+- [arize.com](https://arize.com) — 4 Resources in the guide, mostly Evaluation — frameworks & benchmarks
+- [eugeneyan.com](https://eugeneyan.com) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
+- [glbai.com](https://glbai.com) — 4 Resources in the guide, mostly Security for agents
+- [hamel.dev](https://hamel.dev) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)

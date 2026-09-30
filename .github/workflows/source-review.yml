@@ -147,6 +147,12 @@ jobs:
           COMMENT: "Superseded: the ${{ env.YEAR_MONTH }} Source review planned no changes."
         run: gh pr close bot/source-review --delete-branch --comment "$COMMENT" || true
 
+      # Re-render: bot PRs never trigger the render gate, and Worth following is
+      # derived from sources.yaml, so an addition or retirement changes README.md too.
+      - name: Re-render guide
+        if: env.PLAN_EMPTY != 'true'
+        run: uv run python scripts/render.py
+
       # Fixed branch: an open Source review PR is updated in place instead of stacking.
       - id: cpr
         if: env.PLAN_EMPTY != 'true'
@@ -157,10 +163,11 @@ jobs:
           body: ${{ env.REVIEW_PR_BODY }}
           commit-message: "chore(source-review): monthly Source review ${{ env.YEAR_MONTH }}"
           labels: ${{ env.REVIEW_LABELS }}
-          # Only the files Source review writes.
+          # Only the files Source review writes, plus the README it re-renders.
           add-paths: |
             sources.yaml
             scout/prospects.yaml
+            README.md
 
       # Labels are additive on an updated PR, so clear a hold left by an earlier run.
       - name: Enable auto-merge (gate passed)

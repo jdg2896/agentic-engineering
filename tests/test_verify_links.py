@@ -40,44 +40,36 @@ def test_soft_404_handles_missing_title() -> None:
     assert not verify_links._looks_like_soft_404("<html><body>no title here</body></html>")
 
 
-def test_collect_targets_includes_resources_and_worth_following() -> None:
+def test_collect_targets_collects_resources_only() -> None:
     data = {
         "resources": [
             {"id": "alpha", "url": "https://a.example/", "paywall": True},
             {"id": "beta", "url": "https://b.example/"},
         ],
+        # The old stored list is derived at render time now; a leftover one is ignored.
         "worth_following": [
             {"name": "Cool Person", "url": "https://cool.example/", "blurb": "x"},
         ],
     }
     targets = verify_links.collect_targets(data)
 
-    assert [t["id"] for t in targets] == ["alpha", "beta", "wf:cool-person"]
-    assert [t["kind"] for t in targets] == ["resource", "resource", "worth_following"]
+    assert [t["id"] for t in targets] == ["alpha", "beta"]
+    assert [t["kind"] for t in targets] == ["resource", "resource"]
     assert targets[0]["paywall"] is True
     assert targets[1]["paywall"] is False
-    assert targets[2]["paywall"] is False
 
 
 def test_collect_targets_handles_missing_sections() -> None:
     assert verify_links.collect_targets({}) == []
-    assert verify_links.collect_targets({"resources": None, "worth_following": None}) == []
-
-
-def test_slugify_normalizes_punctuation_and_case() -> None:
-    assert verify_links._slugify("Simon Willison") == "simon-willison"
-    assert verify_links._slugify("Cloudflare AI agents tag") == "cloudflare-ai-agents-tag"
-    assert verify_links._slugify("Hamel's blog") == "hamel-s-blog"
-    assert verify_links._slugify("!!!") == "wf"
+    assert verify_links.collect_targets({"resources": None}) == []
 
 
 # --- State machine -----------------------------------------------------------
 
 
-def _yaml(*, resources=None, worth_following=None, top_7=None) -> dict:
+def _yaml(*, resources=None, top_7=None) -> dict:
     return {
         "resources": resources or [],
-        "worth_following": worth_following or [],
         "top_7": top_7 or [],
     }
 
@@ -196,15 +188,6 @@ def test_paywall_skipped_treated_like_ok() -> None:
     [ch] = verify_links.compute_state_changes(data, results, TODAY)
     assert ch["set"]["verified_at"] == TODAY
     assert "first_dead_at" in ch["clear"]
-
-
-def test_worth_following_matched_by_url() -> None:
-    data = _yaml(worth_following=[{"name": "X", "url": "https://x/", "blurb": "y"}])
-    results = [_result(id="wf:x", url="https://x/", outcome="dead", status_code=404, kind="worth_following")]
-    [ch] = verify_links.compute_state_changes(data, results, TODAY)
-    assert ch["entry"]["name"] == "X"
-    assert ch["set"] == {"first_dead_at": TODAY}
-    assert ch["kind"] == "worth_following"
 
 
 def test_top_7_flag_set_when_id_is_in_top_7() -> None:

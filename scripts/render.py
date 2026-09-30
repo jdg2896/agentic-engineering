@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Render README.md from resources.yaml + templates/."""
+"""Render README.md from resources.yaml + sources.yaml + templates/."""
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
-from urllib.parse import quote
+from typing import NamedTuple
+from urllib.parse import quote, urlsplit
 
 import jinja2
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 RESOURCES_PATH = ROOT / "resources.yaml"
+SOURCES_PATH = ROOT / "sources.yaml"
 TEMPLATES_DIR = ROOT / "templates"
 OUTPUT_PATH = ROOT / "README.md"
 
@@ -115,8 +117,56 @@ def build_populated_sections(
     return populated
 
 
-def visible_worth_following(worth_following: list[dict]) -> list[dict]:
-    return [w for w in worth_following if not w.get("quarantined_at")]
+# A Source is Worth following once its lifetime Yield reaches this many Resources.
+WORTH_FOLLOWING_MIN_YIELD = 3
+
+
+class WorthFollowing(NamedTuple):
+    """One entry in the guide's "Worth following" list."""
+
+    name: str  # the feed's title (already escaped Markdown), else the Source URL's host
+    url: str  # the feed's site link, else the scheme and host of the Source URL
+    yield_count: int  # lifetime Yield: Resources attributed to the Source, any state
+    main_section: str  # title of the section most of those Resources are in
+
+    @property
+    def line(self) -> str:
+        noun = "Resource" if self.yield_count == 1 else "Resources"
+        return f"{self.yield_count} {noun} in the guide, mostly {self.main_section}"
+
+
+def worth_following(sources: list[dict], resources: list[dict], sections: list[dict]) -> list[WorthFollowing]:
+    """The Sources Worth following, strongest first. Pure.
+
+    Every Source not Retired or disabled (`enabled` false or null) whose lifetime Yield, the
+    Resources with its `source_id` (archived, quarantined and hidden ones included), is at
+    least `WORTH_FOLLOWING_MIN_YIELD`. Ordered by Yield descending, then name. The main
+    section is the most frequent among its Resources; a tie goes to the earlier section.
+    """
+    section_order = {s["id"]: s["order"] for s in sections}
+    section_title = {s["id"]: s["title"] for s in sections}
+    by_source: dict[str, list[str]] = defaultdict(list)
+    for r in resources:
+        if r.get("source_id"):
+            by_source[r["source_id"]].append(r["section"])
+
+    entries: list[WorthFollowing] = []
+    for source in sources:
+        yielded = by_source.get(source["id"], [])
+        if not source.get("enabled", True) or len(yielded) < WORTH_FOLLOWING_MIN_YIELD:
+            continue
+        counts = Counter(yielded)
+        main = min(counts, key=lambda sid: (-counts[sid], section_order[sid]))
+        parts = urlsplit(str(source["url"]))
+        host = (parts.hostname or "").rstrip(".")
+        netloc = f"{host}:{parts.port}" if parts.port else host
+        entries.append(WorthFollowing(
+            name=source.get("feed_title") or host.removeprefix("www."),
+            url=source.get("site_url") or f"{parts.scheme}://{netloc}",
+            yield_count=len(yielded),
+            main_section=section_title[main],
+        ))
+    return sorted(entries, key=lambda e: (-e.yield_count, e.name.casefold(), e.name))
 
 
 def _check_top_7_not_quarantined(top_7_slugs: list[str], resources_by_id: dict) -> None:
@@ -141,6 +191,7 @@ def _check_top_7_not_quarantined(top_7_slugs: list[str], resources_by_id: dict) 
 
 def render() -> str:
     data = yaml.safe_load(RESOURCES_PATH.read_text())
+    sources = yaml.safe_load(SOURCES_PATH.read_text())["sources"]
 
     resources = data["resources"]
     resources_by_id = {r["id"]: r for r in resources}
@@ -151,7 +202,7 @@ def render() -> str:
         render_top_7_line(resources_by_id[slug])
         for slug in data["top_7"]
     ]
-    visible_wf = visible_worth_following(data["worth_following"])
+    worth_following_entries = worth_following(sources, resources, data["sections"])
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)),
@@ -170,7 +221,7 @@ def render() -> str:
         _render("top_7.md", top_7_lines=top_7_lines),
         _render("sections.md.j2", populated_sections=populated_sections),
         "---",
-        _render("worth_following.md", worth_following=visible_wf),
+        _render("worth_following.md", worth_following=worth_following_entries),
     ]
     return "\n\n".join(p for p in parts if p) + "\n"
 
