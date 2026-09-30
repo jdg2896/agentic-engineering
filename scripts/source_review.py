@@ -80,9 +80,11 @@ class Fetched(NamedTuple):
 
 
 # `fetch(url)` -> Fetched (a plain (status, headers, body) is read as not redirected);
-# `judge` is Scout's per-entry judge.
+# `judge` is Scout's per-entry judge; `topic_fit(feed_title, feed_url, [(title, summary)])`
+# is the Topic fit judge (`judge.judge_topic_fit`), returning `{topic_fit, rationale}`.
 Fetch = Callable[[str], tuple]
 Judge = Callable[[str, str, str, str], dict]
+TopicFit = Callable[[str, str, list[tuple[str, str]]], dict]
 
 
 class UnproductiveEvidence(NamedTuple):
@@ -131,12 +133,15 @@ class TrialInclude(NamedTuple):
 
 
 class TrialEvidence(NamedTuple):
-    """What a Trial found: its entries in the window and the judge's verdicts on them."""
+    """What a Trial found: its entries in the window, the judge's Topic fit verdict on
+    the feed as a whole, and its verdicts on the entries."""
 
     in_window: int  # dated entries in the 6-month window (the Trial judges up to 10)
-    judged: int
+    judged: int  # entries judged; 0 when the feed lacks Topic fit
     # Each entry judged `include`. Evidence only: never written to resources.yaml.
     included: tuple[TrialInclude, ...]
+    topic_fit: bool | None = None  # None: the Trial stopped before a Topic fit verdict
+    topic_fit_rationale: str = ""  # sanitized judge text
 
 
 class Addition(NamedTuple):
@@ -150,7 +155,7 @@ class Addition(NamedTuple):
 # Why a Prospective Source was rejected, as recorded in the Prospective Source memory.
 REJECTION_REASONS = frozenset({
     "no-url", "unsafe-url", "duplicate", "unreachable", "no-feed", "no-recent-entries",
-    "no-include",
+    "off-topic", "no-include",
 })
 
 
@@ -543,44 +548,32 @@ class _Budget:
 
 
 class _BudgetSpent(JudgeQuotaError):
-    """Raised by the budgeted judge; judge_sources stops on it as on a usage limit."""
+    """Raised by a budgeted judge; a Trial stops on it as on a usage limit."""
 
 
-def _trial(
-    prospect: ProspectiveSource, parsed, source_id: str, today: date, judge: Judge,
-    budget: _Budget,
-) -> TrialEvidence | Rejection | Untried:
-    """Judge up to TRIAL_SIZE of the feed's entries from the last 6 months, newest first.
+def _topic_fit_run(
+    topic_fit: TopicFit, parsed, feed_url: str, sample: list, source_id: str,
+) -> tuple[scout.ScoutRun, dict | None]:
+    """Make the Trial's one Topic fit call over its sample, recording a failure in a
+    ScoutRun exactly as `scout.judge_sources` records one on an entry call
+    (`scout.record_judge_failure`). Returns the run and the verdict (None on a failure)."""
+    run = scout.ScoutRun()
+    feed_title = str(parsed.get("feed", {}).get("title", ""))
+    try:
+        verdict = topic_fit(feed_title, feed_url, [scout.entry_text(e) for e in sample])
+    except Exception as exc:
+        scout.record_judge_failure(
+            run, exc, f"source {source_id}: Topic fit judge error for {sanitize_text(feed_url, 200)}",
+        )
+        return run, None
+    return run, verdict
 
-    Pass iff the feed fetched cleanly (Scout's `read_source` rule), has an entry in the
-    window, and the judge includes at least one. Raises `_TrialStop` when the judge
-    fails or the run's time budget runs out mid-Trial.
-    """
-    window_start = _months_before(today, TRIAL_WINDOW_MONTHS)
-    read = scout.read_source({"id": source_id, "last_checked_at": window_start}, parsed, today)
-    if read.health.consecutive_failures:
-        status = read.health.last_http_status
-        return Untried(prospect, "fetch-failed", f"HTTP status {status}" if status else "unparseable feed")
-    in_window = sorted(
-        (e for e in read.new_entries if scout.entry_date(e) <= today),
-        key=scout.entry_date,
-        reverse=True,
-    )
-    if not in_window:
-        return Rejection(prospect, "no-recent-entries")
 
-    def budgeted(*args):
-        if budget.out_of_time():
-            budget.ran_out = True
-            raise _BudgetSpent(budget.TIME)
-        return judge(*args)
-
-    budget.trials += 1
-    run = scout.judge_sources({source_id: in_window[:TRIAL_SIZE]}, budgeted, set(), set())
-    evidence = TrialEvidence(
-        len(in_window), run.evaluated,
-        tuple(TrialInclude(c["title"], c["url"], c["rationale"]) for c in run.candidates),
-    )
+def _stop_on_judge_failure(
+    prospect: ProspectiveSource, run: scout.ScoutRun, evidence: TrialEvidence, budget: _Budget,
+) -> None:
+    """Raise `_TrialStop` if the judge stopped (Scout's semantics): a spent time budget,
+    a usage limit or a judge error, whichever call of the Trial it came on."""
     if run.stopped_early is not None:
         if budget.ran_out:
             raise _TrialStop(
@@ -596,13 +589,68 @@ def _trial(
     if run.errors:
         hint = scout.judge_failure_hint(run)
         raise _TrialStop(
-            # judge_sources sanitized the error when it recorded it.
+            # Sanitized when it was recorded.
             Untried(prospect, "judge-error", run.errors[0], evidence),
             f"Trials stopped on a judge error; the remaining Prospective Sources are tried "
             f"next run. {hint}",
             judge_failure=hint,
             auth_failed=run.auth_failed,
         )
+
+
+def _trial(
+    prospect: ProspectiveSource, parsed, feed_url: str, source_id: str, today: date,
+    judge: Judge, topic_fit: TopicFit, budget: _Budget,
+) -> TrialEvidence | Rejection | Untried:
+    """Judge the feed's Topic fit, then up to TRIAL_SIZE of its entries from the last 6
+    months, newest first.
+
+    Pass iff the feed fetched cleanly (Scout's `read_source` rule), has an entry in the
+    window, has Topic fit, and the judge includes at least one entry. Topic fit is one
+    judge call over the same sample, made first: without it the Prospective Source is
+    rejected as `off-topic` and no entry is judged. Raises `_TrialStop` when the judge
+    fails or the run's time budget runs out mid-Trial, on either kind of call.
+    """
+    window_start = _months_before(today, TRIAL_WINDOW_MONTHS)
+    read = scout.read_source({"id": source_id, "last_checked_at": window_start}, parsed, today)
+    if read.health.consecutive_failures:
+        status = read.health.last_http_status
+        return Untried(prospect, "fetch-failed", f"HTTP status {status}" if status else "unparseable feed")
+    in_window = sorted(
+        (e for e in read.new_entries if scout.entry_date(e) <= today),
+        key=scout.entry_date,
+        reverse=True,
+    )
+    if not in_window:
+        return Rejection(prospect, "no-recent-entries")
+
+    def budgeted(call):
+        def checked(*args):
+            if budget.out_of_time():
+                budget.ran_out = True
+                raise _BudgetSpent(budget.TIME)
+            return call(*args)
+        return checked
+
+    budget.trials += 1
+    sample = in_window[:TRIAL_SIZE]
+    fit_run, verdict = _topic_fit_run(budgeted(topic_fit), parsed, feed_url, sample, source_id)
+    _stop_on_judge_failure(prospect, fit_run, TrialEvidence(len(in_window), 0, ()), budget)
+    if verdict is None:  # a failed call records a stop, so this never passes silently
+        raise RuntimeError("Topic fit call returned no verdict and recorded no failure")
+    # Fail closed: only a JSON `true` is Topic fit.
+    fit = verdict.get("topic_fit") is True
+    fit_rationale = sanitize_text(verdict.get("rationale", ""))
+    if not fit:
+        return Rejection(prospect, "off-topic",
+                         trial=TrialEvidence(len(in_window), 0, (), False, fit_rationale))
+    run = scout.judge_sources({source_id: sample}, budgeted(judge), set(), set())
+    evidence = TrialEvidence(
+        len(in_window), run.evaluated,
+        tuple(TrialInclude(c["title"], c["url"], c["rationale"]) for c in run.candidates),
+        True, fit_rationale,
+    )
+    _stop_on_judge_failure(prospect, run, evidence, budget)
     if not evidence.included:
         return Rejection(prospect, "no-include", trial=evidence)
     return evidence
@@ -682,9 +730,12 @@ def discover_sources(
     judge: Judge,
     memory: Iterable[dict] = (),
     clock: Callable[[], float] = time.monotonic,
+    *,
+    topic_fit: TopicFit,
 ) -> None:
     """Source discovery's shared pipeline: Trial each Prospective Source in turn, adding
-    passes to `plan` and recording rejections. Every channel feeds it.
+    passes to `plan` and recording rejections. Every channel feeds it, and every
+    Trial judges Topic fit with `topic_fit` before any entry (see `_trial`).
 
     - No url → `no-url`; a url failing `is_safe_url` → `unsafe-url`.
     - A Prospective Source not from a Source suggestion whose Source key is in `memory`
@@ -746,7 +797,8 @@ def discover_sources(
         considered.update({source_key(resolved.page_url), feed_key})
         source_id = _source_id(feed_key, ids)
         try:
-            result = _trial(prospect, resolved.parsed, source_id, plan.today, judge, budget)
+            result = _trial(prospect, resolved.parsed, resolved.feed_url, source_id, plan.today,
+                            judge, topic_fit, budget)
         except _TrialStop as stop:
             plan.untried.append(stop.untried)
             plan.incomplete = stop.note
@@ -1096,14 +1148,16 @@ def review_sources(
     fetch: Fetch,
     judge: Judge,
     *,
+    topic_fit: TopicFit,
     memory: Iterable[dict] = (),
     clock: Callable[[], float] = time.monotonic,
 ) -> ReviewPlan:
     """Plan one Source review: which Sources to retire and which to add.
 
-    Pure apart from the injected `fetch` (url -> Fetched) and `judge` (Scout's
-    per-entry judge, with Scout's system prompt), which only Source discovery calls,
-    and `clock` (the Trial time budget). Nothing passed in is modified.
+    Pure apart from the injected `fetch` (url -> Fetched), `judge` (Scout's
+    per-entry judge, with Scout's system prompt) and `topic_fit` (the Topic fit judge,
+    with the same system prompt), which only Source discovery calls, and `clock` (the
+    Trial time budget). Nothing passed in is modified.
 
     Source discovery: each Source suggestion (`{"number", "url"}`, already limited to
     the owner's and collaborators', see `suggestions_from_issues`) is a Prospective
@@ -1112,10 +1166,13 @@ def review_sources(
     Source key (`source_key`) with any Source on the list, enabled or Retired; its
     feed is the url itself (a github.com repo maps to its releases feed) or, for a
     page, the first safe RSS/Atom feed the page advertises (`no-feed` when none). Its
-    Trial judges up to 10 of the feed's entries from the last 6 calendar months,
-    newest first, dated by Scout's `entry_date`; it passes iff the feed fetched
-    cleanly (Scout's `read_source` rule), has an entry in the window, and at least one
-    is judged `include`. A pass becomes a new Source entry with `added_at`,
+    Trial samples up to 10 of the feed's entries from the last 6 calendar months,
+    newest first, dated by Scout's `entry_date`, first judges the feed's Topic fit in
+    one call over that sample (`off-topic` without it, and no entry is judged), then
+    judges each sampled entry; it passes iff the feed fetched cleanly (Scout's
+    `read_source` rule), has an entry in the window, has Topic fit, and at least one
+    entry is judged `include`. The Topic fit call counts against the Trial budget and
+    fails like an entry call. A pass becomes a new Source entry with `added_at`,
     `added_by: source-review` and `last_checked_at` 6 months back; its included
     entries are evidence only (nothing is written to resources.yaml). A fetch failure,
     judge error, usage limit or spent Trial budget leaves the Prospective Source
@@ -1175,7 +1232,8 @@ def review_sources(
     mined, mining_stopped, plan.mining = _mine_citations(resources, excluded, fetch, clock)
     # One pipeline and one Trial budget for both channels: suggestions first (the owner
     # asked for them), then mined Prospective Sources, best-evidenced first.
-    discover_sources(plan, [*suggested, *mined], sources, fetch, judge, memory, clock)
+    discover_sources(plan, [*suggested, *mined], sources, fetch, judge, memory, clock,
+                     topic_fit=topic_fit)
     if mining_stopped:
         plan.incomplete = f"{plan.incomplete} {mining_stopped}" if plan.incomplete else mining_stopped
     return plan
@@ -1459,7 +1517,8 @@ def pr_body(plan: ReviewPlan, decision: dict, sources: list[dict]) -> str:
     if plan.additions:
         sections.append(
             f"\n## Added Sources ({len(plan.additions)})\n\n"
-            "Each passed its Trial through the Scout judge. The included entries are evidence "
+            "Each passed its Trial through the Scout judge: Topic fit for the feed as a whole, "
+            "then at least one included entry. The included entries are evidence "
             "only; Scout picks them up on its next run (`last_checked_at` is 6 months back).\n\n"
             + "\n".join(_addition_row(a) for a in plan.additions)
         )
@@ -1613,10 +1672,12 @@ def _addition_row(a: Addition) -> str:
         lines.append(f"  {cited[0].upper()}{cited[1:]}")
     lines += [
         f"  Feed: {_url_span(a.source.get('url'))} ({sanitize_text(a.source.get('type'), 10)})",
-        f"  {_trial_line(a.trial)}:",
     ]
-    # Titles and rationales were sanitized by judge_sources; sanitizing again would
-    # double the escapes.
+    # The Topic fit rationale was sanitized by `_trial`, and entry titles and rationales
+    # by judge_sources; sanitizing again would double the escapes.
+    if fit := _rationale_line(a.trial.topic_fit_rationale, label="Topic fit"):
+        lines.append(f"  {fit}")
+    lines.append(f"  {_trial_line(a.trial)}:")
     for entry in a.trial.included:
         lines.append(f"  - {_free_text(entry.title)} — {_url_span(entry.url)}")
         if rationale := _rationale_line(entry.rationale):
@@ -1632,6 +1693,10 @@ def _outcome_row(r: Rejection | Untried) -> str:
     extras = [e for e in (_cited_by(r.prospect), r.trial and _trial_line(r.trial)) if e]
     if extras:
         row += f" ({'; '.join(extras)})"
+    # Why the feed lacks Topic fit (an `off-topic` rejection); sanitized by `_trial`.
+    if r.trial and r.trial.topic_fit is False:
+        if fit := _rationale_line(r.trial.topic_fit_rationale, label="Topic fit"):
+            row += f"\n  {fit}"
     return row
 
 
@@ -1858,12 +1923,14 @@ def main() -> None:
     resources = resources_data["resources"]
     suggestions = _load_suggestions(args.suggestions)
 
-    # The unchanged Scout judge, with the system prompt Scout builds.
+    # The unchanged Scout judge, with the system prompt Scout builds; the Topic fit
+    # judge takes the same prompt, for the guide's sections and inclusion criteria.
     system = scout.build_system_prompt(resources_data["sections"], resources)
     today = date.today()
     plan = review_sources(
         sources, resources, seen, suggestions, today,
-        fetch=http_fetch, judge=functools.partial(judge.judge_entry, system), memory=memory,
+        fetch=http_fetch, judge=functools.partial(judge.judge_entry, system),
+        topic_fit=functools.partial(judge.judge_topic_fit, system), memory=memory,
     )
     decision = evaluate_source_review_automerge(plan, sources, resources)
 

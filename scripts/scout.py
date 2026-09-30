@@ -227,6 +227,34 @@ def judge_failure_hint(run: ScoutRun) -> str:
 USAGE_LIMIT_MESSAGE_LEN = 300
 
 
+def record_judge_failure(run: ScoutRun, exc: Exception, context: str) -> None:
+    """Record a judge call's exception in `run`: a `JudgeQuotaError` (a usage limit)
+    as the early stop `the Claude usage limit (<message>)` with `usage_limit_hit`,
+    anything else in `errors` as `"{context}: {exc}"`, with `auth_failed` set for a
+    `JudgeAuthError`.
+
+    `context` must already be sanitized; the exception text is sanitized here, since
+    errors are printed as `::error::` lines, where no newline may survive.
+    """
+    if isinstance(exc, JudgeQuotaError):
+        # Trimmed here, not only when written, so truncating the whole reason
+        # later can never cut its closing bracket.
+        message = " ".join(str(exc).split())[:USAGE_LIMIT_MESSAGE_LEN]
+        run.stopped_early = f"the Claude usage limit ({message})"
+        run.usage_limit_hit = True
+        return
+    run.errors.append(f"{context}: {sanitize_text(str(exc), 1000)}")
+    run.auth_failed = isinstance(exc, JudgeAuthError)
+
+
+def entry_text(entry) -> tuple[str, str]:
+    """A feed entry's (title, summary) as the judge sees them: the summary, else the
+    first content block. Unsanitized feed text."""
+    content_list = entry.get("content", [])
+    content_val = content_list[0].get("value", "") if content_list else ""
+    return entry.get("title", "(untitled)"), entry.get("summary", "") or content_val
+
+
 def judge_sources(
     new_entries: dict[str, list],
     judge: Callable[[str, str, str, str], dict],
@@ -282,28 +310,17 @@ def judge_sources(
             if max_seconds is not None and clock() - start >= max_seconds:
                 run.stopped_early = f"Scout's time budget of {max_seconds / 60:g} minutes of judging"
                 return run
-            title = entry.get("title", "(untitled)")
-            content_list = entry.get("content", [])
-            content_val = content_list[0].get("value", "") if content_list else ""
-            summary = entry.get("summary", "") or content_val
+            title, summary = entry_text(entry)
 
             try:
                 result = judge(title, url, summary, source_id)
-            except JudgeQuotaError as exc:
-                # Trimmed here, not only when written, so truncating the whole reason
-                # later can never cut its closing bracket.
-                message = " ".join(str(exc).split())[:USAGE_LIMIT_MESSAGE_LEN]
-                run.stopped_early = f"the Claude usage limit ({message})"
-                run.usage_limit_hit = True
-                return run
             except Exception as exc:
                 # Any error fails the run, so further judge calls would only burn quota.
-                # Sanitized: errors are printed as `::error::` lines, so no newline may survive.
-                run.errors.append(
+                record_judge_failure(
+                    run, exc,
                     f"source {source_id}: judge error for '{sanitize_text(title, 200)}'"
-                    f" ({sanitize_text(url, 200)}): {sanitize_text(str(exc), 1000)}"
+                    f" ({sanitize_text(url, 200)})",
                 )
-                run.auth_failed = isinstance(exc, JudgeAuthError)
                 return run
             run.evaluated += 1
             if result["decision"] == "include":
