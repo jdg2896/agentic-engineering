@@ -213,20 +213,24 @@ jobs:
   # went red on a judge error after writing its summary.
   close-decided-suggestions:
     needs: source-review
+    # Only on main: a dispatch on another branch reads that branch's decisions.
     if: >-
-      always() && needs.source-review.outputs.close-suggestions != '' &&
+      !cancelled() && github.ref == 'refs/heads/main' &&
+      needs.source-review.outputs.close-suggestions != '' &&
       needs.source-review.outputs.close-suggestions != '[]'
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
       - name: Close decided Source suggestions
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CLOSES: ${{ needs.source-review.outputs.close-suggestions }}
         run: |
           jq -c '.[]' <<< "$CLOSES" | while read -r close; do
             number=$(jq -r '.number' <<< "$close")
+            [[ $number =~ ^[1-9][0-9]*$ ]] || { echo "::warning::Skipping a malformed Source suggestion number."; continue; }
             comment=$(jq -r '.comment' <<< "$close")
             gh issue close "$number" --repo "$GITHUB_REPOSITORY" --comment "$comment" \
               || echo "::warning::Could not close Source suggestion #$number."

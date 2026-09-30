@@ -790,7 +790,9 @@ def discover_sources(
     - No url → `no-url`; a url failing `is_safe_url` → `unsafe-url`.
     - A Prospective Source not from a Source suggestion whose Source key is in `memory`
       (lasting rejections from recent runs, see `update_prospect_memory`) is skipped
-      silently. A suggestion is always tried: the owner asked again.
+      silently. An undecided suggestion is always tried, even for a remembered site:
+      the owner asked again. (A decided one never gets here, see
+      `reconcile_suggestions`.)
     - Same Source key (`source_key`) as any Source on the list, enabled or Retired, or
       as anything already considered this run → `duplicate`. Checked on the url, and
       again on the page's and feed's final urls after resolution.
@@ -1209,8 +1211,9 @@ def review_sources(
     with the same system prompt), which only Source discovery calls, and `clock` (the
     Trial time budget). Nothing passed in is modified.
 
-    Source discovery: each Source suggestion (`{"number", "url"}`, already limited to
-    the owner's and collaborators', see `suggestions_from_issues`) is a Prospective
+    Source discovery: each undecided Source suggestion (`{"number", "url"}`, already
+    limited to the owner's and collaborators', see `suggestions_from_issues`, with
+    those already decided on main removed by `reconcile_suggestions`) is a Prospective
     Source, run through `discover_sources` with `memory` (the Prospective Source
     memory's `rejected` entries). Its url must pass `is_safe_url` and not share a
     Source key (`source_key`) with any Source on the list, enabled or Retired; its
@@ -1936,8 +1939,9 @@ PROSPECTS_PATH = scout.ROOT / "scout" / "prospects.yaml"
 _PROSPECTS_TEMPLATE = """\
 # Source discovery's Prospective Source memory, written by Source review only
 # (scripts/source_review.py); Scout never reads it. Each lasting rejection is kept
-# for 6 months, so Citation mining does not re-Trial the same site every month; a
-# Source suggestion is always tried again.
+# for 6 months, so Citation mining does not re-Trial the same site every month; an
+# undecided Source suggestion is always tried, while one recorded here (by its issue
+# number) is decided and closed instead.
 rejected: []
 """
 

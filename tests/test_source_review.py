@@ -1687,6 +1687,19 @@ def test_a_suggestion_whose_addition_landed_is_closed_and_not_tried_again() -> N
     }]
 
 
+def test_only_notes_naming_exactly_that_suggestion_mark_it_added() -> None:
+    sources = [
+        _source("thirteen", notes="Added by Source review from Source suggestion #13"),
+        _source("mined", notes="Added by Source review from Citation mining"),
+        _source("hand", notes="Suggested in #1 by a friend"),
+    ]
+    suggestions = [_suggest(1, "https://one.example/"), _suggest(3, "https://three.example/")]
+
+    undecided, closes = source_review.reconcile_suggestions(suggestions, sources, [])
+
+    assert (undecided, closes) == (suggestions, [])
+
+
 def test_a_suggestion_whose_rejection_landed_is_closed_and_not_tried_again() -> None:
     memory = [
         {"key": "blog.example", "url": "https://blog.example/", "channel": "suggestion",
@@ -1741,7 +1754,14 @@ def test_the_run_summary_lists_decided_suggestions_to_close_even_with_nothing_to
 
     out = json.loads(summary.read_text())
     assert out["empty"] is True  # neither suggestion is Trialled (or rejected) again
-    assert [c["number"] for c in out["close_suggestions"]] == [131, 5]
+    assert out["close_suggestions"] == [
+        {"number": 131,
+         "comment": "Source review added this Source suggestion as `glbai-com` in sources.yaml; "
+                    "closing it."},
+        {"number": 5,
+         "comment": "Source review rejected this Source suggestion (`no-feed`, recorded in "
+                    "scout/prospects.yaml); closing it. File a new suggestion to ask again."},
+    ]
     assert fetch.calls == []
 
 

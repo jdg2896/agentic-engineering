@@ -1,7 +1,8 @@
 # Source discovery's Prospective Source memory, written by Source review only
 # (scripts/source_review.py); Scout never reads it. Each lasting rejection is kept
-# for 6 months, so Citation mining does not re-Trial the same site every month; a
-# Source suggestion is always tried again.
+# for 6 months, so Citation mining does not re-Trial the same site every month; an
+# undecided Source suggestion is always tried, while one recorded here (by its issue
+# number) is decided and closed instead.
 rejected:
   - key: anthropic.com
     url: https://www.anthropic.com/
