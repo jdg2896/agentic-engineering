@@ -1522,7 +1522,8 @@ def pr_body(plan: ReviewPlan, decision: dict, sources: list[dict]) -> str:
     if plan.additions:
         sections.append(
             f"\n## Added Sources ({len(plan.additions)})\n\n"
-            "Each passed its Trial through the Scout judge. The included entries are evidence "
+            "Each passed its Trial through the Scout judge: Topic fit for the feed as a whole, "
+            "then at least one included entry. The included entries are evidence "
             "only; Scout picks them up on its next run (`last_checked_at` is 6 months back).\n\n"
             + "\n".join(_addition_row(a) for a in plan.additions)
         )
@@ -1676,10 +1677,12 @@ def _addition_row(a: Addition) -> str:
         lines.append(f"  {cited[0].upper()}{cited[1:]}")
     lines += [
         f"  Feed: {_url_span(a.source.get('url'))} ({sanitize_text(a.source.get('type'), 10)})",
-        f"  {_trial_line(a.trial)}:",
     ]
-    # Titles and rationales were sanitized by judge_sources; sanitizing again would
-    # double the escapes.
+    # The Topic fit rationale was sanitized by `_trial`, and entry titles and rationales
+    # by judge_sources; sanitizing again would double the escapes.
+    if fit := _rationale_line(a.trial.topic_fit_rationale, label="Topic fit"):
+        lines.append(f"  {fit}")
+    lines.append(f"  {_trial_line(a.trial)}:")
     for entry in a.trial.included:
         lines.append(f"  - {_free_text(entry.title)} — {_url_span(entry.url)}")
         if rationale := _rationale_line(entry.rationale):
@@ -1695,6 +1698,10 @@ def _outcome_row(r: Rejection | Untried) -> str:
     extras = [e for e in (_cited_by(r.prospect), r.trial and _trial_line(r.trial)) if e]
     if extras:
         row += f" ({'; '.join(extras)})"
+    # Why the feed lacks Topic fit (an `off-topic` rejection); sanitized by `_trial`.
+    if r.trial and r.trial.topic_fit is False:
+        if fit := _rationale_line(r.trial.topic_fit_rationale, label="Topic fit"):
+            row += f"\n  {fit}"
     return row
 
 

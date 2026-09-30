@@ -1816,11 +1816,75 @@ def test_pr_body_lists_each_addition_with_channel_feed_and_trial_verdicts() -> N
     assert (
         "- **blog-example** — from Source suggestion #7\n"
         "  Feed: `https://blog.example/feed.xml` (rss)\n"
+        f"  Topic fit: _{ON_TOPIC}_\n"
         "  Trial: 2 entries in the last 6 months, 2 judged, 1 included:\n"
         "  - Evals in prod — `https://blog.example/evals`\n"
         "    Rationale: _because Evals in prod_" in body
     )
     assert body.rstrip().endswith("Closes #7")
+
+
+def test_pr_body_shows_the_topic_fit_rationale_under_an_off_topic_rejection() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: GOOD_FEED}, _judge(),
+                     topic_fit=_topic_fit(fit=False, rationale="An embeddings library."))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert (
+        "- Source suggestion #7: `https://blog.example/feed.xml` — `off-topic` "
+        "(Trial: 2 entries in the last 6 months, 0 judged, 0 included)\n"
+        "  Topic fit: _An embeddings library._" in body
+    )
+    assert body.rstrip().endswith("Closes #7")
+
+
+def test_pr_body_shows_a_mined_off_topic_rejections_rationale_in_its_block() -> None:
+    plan = _discover_prospects([_cited(FEED)], {FEED: GOOD_FEED}, _judge(),
+                               topic_fit=_topic_fit(fit=False, rationale="General model serving."))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    block = body[body.index("<details>"):body.index("</details>")]
+    assert "`off-topic`" in block
+    assert "\n  Topic fit: _General model serving._" in block
+
+
+def test_pr_body_shows_no_topic_fit_line_for_a_rejection_that_had_topic_fit() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: GOOD_FEED}, _judge())
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert _rejected(plan) == {FEED: "no-include"}
+    assert "Topic fit:" not in body
+
+
+@pytest.mark.parametrize("fit", [True, False], ids=["addition", "off-topic"])
+def test_pr_body_shows_a_hostile_topic_fit_rationale_inert_on_one_line(fit: bool) -> None:
+    hostile = "Fixes #123, cc @octocat\n::error::pwned [x](https://evil) <b>"
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge(include=("t",)),
+                     topic_fit=_topic_fit(fit=fit, rationale=hostile))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Topic fit:" in ln]
+    assert line.replace("​", "") == (
+        "  Topic fit: _Fixes #123, cc @octocat ::error::pwned \\[x\\](https://evil) \\<b\\>_"
+    )
+    assert "\n::" not in body and "[x](" not in body and "<b>" not in body
+    own = "\nCloses #7"
+    assert body.rstrip().endswith(own)
+    assert not CLOSING_OR_MENTION.search(
+        body.rstrip().removesuffix(own).replace("Source suggestion #7", ""))
+
+
+def test_pr_body_cuts_a_long_topic_fit_rationale_like_an_entry_rationale() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: GOOD_FEED}, _judge(),
+                     topic_fit=_topic_fit(fit=False, rationale="a" * 300 + "<" * 200))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Topic fit:" in ln]
+    assert line == "  Topic fit: _" + "a" * 300 + "\\<" * 100 + "…_"
 
 
 def test_pr_body_lists_rejections_and_untried_and_closes_only_rejected_suggestions() -> None:
@@ -1978,7 +2042,16 @@ def test_pr_body_keeps_every_closes_line_with_the_most_additions_includes_and_ra
             source_review.ProspectiveSource(f"https://n{i}.example/feed", "suggestion",
                                             suggestion=100 + i),
             source_review.TrialEvidence(source_review.TRIAL_SIZE, source_review.TRIAL_SIZE,
-                                        includes),
+                                        includes, True, worst),
+        )
+        for i in range(source_review.MAX_TRIALS)
+    ]
+    plan.rejected = [
+        source_review.Rejection(
+            source_review.ProspectiveSource(f"https://o{i}.example/feed", "suggestion",
+                                            suggestion=200 + i),
+            "off-topic",
+            trial=source_review.TrialEvidence(source_review.TRIAL_SIZE, 0, (), False, worst),
         )
         for i in range(source_review.MAX_TRIALS)
     ]
@@ -1986,8 +2059,9 @@ def test_pr_body_keeps_every_closes_line_with_the_most_additions_includes_and_ra
     body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
 
     assert len(body) <= source_review.MAX_BODY_CHARS
-    assert body.rstrip().endswith(
-        "\n".join(f"Closes #{100 + i}" for i in range(source_review.MAX_TRIALS)))
+    closes = [100 + i for i in range(source_review.MAX_TRIALS)]
+    closes += [200 + i for i in range(source_review.MAX_TRIALS)]
+    assert body.rstrip().endswith("\n".join(f"Closes #{n}" for n in closes))
 
 
 # ── The real fetch (no network: the opener and resolver are faked) ──────────
