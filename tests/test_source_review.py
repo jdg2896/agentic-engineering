@@ -2895,3 +2895,100 @@ def test_pr_body_is_truncated_below_githubs_limit_but_keeps_every_closes_line(mo
 
 def test_the_default_body_limit_is_below_githubs() -> None:
     assert source_review.MAX_BODY_CHARS < 65_536
+
+
+# ── Attribution backfill ─────────────────────────────────────────────────────
+
+
+def _hand_curated(resource_id: str, url: str, **extra) -> dict:
+    """A Resource added before Source attribution: no `source_id`."""
+    return {"id": resource_id, "url": url, "added_at": date(2026, 5, 3)} | extra
+
+
+def test_backfill_attributes_a_resource_whose_site_is_exactly_one_source() -> None:
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml"),
+               _source("other", url="https://other.example/feed")]
+    resources = [_hand_curated("post", "https://embracethered.com/blog/posts/2025/x/")]
+
+    assert source_review.backfill_attribution(resources, sources) == {"post": "red"}
+
+
+def test_backfill_attributes_to_a_retired_source_too() -> None:
+    retired = _source("old", url="https://www.huyenchip.com/feed.xml", enabled=False,
+                      retired_at=date(2026, 9, 1), retired_reason="dead-silent")
+    resources = [_hand_curated("post", "https://huyenchip.com/2025/01/07/agents.html")]
+
+    assert source_review.backfill_attribution(resources, [retired]) == {"post": "old"}
+
+
+def test_backfill_leaves_a_resource_whose_site_is_shared_by_two_sources_unattributed() -> None:
+    sources = [_source("tag-a", url="https://blog.example/tag/a/rss"),
+               _source("tag-b", url="https://blog.example/tag/b/rss")]
+    resources = [_hand_curated("post", "https://blog.example/posts/x")]
+
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfill_leaves_a_resource_whose_site_is_no_source_unattributed() -> None:
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml")]
+    resources = [_hand_curated("paper", "https://arxiv.org/abs/2501.00001"),
+                 _hand_curated("broken", "not a url")]
+
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfill_never_changes_an_existing_source_id() -> None:
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml")]
+    resources = [_hand_curated("post", "https://embracethered.com/blog/posts/x/",
+                               source_id="elsewhere")]
+
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfill_matches_github_repos_by_owner_and_repo() -> None:
+    sources = [_source("langgraph", url="https://github.com/langchain-ai/langgraph/releases.atom"),
+               _source("letta", url="https://github.com/letta-ai/letta/releases.atom")]
+    resources = [
+        _hand_curated("langgraph-repo", "https://github.com/langchain-ai/langgraph"),
+        _hand_curated("letta-doc", "https://github.com/letta-ai/letta/blob/main/README.md"),
+        _hand_curated("other-repo", "https://github.com/langchain-ai/langchain"),
+        _hand_curated("owner-page", "https://github.com/langchain-ai"),
+    ]
+
+    assert source_review.backfill_attribution(resources, sources) == {
+        "langgraph-repo": "langgraph", "letta-doc": "letta",
+    }
+
+
+def test_applying_the_backfill_sets_source_id_after_added_at_and_a_rerun_changes_nothing() -> None:
+    ryaml = source_review.round_trip_yaml()
+    resources = ryaml.load(
+        "- id: post\n"
+        "  url: https://embracethered.com/blog/posts/x/\n"
+        "  added_at: '2026-05-03'\n"
+        "  verified_at: null\n"
+        "- id: paper\n"
+        "  url: https://arxiv.org/abs/2501.00001\n"
+        "  added_at: '2026-05-03'\n"
+    )
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml")]
+
+    source_review.apply_attribution(resources, source_review.backfill_attribution(resources, sources))
+
+    assert list(resources[0]) == ["id", "url", "added_at", "source_id", "verified_at"]
+    assert resources[0]["source_id"] == "red"
+    assert "source_id" not in resources[1]
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfilled_resources_dated_before_the_window_do_not_change_unproductive_evidence() -> None:
+    source = _healthy("u", url="https://u.example/feed")
+    old = [_hand_curated(f"old-{i}", f"https://u.example/p{i}") for i in range(6)]
+    source_review.apply_attribution(old, source_review.backfill_attribution(old, [source]))
+    assert {r["source_id"] for r in old} == {"u"}
+
+    before = _review([source], [], seen=_rejects("u", 15), today=LATER).retirements
+    after = _review([source], old, seen=_rejects("u", 15), today=LATER).retirements
+
+    assert after == before
+    assert [r.evidence.yield_count for r in after] == [0]
