@@ -382,13 +382,22 @@ def test_sanitize_escapes_markdown_links_and_html() -> None:
     assert out == "\\[click\\](https://evil.example) \\<img src=x\\> \\`code\\`"
 
 
-def test_sanitize_truncates_to_max_len() -> None:
-    assert scout.sanitize_text("x" * 600) == "x" * 500
-    assert scout.sanitize_text("abcdef", max_len=3) == "abc"
+def test_sanitize_marks_a_cut_with_an_ellipsis_within_max_len() -> None:
+    assert scout.sanitize_text("x" * 600) == "x" * 499 + "…"
+    assert scout.sanitize_text("abcdef", max_len=3) == "ab…"
+
+
+def test_sanitize_keeps_text_of_exactly_max_len_uncut() -> None:
+    assert scout.sanitize_text("x" * 500) == "x" * 500
+    assert scout.sanitize_text("abc", max_len=3) == "abc"
+
+
+def test_sanitize_leaves_no_space_before_the_ellipsis() -> None:
+    assert scout.sanitize_text("ab cdef", max_len=4) == "ab…"
 
 
 def test_sanitize_truncates_before_escaping_so_no_escape_is_split() -> None:
-    assert scout.sanitize_text("ab[cd", max_len=3) == "ab\\["
+    assert scout.sanitize_text("ab[cd", max_len=4) == "ab\\[…"
 
 
 def test_sanitize_escapes_backslashes_so_pre_escaped_links_stay_dead() -> None:
@@ -416,7 +425,7 @@ def test_sanitize_escapes_ampersands_readably() -> None:
 
 
 def test_sanitize_truncates_before_escaping_an_ampersand() -> None:
-    assert scout.sanitize_text("ab&cd", max_len=3) == "ab\\&"
+    assert scout.sanitize_text("ab&cd", max_len=4) == "ab\\&…"
 
 
 def test_candidates_carry_sanitized_judge_text_but_raw_url() -> None:

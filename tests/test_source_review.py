@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import json
 import re
 import socket
 import sys
@@ -1701,6 +1702,105 @@ def test_the_real_fetch_refuses_an_unsafe_url_before_connecting(url) -> None:
         source_review.http_fetch(url)
 
 
+# ── Reconciling decided Source suggestions ───────────────────────────────────
+# A Source review PR is opened with GITHUB_TOKEN, so GitHub may not act on its `Closes`
+# lines and its merge starts no workflow (#136). Each run therefore closes the open
+# suggestions whose decision already landed on main, and never Trials them again.
+
+
+def test_a_suggestion_whose_addition_landed_is_closed_and_not_tried_again() -> None:
+    added = _source("glbai-com", notes="Added by Source review from Source suggestion #131",
+                    added_by="source-review")
+    suggestions = [_suggest(131, "https://glbai.com/en/"), _suggest(140, FEED)]
+
+    undecided, closes = source_review.reconcile_suggestions(suggestions, [added], [])
+
+    assert undecided == [_suggest(140, FEED)]
+    assert closes == [{
+        "number": 131,
+        "comment": "Source review added this Source suggestion as `glbai-com` in sources.yaml; "
+                   "closing it.",
+    }]
+
+
+def test_only_notes_naming_exactly_that_suggestion_mark_it_added() -> None:
+    sources = [
+        _source("thirteen", notes="Added by Source review from Source suggestion #13"),
+        _source("mined", notes="Added by Source review from Citation mining"),
+        _source("hand", notes="Suggested in #1 by a friend"),
+    ]
+    suggestions = [_suggest(1, "https://one.example/"), _suggest(3, "https://three.example/")]
+
+    undecided, closes = source_review.reconcile_suggestions(suggestions, sources, [])
+
+    assert (undecided, closes) == (suggestions, [])
+
+
+def test_a_suggestion_whose_rejection_landed_is_closed_and_not_tried_again() -> None:
+    memory = [
+        {"key": "blog.example", "url": "https://blog.example/", "channel": "suggestion",
+         "suggestion": 5, "reason": "no-feed", "rejected_at": date(2026, 8, 1)},
+        {"key": "cited.example", "url": "https://cited.example/", "channel": "citation",
+         "suggestion": None, "reason": "no-include", "rejected_at": date(2026, 8, 1)},
+    ]
+    suggestions = [_suggest(5, "https://blog.example/"), _suggest(6, "https://cited.example/")]
+
+    undecided, closes = source_review.reconcile_suggestions(suggestions, _enabled_sources(3), memory)
+
+    assert undecided == [_suggest(6, "https://cited.example/")]  # a mined rejection is not its verdict
+    assert closes == [{
+        "number": 5,
+        "comment": "Source review rejected this Source suggestion (`no-feed`, recorded in "
+                   "scout/prospects.yaml); closing it. File a new suggestion to ask again.",
+    }]
+
+
+def test_the_run_summary_lists_decided_suggestions_to_close_even_with_nothing_to_change(
+    tmp_path, monkeypatch
+) -> None:
+    sources = tmp_path / "sources.yaml"
+    sources.write_text(
+        "sources:\n"
+        "  - id: glbai-com\n    type: rss\n    url: https://glbai.com/en/rss.xml\n"
+        "    enabled: true\n    notes: 'Added by Source review from Source suggestion #131'\n"
+    )
+    (tmp_path / "resources.yaml").write_text("sections: []\nresources: []\n")
+    (tmp_path / "seen.yaml").write_text("seen: []\n")
+    prospects = tmp_path / "prospects.yaml"
+    prospects.write_text(
+        "rejected:\n  - key: blog.example\n    url: https://blog.example/\n"
+        "    channel: suggestion\n    suggestion: 5\n    reason: no-feed\n"
+        f"    rejected_at: {date.today() - timedelta(days=7)}\n"
+    )
+    issues = tmp_path / "issues.json"
+    issues.write_text(json.dumps([
+        _issue(131, "https://glbai.com/en/"), _issue(5, "https://blog.example/"),
+    ]))
+    summary = tmp_path / "summary.json"
+    monkeypatch.setattr(source_review.scout, "SOURCES_PATH", sources)
+    monkeypatch.setattr(source_review.scout, "RESOURCES_PATH", tmp_path / "resources.yaml")
+    monkeypatch.setattr(source_review.scout, "SEEN_PATH", tmp_path / "seen.yaml")
+    monkeypatch.setattr(source_review, "PROSPECTS_PATH", prospects)
+    fetch = _fetcher({})
+    monkeypatch.setattr(source_review, "http_fetch", fetch)
+    monkeypatch.setattr(sys, "argv", ["source_review.py", "--suggestions", str(issues),
+                                      "--summary", str(summary)])
+
+    source_review.main()
+
+    out = json.loads(summary.read_text())
+    assert out["empty"] is True  # neither suggestion is Trialled (or rejected) again
+    assert out["close_suggestions"] == [
+        {"number": 131,
+         "comment": "Source review added this Source suggestion as `glbai-com` in sources.yaml; "
+                    "closing it."},
+        {"number": 5,
+         "comment": "Source review rejected this Source suggestion (`no-feed`, recorded in "
+                    "scout/prospects.yaml); closing it. File a new suggestion to ask again."},
+    ]
+    assert fetch.calls == []
+
+
 # ── Applying additions ───────────────────────────────────────────────────────
 
 
@@ -2069,6 +2169,43 @@ def test_pr_body_cuts_a_long_rationale_at_the_maximum_length() -> None:
     (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
     assert line == "    Rationale: _" + "a" * 300 + "\\<" * 100 + "…_"
     assert source_review.RATIONALE_MAX_CHARS == 500
+
+
+def test_pr_body_ends_a_rationale_longer_than_the_cap_with_an_ellipsis() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("so the content still needs work " * 30))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line.endswith("…_")
+    assert len(line.removeprefix("    Rationale: _").removesuffix("_")) <= (
+        source_review.RATIONALE_MAX_CHARS)
+
+
+def test_pr_body_ends_a_cut_escape_heavy_rationale_with_an_ellipsis_whole_escapes() -> None:
+    # Over sanitize_text's cap before escaping; each `&` becomes `\&` after.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "&" * 600))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line.endswith("…_")
+    kept = line.removeprefix("    Rationale: _x").removesuffix("…_")
+    assert kept == "\\&" * (len(kept) // 2)
+
+
+def test_pr_body_never_doubles_the_ellipsis_when_a_cut_lands_on_one() -> None:
+    # Sanitized, this is `x`, 249 `\\<` escapes and a literal `…` at the cap's last
+    # character, then more text, so the cut ends on that `…`.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "<" * 249 + "… and more"))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line == "    Rationale: _x" + "\\<" * 249 + "…_"
 
 
 def test_pr_body_shows_a_rationale_of_sanitize_texts_full_length_uncut() -> None:
