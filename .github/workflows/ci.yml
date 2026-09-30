@@ -6,13 +6,13 @@ name: CI
 # PRs get a read-only token, no secrets and an isolated cache scope. No secrets are
 # used here; the tests stub the judge and never call the real `claude` CLI.
 #
-# LIMITATION: PRs opened with the default GITHUB_TOKEN (the Scout, Verify links and
-# Source review bots, via peter-evans/create-pull-request) do NOT trigger workflows;
-# GitHub suppresses them to prevent recursive runs. Bot PRs therefore get no CI
-# check unless those workflows open PRs with a PAT or GitHub App token instead.
-# Their merges to main still run this workflow via the `push` trigger. Making this
-# a required status check is left to the maintainer: if required, bot PRs would
-# wait forever on a check that never starts.
+# LIMITATION (bot PRs): the Scout, Verify links and Source review bots open PRs
+# with the default GITHUB_TOKEN (via peter-evans/create-pull-request). Bot PRs
+# opened with GITHUB_TOKEN get CI runs, but they wait for a maintainer to approve
+# them ("Approve workflows to run"). Bot auto-merges (also GITHUB_TOKEN) trigger
+# no push runs, so a bot merge to main is not re-checked here. If this check is
+# made required, a bot PR blocks until someone approves the run, unless the bots
+# switch to an App or PAT token. Making it required is left to the maintainer.
 on:
   pull_request:
     branches: [main]
