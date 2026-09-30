@@ -347,8 +347,9 @@ def judge_sources(
 
 # One run's judge budget, whichever runs out first. The call budget bounds how much of
 # the subscription quota, shared with interactive use (ADR-0001), one backlog can draw;
-# the time budget keeps judging (an Opus-class judge call takes roughly 30-60 s) well
-# inside the workflow's 90-minute timeout, leaving room to write files and open the PR.
+# the time budget keeps judging well inside the workflow's 90-minute timeout, leaving
+# room to write files and open the PR. Opus 5.5 measured 7.7 s mean and 15.6 s max per
+# call (#123), so the call budget normally binds first.
 # A spent budget stops the run cleanly; the unjudged remainder is picked up next run.
 # Retune both from real judge.MODEL timings when the model changes.
 JUDGE_CALL_BUDGET = 100
