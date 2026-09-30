@@ -215,6 +215,14 @@ def judge_failure_hint(run: ScoutRun) -> str:
     )
 
 
+def entry_text(entry) -> tuple[str, str]:
+    """A feed entry's (title, summary) as the judge sees them: the summary, else the
+    first content block. Unsanitized feed text."""
+    content_list = entry.get("content", [])
+    content_val = content_list[0].get("value", "") if content_list else ""
+    return entry.get("title", "(untitled)"), entry.get("summary", "") or content_val
+
+
 def judge_sources(
     new_entries: dict[str, list],
     judge: Callable[[str, str, str, str], dict],
@@ -253,10 +261,7 @@ def judge_sources(
             if limit is not None and run.evaluated >= limit:
                 print(f"\n  --limit {limit} reached, stopping early.")
                 return run
-            title = entry.get("title", "(untitled)")
-            content_list = entry.get("content", [])
-            content_val = content_list[0].get("value", "") if content_list else ""
-            summary = entry.get("summary", "") or content_val
+            title, summary = entry_text(entry)
 
             try:
                 result = judge(title, url, summary, source_id)

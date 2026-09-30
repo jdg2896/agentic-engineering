@@ -58,9 +58,14 @@ def _unused_judge(title, url, summary, source_id):
     raise AssertionError("this slice never judges")
 
 
+def _unused_topic_fit(feed_title, feed_url, entries):
+    raise AssertionError("this slice never judges Topic fit")
+
+
 def _review(sources, resources=None, today=TODAY, seen=None):
     return source_review.review_sources(
-        sources, resources or [], seen or [], [], today, _nothing_online, _unused_judge
+        sources, resources or [], seen or [], [], today, _nothing_online, _unused_judge,
+        topic_fit=_unused_topic_fit,
     )
 
 
@@ -761,15 +766,37 @@ def _judge(include: tuple[str, ...] = (), fail_on: dict | None = None):
     return judge
 
 
+ON_TOPIC = "The feed is about building agents."
+
+
+def _topic_fit(fit: bool = True, rationale: str = ON_TOPIC, fail: Exception | None = None):
+    """A stub Topic fit judge: every feed gets `fit` with `rationale`, or raises `fail`.
+
+    Records calls as (feed_title, feed_url, entries) in `.calls`.
+    """
+    calls: list[tuple] = []
+
+    def topic_fit(feed_title, feed_url, entries):
+        calls.append((feed_title, feed_url, list(entries)))
+        if fail is not None:
+            raise fail
+        return {"topic_fit": fit, "rationale": rationale}
+
+    topic_fit.calls = calls
+    return topic_fit
+
+
 def _suggest(number: int, url: str | None) -> dict:
     return {"number": number, "url": url}
 
 
-def _discover(suggestions, pages, judge, sources=None, today=TODAY, memory=(), clock=None):
+def _discover(suggestions, pages, judge, sources=None, today=TODAY, memory=(), clock=None,
+              topic_fit=None):
     fetch = _fetcher(pages)
     plan = source_review.review_sources(
         sources if sources is not None else _enabled_sources(12), [], [], suggestions, today,
-        fetch, judge, memory=memory, clock=clock or (lambda: 0.0),
+        fetch, judge, topic_fit=topic_fit or _topic_fit(), memory=memory,
+        clock=clock or (lambda: 0.0),
     )
     plan.fetch_calls = fetch.calls
     return plan
@@ -835,6 +862,7 @@ def test_a_trial_judges_up_to_10_entries_from_the_last_6_months_newest_first() -
         in_window=12, judged=10,
         included=(source_review.TrialInclude(
             title="Post 3", url="https://blog.example/p3", rationale="because Post 3"),),
+        topic_fit=True, topic_fit_rationale=ON_TOPIC,
     )
 
 
@@ -853,7 +881,214 @@ def test_a_trial_with_no_include_rejects_the_prospective_source() -> None:
     assert plan.additions == []
     (rejection,) = plan.rejected
     assert rejection.reason == "no-include"
-    assert rejection.trial == source_review.TrialEvidence(in_window=2, judged=2, included=())
+    assert rejection.trial == source_review.TrialEvidence(
+        in_window=2, judged=2, included=(), topic_fit=True, topic_fit_rationale=ON_TOPIC,
+    )
+
+
+# ── Topic fit ────────────────────────────────────────────────────────────────
+
+
+def _logged(judge, topic_fit, log: list):
+    """Wrap a stub judge and Topic fit judge so both record into one ordered `log`."""
+
+    def logged_judge(title, url, summary, source_id):
+        log.append(("entry", title))
+        return judge(title, url, summary, source_id)
+
+    def logged_topic_fit(feed_title, feed_url, entries):
+        log.append(("topic-fit", feed_url))
+        return topic_fit(feed_title, feed_url, entries)
+
+    return logged_judge, logged_topic_fit
+
+
+def test_a_trial_makes_one_topic_fit_call_over_its_sample_before_any_entry_call() -> None:
+    items = [(f"Post {i}", f"https://blog.example/p{i}", date(2026, 9, 28) - timedelta(days=i))
+             for i in range(12)]
+    judge, topic_fit, log = _judge(include=("Post 3",)), _topic_fit(), []
+    logged_judge, logged_topic_fit = _logged(judge, topic_fit, log)
+
+    plan = _discover([_suggest(1, FEED)], {FEED: _rss(*reversed(items), title="Agent Blog")},
+                     logged_judge, topic_fit=logged_topic_fit)
+
+    assert log == [("topic-fit", FEED), *(("entry", f"Post {i}") for i in range(10))]
+    [(feed_title, feed_url, entries)] = topic_fit.calls
+    assert (feed_title, feed_url) == ("Agent Blog", FEED)
+    # The same sample the entry calls judge: titles and summaries, newest first.
+    assert entries == [(f"Post {i}", f"About Post {i}") for i in range(10)]
+    assert list(_added(plan)) == ["blog-example"]
+
+
+def test_an_off_topic_feed_is_rejected_without_judging_any_entry() -> None:
+    judge = _judge(include=("Evals in prod",))
+    topic_fit = _topic_fit(fit=False, rationale="An embeddings library's releases.")
+
+    plan = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED}, judge, topic_fit=topic_fit)
+
+    assert plan.additions == [] and plan.untried == []
+    (rejection,) = plan.rejected
+    assert rejection.reason == "off-topic"
+    assert rejection.trial == source_review.TrialEvidence(
+        in_window=2, judged=0, included=(), topic_fit=False,
+        topic_fit_rationale="An embeddings library's releases.",
+    )
+    assert len(topic_fit.calls) == 1
+    assert judge.calls == []
+    assert "off-topic" in source_review.REJECTION_REASONS
+
+
+def test_an_on_topic_feed_with_an_include_is_added_carrying_the_topic_fit_rationale() -> None:
+    plan = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED}, _judge(include=("Evals in prod",)),
+                     topic_fit=_topic_fit(rationale="Agent evals, week after week."))
+
+    (addition,) = plan.additions
+    assert addition.trial.topic_fit is True
+    assert addition.trial.topic_fit_rationale == "Agent evals, week after week."
+
+
+def test_a_hostile_topic_fit_rationale_is_sanitized_when_recorded() -> None:
+    hostile = "Evil <img src=x> [click](https://evil) \n::error::x"
+
+    plan = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED}, _judge(),
+                     topic_fit=_topic_fit(fit=False, rationale=hostile))
+
+    (rejection,) = plan.rejected
+    assert rejection.trial.topic_fit_rationale == (
+        "Evil \\<img src=x\\> \\[click\\](https://evil) ::error::x"
+    )
+
+
+def test_a_feed_with_no_recent_entry_gets_no_topic_fit_call() -> None:
+    topic_fit = _topic_fit()
+    stale = _rss(("Old", "https://blog.example/old", date(2026, 3, 29)))
+
+    plan = _discover([_suggest(1, FEED)], {FEED: stale}, _judge(), topic_fit=topic_fit)
+
+    assert _rejected(plan) == {FEED: "no-recent-entries"}
+    assert topic_fit.calls == []
+
+
+def test_a_topic_fit_judge_error_leaves_the_prospective_source_untried_and_stops_trials() -> None:
+    second = "https://two.example/feed"
+    judge = _judge(include=("Evals in prod",))
+    topic_fit = _topic_fit(fail=source_review.scout.judge.JudgeError("CLI\n::error::boom"))
+
+    plan = _discover([_suggest(1, FEED), _suggest(2, second)], {FEED: GOOD_FEED, second: GOOD_FEED},
+                     judge, topic_fit=topic_fit)
+
+    assert plan.additions == [] and plan.rejected == []
+    (untried,) = plan.untried
+    assert (untried.prospect.suggestion, untried.reason) == (1, "judge-error")
+    assert "Topic fit" in untried.detail and "boom" in untried.detail
+    assert "\n" not in untried.detail
+    assert judge.calls == []
+    assert second not in plan.fetch_calls
+    assert "judge error" in plan.incomplete
+    assert "re-run" in plan.judge_failure and plan.auth_failed is False
+
+
+def test_a_topic_fit_auth_error_is_a_judge_failure_that_names_the_credential() -> None:
+    topic_fit = _topic_fit(fail=source_review.scout.JudgeAuthError("bad token"))
+
+    plan = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED}, _judge(), topic_fit=topic_fit)
+
+    assert _untried(plan) == {FEED: "judge-error"}
+    assert plan.auth_failed is True
+    assert "credential" in plan.judge_failure and "credential" in plan.incomplete
+
+
+def test_a_topic_fit_usage_limit_stops_trials_and_keeps_completed_ones() -> None:
+    second, third = "https://two.example/feed", "https://three.example/feed"
+    limit = source_review.scout.JudgeQuotaError("You've hit your limit")
+
+    def topic_fit(feed_title, feed_url, entries):
+        if feed_url == second:
+            raise limit
+        return {"topic_fit": True, "rationale": ON_TOPIC}
+
+    judge = _judge(include=("Evals in prod",))
+    pages = {FEED: GOOD_FEED, second: GOOD_FEED, third: GOOD_FEED}
+
+    plan = _discover([_suggest(1, FEED), _suggest(2, second), _suggest(3, third)], pages, judge,
+                     topic_fit=topic_fit)
+
+    assert list(_added(plan)) == ["blog-example"]
+    assert _untried(plan) == {second: "usage-limit"}
+    assert third not in plan.fetch_calls
+    assert len(judge.calls) == 2  # the first Trial's entries only
+    assert "usage limit" in plan.incomplete
+    assert plan.judge_failure is None
+
+
+def test_the_topic_fit_call_counts_against_the_time_budget() -> None:
+    now = [0.0]
+    second, third = "https://two.example/feed", "https://three.example/feed"
+    pages = {FEED: GOOD_FEED, second: GOOD_FEED, third: GOOD_FEED}
+    fetch = _fetcher(pages)
+
+    def slow_fetch(url):
+        now[0] += 20 * 60  # every fetch takes 20 minutes; judging is instant
+        return fetch(url)
+
+    judge, topic_fit = _judge(include=("Evals in prod",)), _topic_fit()
+
+    plan = source_review.review_sources(
+        _enabled_sources(12), [], [], [_suggest(1, FEED), _suggest(2, second), _suggest(3, third)],
+        TODAY, slow_fetch, judge, topic_fit=topic_fit, clock=lambda: now[0],
+    )
+
+    # Trial 1 starts at 0 and judges at 20 minutes; Trial 2 starts at 20 minutes, but its
+    # feed fetch ends at 40, so its Topic fit call finds the budget spent.
+    assert list(_added(plan)) == ["blog-example"]
+    assert _untried(plan) == {second: "time-budget"}
+    assert [c[1] for c in topic_fit.calls] == [FEED]
+    assert len(judge.calls) == 2
+    assert "time budget of 35 minutes" in plan.incomplete
+    assert third not in fetch.calls
+
+
+def test_a_topic_fit_verdict_that_is_not_true_fails_closed() -> None:
+    def topic_fit(feed_title, feed_url, entries):
+        return {"topic_fit": "yes", "rationale": "r"}
+
+    judge = _judge(include=("Evals in prod",))
+
+    plan = _discover([_suggest(1, FEED)], {FEED: GOOD_FEED}, judge, topic_fit=topic_fit)
+
+    assert plan.additions == []
+    assert judge.calls == []
+
+
+def test_a_mined_prospective_source_goes_through_topic_fit_too() -> None:
+    topic_fit = _topic_fit(fit=False, rationale="General model serving.")
+
+    plan = _discover_prospects([_cited(FEED)], {FEED: GOOD_FEED}, _judge(include=("Evals in prod",)),
+                               topic_fit=topic_fit)
+
+    assert _rejected(plan) == {FEED: "off-topic"}
+    assert [c[1] for c in topic_fit.calls] == [FEED]
+
+
+def test_an_off_topic_rejection_is_remembered_and_expires_like_no_include() -> None:
+    plan = _discover([_suggest(1, FEED), _suggest(2, "https://two.example/feed")],
+                     {FEED: GOOD_FEED, "https://two.example/feed": GOOD_FEED}, _judge(),
+                     topic_fit=lambda title, url, entries: {"topic_fit": url != FEED, "rationale": "r"})
+    assert _rejected(plan) == {FEED: "off-topic", "https://two.example/feed": "no-include"}
+
+    updated = source_review.update_prospect_memory([], plan)
+
+    assert [(m["key"], m["reason"], m["rejected_at"]) for m in updated] == [
+        ("blog.example", "off-topic", TODAY), ("two.example", "no-include", TODAY),
+    ]
+    later = source_review.ReviewPlan(today=date(2027, 3, 29))  # 6 months on: both pruned
+    assert source_review.update_prospect_memory(updated, later) == []
+    sooner = source_review.ReviewPlan(today=date(2027, 3, 28))
+    assert [m["reason"] for m in source_review.update_prospect_memory(updated, sooner)] == [
+        "off-topic", "no-include",
+    ]
+    skipped = _discover_prospects([_cited("https://blog.example/")], {}, _judge(), updated)
+    assert (skipped.rejected, skipped.fetch_calls) == ([], [])
 
 
 def test_a_feed_with_no_entry_in_the_last_6_months_is_rejected_without_judging() -> None:
@@ -1244,7 +1479,7 @@ def test_discovery_writes_no_resources_and_leaves_its_inputs_unmodified() -> Non
 
     plan = source_review.review_sources(
         sources, resources, [], suggestions, TODAY, _fetcher({FEED: GOOD_FEED}),
-        _judge(include=("Evals in prod",)), memory=memory,
+        _judge(include=("Evals in prod",)), topic_fit=_topic_fit(), memory=memory,
     )
 
     assert len(plan.additions) == 1
@@ -1265,11 +1500,11 @@ def _cited(url: str) -> source_review.ProspectiveSource:
     return source_review.ProspectiveSource(url, "citation")
 
 
-def _discover_prospects(prospects, pages, judge, memory=()):
+def _discover_prospects(prospects, pages, judge, memory=(), topic_fit=None):
     plan = source_review.ReviewPlan(today=TODAY)
     fetch = _fetcher(pages)
     source_review.discover_sources(plan, prospects, _enabled_sources(12), fetch, judge, memory,
-                                   clock=lambda: 0.0)
+                                   clock=lambda: 0.0, topic_fit=topic_fit or _topic_fit())
     plan.fetch_calls = fetch.calls
     return plan
 
@@ -1978,12 +2213,13 @@ BLOG_HOME = _html('<link rel="alternate" type="application/rss+xml" href="/feed.
 TWO_CITING = [_res("r1", "https://a.example/p"), _res("r2", "https://b.example/p")]
 
 
-def _mine(resources, pages, judge=None, suggestions=(), sources=None, memory=(), clock=None):
+def _mine(resources, pages, judge=None, suggestions=(), sources=None, memory=(), clock=None,
+          topic_fit=None):
     fetch = _fetcher(pages)
     plan = source_review.review_sources(
         sources if sources is not None else _enabled_sources(12), resources, [],
-        list(suggestions), TODAY, fetch, judge or _judge(), memory=memory,
-        clock=clock or (lambda: 0.0),
+        list(suggestions), TODAY, fetch, judge or _judge(), topic_fit=topic_fit or _topic_fit(),
+        memory=memory, clock=clock or (lambda: 0.0),
     )
     plan.fetch_calls = fetch.calls
     return plan
@@ -2321,7 +2557,7 @@ def test_the_citation_time_budget_stops_mining_and_marks_the_run_incomplete() ->
 
     plan = source_review.review_sources(
         _enabled_sources(12), resources, [], [], TODAY, slow_fetch, _judge(),
-        clock=lambda: now[0],
+        topic_fit=_topic_fit(), clock=lambda: now[0],
     )
 
     assert base.calls[:3] == [f"https://r{i}.example/p" for i in range(3)]
