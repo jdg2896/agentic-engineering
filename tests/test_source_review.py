@@ -1450,12 +1450,34 @@ def test_applying_a_plan_writes_plain_yaml_without_anchors() -> None:
 PROSPECTS_YAML = (ROOT / "scout" / "prospects.yaml").read_text()
 
 
-def test_the_checked_in_memory_starts_empty_and_keeps_its_header() -> None:
+def test_the_checked_in_memory_is_well_formed() -> None:
+    # Source review commits its lasting rejections here every month, so the file is
+    # not expected to be empty; each entry must still be one update_prospect_memory writes.
+    memory = source_review.round_trip_yaml().load(PROSPECTS_YAML)
+    assert list(memory) == ["rejected"]
+    assert isinstance(memory["rejected"], list)
+    for entry in memory["rejected"]:
+        who = f"prospect memory entry {entry.get('key') or entry.get('suggestion')!r}"
+        assert set(entry) == {"key", "url", "channel", "suggestion", "reason", "rejected_at"}, who
+        assert entry["channel"] in ("suggestion", "citation"), who
+        if entry["channel"] == "citation":
+            assert entry["suggestion"] is None, who
+        else:
+            assert isinstance(entry["suggestion"], int), who
+        assert entry["reason"] in source_review.REJECTION_REASONS, who
+        if entry["url"] is None:
+            assert entry["key"] is None, who
+        else:
+            assert source_review.is_safe_url(entry["url"]), who
+            assert entry["key"] == source_review.source_key(entry["url"]), who
+        assert isinstance(entry["rejected_at"], date), who
+
+
+def test_updating_the_checked_in_memory_keeps_its_header() -> None:
     import io
 
     ryaml = source_review.round_trip_yaml()
     memory = ryaml.load(PROSPECTS_YAML)
-    assert memory["rejected"] == []
     plan = _discover([_suggest(1, None)], {}, _judge())
 
     memory["rejected"] = source_review.update_prospect_memory(memory["rejected"], plan)
