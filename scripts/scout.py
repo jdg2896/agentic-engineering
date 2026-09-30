@@ -215,6 +215,21 @@ def judge_failure_hint(run: ScoutRun) -> str:
     )
 
 
+def record_judge_failure(run: ScoutRun, exc: Exception, context: str) -> None:
+    """Record a judge call's exception in `run`: a `JudgeQuotaError` (a usage limit)
+    in `quota_exhausted`, anything else in `errors` as `"{context}: {exc}"`, with
+    `auth_failed` set for a `JudgeAuthError`.
+
+    `context` must already be sanitized; the exception text is sanitized here, since
+    errors are printed as `::error::` lines, where no newline may survive.
+    """
+    if isinstance(exc, JudgeQuotaError):
+        run.quota_exhausted = str(exc)
+        return
+    run.errors.append(f"{context}: {sanitize_text(str(exc), 1000)}")
+    run.auth_failed = isinstance(exc, JudgeAuthError)
+
+
 def entry_text(entry) -> tuple[str, str]:
     """A feed entry's (title, summary) as the judge sees them: the summary, else the
     first content block. Unsanitized feed text."""
@@ -265,17 +280,13 @@ def judge_sources(
 
             try:
                 result = judge(title, url, summary, source_id)
-            except JudgeQuotaError as exc:
-                run.quota_exhausted = str(exc)
-                return run
             except Exception as exc:
                 # Any error fails the run, so further judge calls would only burn quota.
-                # Sanitized: errors are printed as `::error::` lines, so no newline may survive.
-                run.errors.append(
+                record_judge_failure(
+                    run, exc,
                     f"source {source_id}: judge error for '{sanitize_text(title, 200)}'"
-                    f" ({sanitize_text(url, 200)}): {sanitize_text(str(exc), 1000)}"
+                    f" ({sanitize_text(url, 200)})",
                 )
-                run.auth_failed = isinstance(exc, JudgeAuthError)
                 return run
             run.evaluated += 1
             if result["decision"] == "include":

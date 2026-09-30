@@ -35,7 +35,7 @@ import feedparser
 import idna
 
 import judge
-from judge import JudgeAuthError, JudgeQuotaError
+from judge import JudgeQuotaError
 import scout
 from scout import (
     SKIPPED_LABEL,
@@ -555,22 +555,16 @@ def _topic_fit_run(
     topic_fit: TopicFit, parsed, feed_url: str, sample: list, source_id: str,
 ) -> tuple[scout.ScoutRun, dict | None]:
     """Make the Trial's one Topic fit call over its sample, recording a failure in a
-    ScoutRun exactly as `scout.judge_sources` records one on an entry call: a usage
-    limit (or spent budget) in `quota_exhausted`, any other error, sanitized, in
-    `errors`. Returns the run and the verdict (None on a failure)."""
+    ScoutRun exactly as `scout.judge_sources` records one on an entry call
+    (`scout.record_judge_failure`). Returns the run and the verdict (None on a failure)."""
     run = scout.ScoutRun()
     feed_title = str(parsed.get("feed", {}).get("title", ""))
     try:
         verdict = topic_fit(feed_title, feed_url, [scout.entry_text(e) for e in sample])
-    except JudgeQuotaError as exc:
-        run.quota_exhausted = str(exc)
-        return run, None
     except Exception as exc:
-        run.errors.append(
-            f"source {source_id}: Topic fit judge error for {sanitize_text(feed_url, 200)}: "
-            f"{sanitize_text(str(exc), 1000)}"
+        scout.record_judge_failure(
+            run, exc, f"source {source_id}: Topic fit judge error for {sanitize_text(feed_url, 200)}",
         )
-        run.auth_failed = isinstance(exc, JudgeAuthError)
         return run, None
     return run, verdict
 
@@ -642,7 +636,8 @@ def _trial(
     sample = in_window[:TRIAL_SIZE]
     fit_run, verdict = _topic_fit_run(budgeted(topic_fit), parsed, feed_url, sample, source_id)
     _stop_on_judge_failure(prospect, fit_run, TrialEvidence(len(in_window), 0, ()), budget)
-    assert verdict is not None  # a call without a verdict stopped the Trial above
+    if verdict is None:  # a failed call records a stop, so this never passes silently
+        raise RuntimeError("Topic fit call returned no verdict and recorded no failure")
     # Fail closed: only a JSON `true` is Topic fit.
     fit = verdict.get("topic_fit") is True
     fit_rationale = sanitize_text(verdict.get("rationale", ""))
