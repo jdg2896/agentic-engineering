@@ -1,9 +1,11 @@
 """Scout's editorial judge, run through the Claude Code CLI in headless mode.
 
 Authenticates with `CLAUDE_CODE_OAUTH_TOKEN` per docs/adr/0001-oauth-token-for-ci.md.
-`judge_entry` is the whole interface: it hides the CLI invocation, retries, JSON
-parsing and schema validation, and raises `JudgeError` instead of returning a
-partial judgment.
+Two judgment kinds share one CLI invocation, model setting, hardening, retry policy
+and error types: `judge_entry` (Scout's per-entry judgment) and `judge_topic_fit`
+(a Trial's Topic fit verdict on a Prospective Source's feed as a whole). Each hides
+the CLI invocation, retries, JSON parsing and schema validation, and raises
+`JudgeError` instead of returning a partial judgment.
 """
 
 from __future__ import annotations
@@ -13,7 +15,7 @@ import re
 import subprocess
 import tempfile
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 
 MODEL = "claude-sonnet-4-6"
 CLI_TIMEOUT_SECONDS = 300
@@ -24,6 +26,9 @@ RETRY_BACKOFF_SECONDS = 10
 # of release notes; the opening is enough to judge it, and the rest only costs tokens.
 MAX_SUMMARY_CHARS = 4_000
 MAX_TITLE_CHARS = 500
+# A Topic fit call sees a whole Trial sample (up to 10 entries) at once, so each
+# summary is shortened further: its opening says what the entry is about.
+TOPIC_FIT_SUMMARY_CHARS = 600
 
 # The judge_candidate schema, passed to the CLI as --json-schema and re-checked here.
 JUDGMENT_SCHEMA = {
@@ -39,6 +44,17 @@ JUDGMENT_SCHEMA = {
         "license": {"type": ["string", "null"]},
         "blurb": {"type": "string"},
         "tags": {"type": "array", "items": {"type": "string"}},
+        "rationale": {"type": "string"},
+    },
+}
+
+# The Topic fit schema: whether a feed, as a whole, is about agentic systems, and why.
+# Passed to the CLI as --json-schema and re-checked here, like JUDGMENT_SCHEMA.
+TOPIC_FIT_SCHEMA = {
+    "type": "object",
+    "required": ["topic_fit", "rationale"],
+    "properties": {
+        "topic_fit": {"type": "boolean"},
         "rationale": {"type": "string"},
     },
 }
@@ -82,6 +98,7 @@ class JudgeLaunchError(JudgeError):
 
 _JSON_TYPES = {
     "string": str,
+    "boolean": bool,
     "array": list,
     "object": dict,
     "null": type(None),
@@ -104,13 +121,13 @@ def _check(value: object, schema: dict, path: str) -> None:
             _check(item, schema["items"], f"{path}[{i}]")
 
 
-def _validate(judgment: object) -> dict:
+def _validate(judgment: object, schema: dict) -> dict:
     if not isinstance(judgment, dict):
         raise JudgeError(f"judgment must be an object, got {judgment!r}")
-    missing = [k for k in JUDGMENT_SCHEMA["required"] if k not in judgment]
+    missing = [k for k in schema["required"] if k not in judgment]
     if missing:
         raise JudgeError(f"judgment is missing required field(s): {', '.join(missing)}")
-    for key, prop in JUDGMENT_SCHEMA["properties"].items():
+    for key, prop in schema["properties"].items():
         if key in judgment:
             _check(judgment[key], prop, key)
     return judgment
@@ -145,11 +162,24 @@ def _is_auth_failure(envelope: dict) -> bool:
 
 
 def parse_judgment(stdout: str) -> dict:
-    """Parse `claude -p --output-format json` stdout into a validated judgment.
+    """Parse `claude -p --output-format json` stdout into a validated per-entry judgment.
 
     Raises JudgeAuthError on an authentication failure, JudgeQuotaError when the
     subscription usage limit is exhausted, and JudgeError on any other CLI error, malformed JSON, missing structured output, or schema violation.
     """
+    return _parse(stdout, JUDGMENT_SCHEMA)
+
+
+def parse_topic_fit(stdout: str) -> dict:
+    """Parse CLI stdout into a validated Topic fit verdict (`TOPIC_FIT_SCHEMA`).
+
+    Raises exactly as `parse_judgment` does. `topic_fit` must be a JSON boolean, so
+    any other answer fails closed instead of reading as a pass.
+    """
+    return _parse(stdout, TOPIC_FIT_SCHEMA)
+
+
+def _parse(stdout: str, schema: dict) -> dict:
     try:
         envelope = json.loads(stdout)
     except json.JSONDecodeError as exc:
@@ -165,10 +195,10 @@ def parse_judgment(stdout: str) -> dict:
     judgment = envelope.get("structured_output")
     if judgment is None:
         raise JudgeError(f"Claude Code CLI returned no structured_output (result: {envelope.get('result')!r})")
-    return _validate(judgment)
+    return _validate(judgment, schema)
 
 
-def run_claude(prompt: str, system: str) -> str:
+def run_claude(prompt: str, system: str, schema: dict = JUDGMENT_SCHEMA) -> str:
     """Invoke the Claude Code CLI headless and return its stdout (the JSON envelope).
 
     The prompt goes in on stdin, not argv: it carries feed text of any length, and
@@ -181,7 +211,7 @@ def run_claude(prompt: str, system: str) -> str:
         "--system-prompt", system,
         "--model", MODEL,
         "--output-format", "json",
-        "--json-schema", json.dumps(JUDGMENT_SCHEMA),
+        "--json-schema", json.dumps(schema),
         # Feed content is untrusted: give the judge no tools to act with.
         "--tools", "",
         "--no-session-persistence",
@@ -219,6 +249,11 @@ def run_claude(prompt: str, system: str) -> str:
     return proc.stdout
 
 
+def run_claude_topic_fit(prompt: str, system: str) -> str:
+    """`run_claude` with the Topic fit schema."""
+    return run_claude(prompt, system, TOPIC_FIT_SCHEMA)
+
+
 def judge_entry(
     system: str,
     title: str,
@@ -253,9 +288,58 @@ def judge_entry(
         f"Source feed: {source_id}\n"
         f"Summary/description:\n{summary or '(no summary available)'}"
     )
+    return _with_retries(lambda: parse_judgment(run(prompt, system)), _one_line(url, 200), sleep)
+
+
+def judge_topic_fit(
+    system: str,
+    feed_title: str,
+    feed_url: str,
+    entries: Iterable[tuple[str, str]],
+    run: Callable[[str, str], str] = run_claude_topic_fit,
+    sleep: Callable[[float], None] = time.sleep,
+) -> dict:
+    """Judge whether a feed, as a whole, has Topic fit; return `{"topic_fit", "rationale"}`.
+
+    `entries` are the (title, summary) pairs of a Trial's sample, newest first. Takes
+    the same system prompt as `judge_entry` (the guide's sections and inclusion
+    criteria) and shares its CLI hardening, retry policy and error types: an
+    off-schema answer is retried and, once attempts run out, raised as `JudgeError`,
+    never read as a pass. Each summary is cut to `TOPIC_FIT_SUMMARY_CHARS` and each
+    title to `MAX_TITLE_CHARS`.
+    """
+    lines = []
+    for i, (title, summary) in enumerate(entries, start=1):
+        summary = str(summary or "")
+        if len(summary) > TOPIC_FIT_SUMMARY_CHARS:
+            summary = f"{summary[:TOPIC_FIT_SUMMARY_CHARS]} [... truncated]"
+        lines.append(
+            f"{i}. Title: {str(title)[:MAX_TITLE_CHARS]}\n"
+            f"   Summary: {summary or '(no summary available)'}"
+        )
+    prompt = (
+        "Decide whether this feed has Topic fit for the guide: whether the feed as a whole "
+        "is about building, evaluating, operating or securing agentic systems. Judge the "
+        "feed, not any single entry: a feed mostly about something else (for example "
+        "general model serving, embeddings or training) lacks Topic fit even when an "
+        "occasional entry touches on agents. Use the guide's sections and inclusion "
+        "criteria as context. Answer with `topic_fit` and a one- or two-sentence "
+        "`rationale`.\n\n"
+        f"Feed title: {str(feed_title or '(untitled)')[:MAX_TITLE_CHARS]}\n"
+        f"Feed URL: {feed_url}\n"
+        "Recent entries, newest first:\n" + ("\n".join(lines) or "(none)")
+    )
+    return _with_retries(
+        lambda: parse_topic_fit(run(prompt, system)), f"Topic fit of {_one_line(feed_url, 200)}", sleep,
+    )
+
+
+def _with_retries(attempt_once: Callable[[], dict], subject: str, sleep: Callable[[float], None]) -> dict:
+    """Make one judge call with `judge_entry`'s retry policy; `subject` (already one
+    line) names the call in the retry warning."""
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            return parse_judgment(run(prompt, system))
+            return attempt_once()
         except (JudgeAuthError, JudgeQuotaError, JudgeLaunchError):
             raise
         except JudgeError as exc:
@@ -263,7 +347,7 @@ def judge_entry(
                 raise
             delay = attempt * RETRY_BACKOFF_SECONDS
             print(
-                f"::warning::judge attempt {attempt}/{MAX_ATTEMPTS} failed for {_one_line(url, 200)}: "
+                f"::warning::judge attempt {attempt}/{MAX_ATTEMPTS} failed for {subject}: "
                 f"{_one_line(exc)}; "
                 f"retrying in {delay}s",
                 flush=True,

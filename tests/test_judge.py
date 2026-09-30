@@ -449,3 +449,183 @@ def test_os_error_launching_the_cli_is_a_launch_error_that_is_not_retried(monkey
     assert len(calls) == 1
     assert sleeps == []
     assert _single_line(str(exc_info.value))
+
+
+# ── Topic fit ────────────────────────────────────────────────────────────────
+
+VALID_TOPIC_FIT = {"topic_fit": True, "rationale": "Release notes for an agent framework."}
+FEED_ENTRIES = [
+    ("v2.0: tool calling", "Adds parallel tool calls to the agent loop."),
+    ("v1.9", "Bug fixes."),
+]
+
+
+def _topic_fit_envelope(**overrides) -> str:
+    return _envelope(**{"result": json.dumps(VALID_TOPIC_FIT), "structured_output": VALID_TOPIC_FIT, **overrides})
+
+
+def test_valid_topic_fit_output_returns_the_verdict() -> None:
+    assert judge.parse_topic_fit(_topic_fit_envelope()) == VALID_TOPIC_FIT
+    off_topic = {"topic_fit": False, "rationale": "An embeddings library."}
+    assert judge.parse_topic_fit(_topic_fit_envelope(structured_output=off_topic)) == off_topic
+
+
+@pytest.mark.parametrize(
+    ("verdict", "field"),
+    [
+        ({"rationale": "no verdict"}, "topic_fit"),
+        ({"topic_fit": True}, "rationale"),
+        ({"topic_fit": "yes", "rationale": "r"}, "topic_fit"),
+        ({"topic_fit": 1, "rationale": "r"}, "topic_fit"),
+        ({"topic_fit": None, "rationale": "r"}, "topic_fit"),
+        ({"topic_fit": True, "rationale": ["r"]}, "rationale"),
+        (VALID_JUDGMENT, "topic_fit"),  # a per-entry judgment is not a Topic fit verdict
+    ],
+    ids=["no-verdict", "no-rationale", "string-verdict", "int-verdict", "null-verdict",
+         "list-rationale", "entry-judgment"],
+)
+def test_off_schema_topic_fit_raises_judge_error(verdict: dict, field: str) -> None:
+    with pytest.raises(judge.JudgeError, match=field):
+        judge.parse_topic_fit(_topic_fit_envelope(structured_output=verdict))
+
+
+def test_a_topic_fit_verdict_is_not_a_per_entry_judgment() -> None:
+    with pytest.raises(judge.JudgeError, match="decision"):
+        judge.parse_judgment(_topic_fit_envelope())
+
+
+def test_topic_fit_cli_errors_raise_the_same_error_types() -> None:
+    unauthorized = _topic_fit_envelope(
+        is_error=True, api_error_status=401, result="Failed to authenticate.", structured_output=None,
+    )
+    limited = _topic_fit_envelope(
+        is_error=True, api_error_status=429, result="You've hit your session limit", structured_output=None,
+    )
+    with pytest.raises(judge.JudgeAuthError):
+        judge.parse_topic_fit(unauthorized)
+    with pytest.raises(judge.JudgeQuotaError):
+        judge.parse_topic_fit(limited)
+    with pytest.raises(judge.JudgeError, match="structured_output"):
+        judge.parse_topic_fit(_topic_fit_envelope(structured_output=None))
+
+
+def _judge_topic_fit(run, sleeps: list[float] | None = None, entries=FEED_ENTRIES) -> dict:
+    return judge.judge_topic_fit(
+        "SYSTEM", "Agent SDK releases", "https://example.com/releases.atom", entries,
+        run=run, sleep=(sleeps if sleeps is not None else []).append,
+    )
+
+
+def test_judge_topic_fit_asks_about_the_feed_as_a_whole_in_one_call() -> None:
+    calls = []
+
+    def fake_run(prompt: str, system: str) -> str:
+        calls.append((prompt, system))
+        return _topic_fit_envelope()
+
+    assert _judge_topic_fit(fake_run) == VALID_TOPIC_FIT
+    [(prompt, system)] = calls
+    assert system == "SYSTEM"
+    assert "Agent SDK releases" in prompt
+    assert "https://example.com/releases.atom" in prompt
+    for title, summary in FEED_ENTRIES:
+        assert title in prompt and summary in prompt
+    assert "as a whole" in prompt
+    assert "building, evaluating, operating or securing agentic systems" in prompt
+
+
+def test_judge_topic_fit_shortens_each_summary_and_caps_titles() -> None:
+    calls = []
+
+    def fake_run(prompt: str, system: str) -> str:
+        calls.append(prompt)
+        return _topic_fit_envelope()
+
+    entries = [("T-HEAD " + "t" * 20_000 + " T-TAIL", "S-HEAD " + "changelog line\n" * 10_000 + "S-TAIL")] * 10
+    _judge_topic_fit(fake_run, entries=entries)
+
+    [prompt] = calls
+    assert "S-HEAD" in prompt and "T-HEAD" in prompt
+    assert "S-TAIL" not in prompt and "T-TAIL" not in prompt
+    assert len(prompt) < 20_000
+
+
+def test_judge_topic_fit_retries_off_schema_output_then_returns_the_verdict() -> None:
+    bad = _topic_fit_envelope(structured_output={"topic_fit": "maybe", "rationale": "r"})
+    run, calls = _scripted_run(bad, _topic_fit_envelope())
+    sleeps: list[float] = []
+
+    assert _judge_topic_fit(run, sleeps) == VALID_TOPIC_FIT
+    assert len(calls) == 2
+    assert len(sleeps) == 1
+
+
+def test_judge_topic_fit_fails_closed_once_attempts_are_exhausted() -> None:
+    bad = _topic_fit_envelope(structured_output={"rationale": "no verdict"})
+    run, calls = _scripted_run(*([bad] * judge.MAX_ATTEMPTS))
+
+    with pytest.raises(judge.JudgeError, match="topic_fit"):
+        _judge_topic_fit(run)
+    assert len(calls) == judge.MAX_ATTEMPTS
+
+
+@pytest.mark.parametrize(
+    ("stdout", "error"),
+    [
+        (_envelope(is_error=True, api_error_status=401, result="Failed to authenticate.", structured_output=None),
+         judge.JudgeAuthError),
+        (_envelope(is_error=True, api_error_status=429, result="You've hit your weekly limit", structured_output=None),
+         judge.JudgeQuotaError),
+    ],
+    ids=["auth", "usage-limit"],
+)
+def test_judge_topic_fit_does_not_retry_auth_or_usage_limit(stdout: str, error: type) -> None:
+    run, calls = _scripted_run(stdout, _topic_fit_envelope())
+    sleeps: list[float] = []
+
+    with pytest.raises(error):
+        _judge_topic_fit(run, sleeps)
+    assert len(calls) == 1
+    assert sleeps == []
+
+
+def test_judge_topic_fit_retry_warning_is_a_single_line(capsys) -> None:
+    run, _ = _scripted_run(judge.JudgeError("bad\n::error::injected"), _topic_fit_envelope())
+    judge.judge_topic_fit("SYSTEM", "t", "https://x.example/a\n::add-mask::y", FEED_ENTRIES,
+                          run=run, sleep=lambda _: None)
+
+    out = capsys.readouterr().out
+    assert out.count("\n") == 1 and out.startswith("::warning::")
+    assert "Topic fit" in out
+
+
+def test_judge_topic_fit_runs_the_hardened_cli_with_the_topic_fit_schema(monkeypatch) -> None:
+    calls: list = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append((cmd, kwargs))
+        return subprocess.CompletedProcess(cmd, 0, stdout=_topic_fit_envelope(), stderr="")
+
+    monkeypatch.setattr(judge.subprocess, "run", fake_run)
+
+    assert judge.judge_topic_fit("SYSTEM", "t", "https://example.com/f", FEED_ENTRIES) == VALID_TOPIC_FIT
+
+    [(cmd, kwargs)] = calls
+    assert json.loads(cmd[cmd.index("--json-schema") + 1]) == judge.TOPIC_FIT_SCHEMA
+    assert cmd[cmd.index("--model") + 1] == judge.MODEL
+    assert cmd[cmd.index("--system-prompt") + 1] == "SYSTEM"
+    assert cmd[cmd.index("--tools") + 1] == ""
+    assert cmd[cmd.index("--setting-sources") + 1] == ""
+    for flag in ("--no-session-persistence", "--strict-mcp-config"):
+        assert flag in cmd
+    assert "tool calling" in kwargs["input"]
+    assert all("tool calling" not in arg for arg in cmd)
+
+
+def test_per_entry_judging_still_sends_the_per_entry_schema(monkeypatch) -> None:
+    calls = _recording_cli(monkeypatch)
+
+    judge.judge_entry("SYSTEM", "A title", "https://example.com/a", "s", "src")
+
+    [(cmd, _)] = calls
+    assert json.loads(cmd[cmd.index("--json-schema") + 1]) == judge.JUDGMENT_SCHEMA
