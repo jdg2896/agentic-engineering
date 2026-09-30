@@ -1513,7 +1513,9 @@ def test_read_source_sanitizes_a_hostile_feed_title_to_one_capped_line() -> None
     assert title == (
         "Blog ::error::pwned \\[x\\](https://evil.example) \\<script\\>\\`x\\`\\</script\\> \\&#64;me"
     )
-    assert _meta(_titled("x" * 1000)).feed_title == "x" * scout.FEED_TITLE_MAX_LEN
+    capped = _meta(_titled("x" * 1000)).feed_title
+    assert len(capped) == scout.FEED_TITLE_MAX_LEN and capped.endswith("…")
+    assert _meta(_titled("x" * scout.FEED_TITLE_MAX_LEN)).feed_title == "x" * scout.FEED_TITLE_MAX_LEN
 
 
 @pytest.mark.parametrize(
