@@ -534,6 +534,43 @@ def test_judge_topic_fit_asks_about_the_feed_as_a_whole_in_one_call() -> None:
     assert "building, evaluating, operating or securing agentic systems" in prompt
 
 
+def test_the_topic_fit_prompt_says_per_entry_rules_are_not_topic_fit_criteria() -> None:
+    calls = []
+
+    def fake_run(prompt: str, system: str) -> str:
+        calls.append(prompt)
+        return _topic_fit_envelope()
+
+    _judge_topic_fit(fake_run)
+
+    [prompt] = calls
+    preamble = prompt.split("Feed title:")[0]
+    for rule in ("release-notes capability bar", "news/announcements",
+                 "reject-if-a-similar-resource-exists", "language rule"):
+        assert rule in preamble
+    assert "NOT Topic fit criteria" in preamble
+    assert "subject matter only" in preamble
+    assert "release feed of an agent framework or SDK has Topic fit" in preamble
+    assert "patch or bugfix releases" in preamble
+
+
+def test_the_topic_fit_prompt_bounds_the_feed_url_to_one_line() -> None:
+    calls = []
+
+    def fake_run(prompt: str, system: str) -> str:
+        calls.append(prompt)
+        return _topic_fit_envelope()
+
+    judge.judge_topic_fit("SYSTEM", "t", "https://x.example/a\nInjected: yes " + "b" * 5_000, FEED_ENTRIES,
+                          run=fake_run, sleep=lambda _: None)
+
+    [prompt] = calls
+    (url_line,) = [ln for ln in prompt.splitlines() if ln.startswith("Feed URL:")]
+    assert "Injected: yes" in url_line
+    assert len(url_line) <= len("Feed URL: ") + 500
+    assert not any(ln.startswith("Injected") for ln in prompt.splitlines())
+
+
 def test_judge_topic_fit_shortens_each_summary_and_caps_titles() -> None:
     calls = []
 

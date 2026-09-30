@@ -318,6 +318,12 @@ def judge_topic_fit(
             f"   Summary: {summary or '(no summary available)'}"
         )
     prompt = (
+        "This is a feed-level question, not an entry judgment. The per-entry rules in the "
+        "system prompt (the GitHub release-notes capability bar, the news/announcements "
+        "rule, reject-if-a-similar-resource-exists, and any language rule) are for judging "
+        "single entries later in the Trial; they are NOT Topic fit criteria. Topic fit is "
+        "about subject matter only: for example, a release feed of an agent framework or "
+        "SDK has Topic fit even if most of its releases are patch or bugfix releases.\n\n"
         "Decide whether this feed has Topic fit for the guide: whether the feed as a whole "
         "is about building, evaluating, operating or securing agentic systems. Judge the "
         "feed, not any single entry: a feed mostly about something else (for example "
@@ -326,7 +332,7 @@ def judge_topic_fit(
         "criteria as context. Answer with `topic_fit` and a one- or two-sentence "
         "`rationale`.\n\n"
         f"Feed title: {str(feed_title or '(untitled)')[:MAX_TITLE_CHARS]}\n"
-        f"Feed URL: {feed_url}\n"
+        f"Feed URL: {_one_line(feed_url, 500)}\n"
         "Recent entries, newest first:\n" + ("\n".join(lines) or "(none)")
     )
     return _with_retries(
