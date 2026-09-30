@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sys
+import time
 import unicodedata
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
@@ -202,8 +203,12 @@ class ScoutRun:
     fully_judged: set[str] = field(default_factory=set)
     # The judge error was an authentication failure, so the credential needs fixing.
     auth_failed: bool = False
-    # Judging stopped on the subscription usage limit (the error message); not an error.
-    quota_exhausted: str | None = None
+    # Judging stopped before every entry was judged, but not on an error: why, naming
+    # the cause (e.g. "the Claude usage limit (<error message>)"). Unsanitized.
+    stopped_early: str | None = None
+    # The early stop was the subscription usage limit, the one cause that can leave a
+    # run with nothing judged; main() fails such a run instead of hiding it.
+    usage_limit_hit: bool = False
 
 
 def judge_failure_hint(run: ScoutRun) -> str:
@@ -217,22 +222,36 @@ def judge_failure_hint(run: ScoutRun) -> str:
     )
 
 
+# The usage-limit error text kept in a stop reason: well under sanitize_text's default
+# 500, so the reason around it survives being sanitized whole.
+USAGE_LIMIT_MESSAGE_LEN = 300
+
+
 def judge_sources(
     new_entries: dict[str, list],
     judge: Callable[[str, str, str, str], dict],
     known_urls: set[str],
     existing_slugs: set[str],
     limit: int | None = None,
+    max_calls: int | None = None,
+    max_seconds: float | None = None,
+    clock: Callable[[], float] = time.monotonic,
 ) -> ScoutRun:
     """Judge each Source's new entries and record which Sources were fully judged.
 
     `judge(title, url, summary, source_id)` returns the judgment dict or raises;
     the first raise is recorded in `errors` and stops judging, since any error
     fails the run. A `JudgeQuotaError` also stops judging, since every later call
-    would hit the same limit, but is recorded in `quota_exhausted` instead: the
+    would hit the same limit, but is recorded in `stopped_early` instead: the
     judgments made so far stand. Entries in `known_urls` are skipped. Judging also
     stops once `limit` entries are judged. Sources left unfinished by any stop are
     not in `fully_judged`.
+
+    The optional budget caps one run's judging: at most `max_calls` judge calls and
+    no call started once `max_seconds` of `clock` have passed since judging began.
+    It is checked before each judge call, so skipped entries cost nothing, and a
+    spent budget stops judging like the usage limit, recorded in `stopped_early`.
+    With neither set there is no budget (Source review's Trials rely on that).
 
     Entries whose link fails `is_safe_url` are skipped before the judge is called,
     like known URLs: they are not errors, are not recorded as rejects, and do not
@@ -241,6 +260,7 @@ def judge_sources(
     """
     run = ScoutRun()
     slugs = set(existing_slugs)
+    start = clock() if max_seconds is not None else 0.0
     for source_id, entries in new_entries.items():
         for entry in entries:
             url = entry.get("link", "")
@@ -255,6 +275,13 @@ def judge_sources(
             if limit is not None and run.evaluated >= limit:
                 print(f"\n  --limit {limit} reached, stopping early.")
                 return run
+            if max_calls is not None and run.evaluated >= max_calls:
+                calls = "judge call" if max_calls == 1 else "judge calls"
+                run.stopped_early = f"Scout's call budget of {max_calls} {calls}"
+                return run
+            if max_seconds is not None and clock() - start >= max_seconds:
+                run.stopped_early = f"Scout's time budget of {max_seconds / 60:g} minutes of judging"
+                return run
             title = entry.get("title", "(untitled)")
             content_list = entry.get("content", [])
             content_val = content_list[0].get("value", "") if content_list else ""
@@ -263,7 +290,11 @@ def judge_sources(
             try:
                 result = judge(title, url, summary, source_id)
             except JudgeQuotaError as exc:
-                run.quota_exhausted = str(exc)
+                # Trimmed here, not only when written, so truncating the whole reason
+                # later can never cut its closing bracket.
+                message = " ".join(str(exc).split())[:USAGE_LIMIT_MESSAGE_LEN]
+                run.stopped_early = f"the Claude usage limit ({message})"
+                run.usage_limit_hit = True
                 return run
             except Exception as exc:
                 # Any error fails the run, so further judge calls would only burn quota.
@@ -315,6 +346,15 @@ def judge_sources(
         run.fully_judged.add(source_id)
     return run
 
+
+# One run's judge budget, whichever runs out first. The call budget bounds how much of
+# the subscription quota, shared with interactive use (ADR-0001), one backlog can draw;
+# the time budget keeps judging (an Opus-class judge call takes roughly 30-60 s) well
+# inside the workflow's 90-minute timeout, leaving room to write files and open the PR.
+# A spent budget stops the run cleanly; the unjudged remainder is picked up next run.
+# Retune both from real judge.MODEL timings when the model changes.
+JUDGE_CALL_BUDGET = 100
+JUDGE_TIME_BUDGET_SECONDS = 60 * 60
 
 CANDIDATE_CAP = 8
 BASE_LABELS = ["automated", "scout"]
@@ -369,9 +409,9 @@ def pr_body(candidates: list[dict], decision: dict, incomplete: str | None = Non
     (an unsafe one is withheld, not linked), slug/source/section/type are made inert
     for their code spans, and each gate reason is collapsed onto one line.
 
-    `incomplete` is the reason a quota-stopped run recorded in candidates.yaml
-    (already sanitized by `write_candidates`); when set, a partial-run note follows
-    the banner, telling the reviewer to merge before the next run.
+    `incomplete` is the reason a run that stopped early recorded in candidates.yaml
+    (already sanitized by `write_candidates`); when set, a partial-run note naming it
+    follows the banner, telling the reviewer to merge before the next run.
     """
     if decision["auto_merge_ok"]:
         prefix = "> **Auto-merge enabled** — this PR will land once required checks pass.\n"
@@ -381,8 +421,8 @@ def pr_body(candidates: list[dict], decision: dict, incomplete: str | None = Non
         prefix = f"> **Auto-merge skipped:** {reasons}.\n"
     if incomplete:
         prefix += (
-            "\n> **Partial run:** the judge hit the Claude usage limit, so some entries "
-            f"were left for the next run. {' '.join(str(incomplete).split())}\n"
+            f"\n> **Partial run:** judging stopped on {' '.join(str(incomplete).split())}, "
+            "so some entries were left for the next run.\n"
             "> Merge this PR before the next scheduled run: that run starts from main, "
             "so until this lands it re-judges the same entries. For a large backlog, "
             "re-dispatch the workflow with a higher `candidate_cap`.\n"
@@ -407,10 +447,10 @@ def pr_body(candidates: list[dict], decision: dict, incomplete: str | None = Non
 
 
 def write_candidates(path: Path, run: ScoutRun) -> None:
-    """Write candidates.yaml; a quota-stopped run also records why it is incomplete."""
+    """Write candidates.yaml; a run that stopped early also records why it is incomplete."""
     data: dict = {"candidates": run.candidates}
-    if run.quota_exhausted is not None:
-        data["incomplete"] = sanitize_text(run.quota_exhausted)
+    if run.stopped_early is not None:
+        data["incomplete"] = sanitize_text(run.stopped_early)
     path.write_text(pyyaml.dump(data, sort_keys=False, allow_unicode=True))
 
 
@@ -660,6 +700,8 @@ def main() -> None:
         known_urls=seen_urls | existing_urls,
         existing_slugs=existing_slugs,
         limit=args.limit,
+        max_calls=JUDGE_CALL_BUDGET,
+        max_seconds=JUDGE_TIME_BUDGET_SECONDS,
     )
 
     print(
@@ -670,7 +712,7 @@ def main() -> None:
     # The fail-closed exits below write no files at all, Source health included: the
     # workflow does not commit a failed run, so health written there would be discarded
     # anyway, and "no files written" stays a simple, whole-run guarantee. Every run that
-    # writes sources.yaml — including one stopped early by the usage limit — records
+    # writes sources.yaml — including one that stopped judging early — records
     # health for every enabled Source, however far its entries were judged.
     if run.errors:
         # Fail closed: a dead judge must never advance last_checked_at or record rejects.
@@ -682,26 +724,26 @@ def main() -> None:
         )
         sys.exit(1)
 
-    if run.quota_exhausted is not None and run.evaluated == 0:
+    if run.usage_limit_hit and run.evaluated == 0:
         # No progress at all: nothing to keep, and a green run would hide that the
         # quota (shared with interactive use, ADR-0001) is gone.
         print(
-            f"::error::The Claude usage limit is exhausted and nothing was judged "
-            f"({sanitize_text(run.quota_exhausted)}); no files written. The subscription "
+            f"::error::Nothing was judged: judging stopped on {sanitize_text(run.stopped_early)}; "
+            "no files written. The subscription "
             "quota is shared with interactive use (docs/adr/0001-oauth-token-for-ci.md); "
             "re-run once it resets.",
             file=sys.stderr,
         )
         sys.exit(1)
 
-    if run.quota_exhausted is not None:
-        # Unlike an error, a usage limit leaves every judgment made so far real, so
+    if run.stopped_early is not None:
+        # Unlike an error, an early stop leaves every judgment made so far real, so
         # keep them: rejects go to seen.yaml, includes become Resources, and only fully
         # judged Sources are bumped. Discarding them would re-judge the same entries
         # next run, so a backlog larger than one quota window could never clear.
         print(
-            f"::warning::Judging stopped on the Claude usage limit "
-            f"({sanitize_text(run.quota_exhausted)}). The {run.evaluated} judgment(s) made are "
+            f"::warning::Judging stopped on {sanitize_text(run.stopped_early)}. "
+            f"The {run.evaluated} judgment(s) made are "
             "saved; unfinished Sources keep their last_checked_at, so the unjudged "
             "remainder is picked up next run.",
             flush=True,
