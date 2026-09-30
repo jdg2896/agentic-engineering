@@ -397,10 +397,13 @@ def test_sanitize_escapes_backslashes_so_pre_escaped_links_stay_dead() -> None:
     assert out == "\\\\\\[x\\\\\\](https://evil) \\\\\\<b\\>"
 
 
-@pytest.mark.parametrize("raw", ["&#64;octocat", "&#35;12", "Fixes &#35;12", "&commat;x"])
+@pytest.mark.parametrize(
+    "raw", ["&#64;octocat", "&#35;12", "Fixes &#35;12", "&commat;x", "&num;12", "Fixes &num;12"]
+)
 def test_sanitized_entities_cannot_decode_into_mentions_or_references(raw: str) -> None:
-    # GitHub decodes HTML entities in PR bodies, so `&#64;octocat` would render as
-    # `@octocat` after defuse_references had already looked for a literal `@`.
+    # GitHub decodes HTML entities in PR bodies, so a named entity such as
+    # `&commat;x` or `&num;12` would render as `@x` or `#12` after defuse_references
+    # had already looked for a literal `@` or `#`.
     out = scout.defuse_references(scout.sanitize_text(raw))
     # `\&` is a CommonMark backslash escape: it renders as a literal `&`, so the
     # entity text shows as typed instead of decoding.
