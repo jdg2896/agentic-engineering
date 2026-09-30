@@ -167,8 +167,10 @@ def sanitize_text(value: str, max_len: int = 500) -> str:
     Collapses whitespace (newlines included) to single spaces, drops control
     characters, cuts text longer than `max_len` to `max_len` ending in "…", then
     backslash-escapes backslashes and Markdown link / HTML characters. `&` is escaped
-    too (`\\&` renders as a literal `&`), so an entity such as `&#64;user` or `&#35;12`
-    cannot decode into a mention or issue reference that `defuse_references` never saw.
+    too (`\\&` renders as a literal `&`), so a named entity such as `&commat;user` or
+    `&num;12` cannot decode into a mention or issue reference that `defuse_references`
+    never saw. This alone is not enough for PR bodies: `\\&#64;` still leaves a bare
+    `#64`, which GitHub links, so PR text must also go through `defuse_references`.
     Cutting first means no escape is ever split, so the result may exceed `max_len` by
     its escapes. Pure.
     """
