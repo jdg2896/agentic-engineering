@@ -247,9 +247,16 @@ def test_worth_following_excludes_retired_and_disabled_sources() -> None:
         _source("retired", feed_title="Retired", enabled=False, retired_at="2026-09-29",
                 retired_reason="dead-silent"),
         _source("disabled", feed_title="Disabled", enabled=False),
+        _source("null", feed_title="Null", enabled=None),
     ]
-    resources = _yielded("kept", 3) + _yielded("retired", 5) + _yielded("disabled", 5)
+    resources = _yielded("kept", 3) + _yielded("retired", 5) + _yielded("disabled", 5) + _yielded("null", 5)
     assert _names(sources, resources) == ["Kept"]
+
+
+def test_worth_following_lists_a_revived_source() -> None:
+    # Reviving sets `enabled: true` and may leave the retirement fields behind.
+    source = _source("revived", feed_title="Revived", retired_at="2026-09-29", retired_reason="dead-silent")
+    assert _names([source], _yielded("revived", 3)) == ["Revived"]
 
 
 def test_worth_following_treats_a_missing_enabled_as_enabled() -> None:

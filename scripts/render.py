@@ -138,7 +138,7 @@ class WorthFollowing(NamedTuple):
 def worth_following(sources: list[dict], resources: list[dict], sections: list[dict]) -> list[WorthFollowing]:
     """The Sources Worth following, strongest first. Pure.
 
-    Every Source not Retired or disabled (`enabled: false`) whose lifetime Yield, the
+    Every Source not Retired or disabled (`enabled` false or null) whose lifetime Yield, the
     Resources with its `source_id` (archived, quarantined and hidden ones included), is at
     least `WORTH_FOLLOWING_MIN_YIELD`. Ordered by Yield descending, then name. The main
     section is the most frequent among its Resources; a tie goes to the earlier section.
@@ -153,7 +153,7 @@ def worth_following(sources: list[dict], resources: list[dict], sections: list[d
     entries: list[WorthFollowing] = []
     for source in sources:
         yielded = by_source.get(source["id"], [])
-        if source.get("enabled") is False or len(yielded) < WORTH_FOLLOWING_MIN_YIELD:
+        if not source.get("enabled", True) or len(yielded) < WORTH_FOLLOWING_MIN_YIELD:
             continue
         counts = Counter(yielded)
         main = min(counts, key=lambda sid: (-counts[sid], section_order[sid]))
