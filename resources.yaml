@@ -393,6 +393,7 @@ resources:
     cluster: null
     tags: [curation]
     added_at: 2026-05-03
+    source_id: simonwillison-ai-agents
     verified_at: *id001
     archived: false
     paywall: false
@@ -410,6 +411,7 @@ resources:
     cluster: null
     tags: [patterns]
     added_at: 2026-05-03
+    source_id: eugene-yan
     verified_at: *id001
     archived: false
     paywall: false
@@ -427,6 +429,7 @@ resources:
     cluster: null
     tags: [architecture]
     added_at: 2026-05-03
+    source_id: chip-huyen
     verified_at: *id001
     archived: false
     paywall: false
@@ -516,6 +519,7 @@ resources:
     cluster: null
     tags: [mcp, reference]
     added_at: 2026-05-03
+    source_id: mcp-servers-releases
     verified_at: *id001
     archived: false
     paywall: false
@@ -729,6 +733,7 @@ resources:
     cluster: null
     tags: [openai]
     added_at: 2026-05-03
+    source_id: openai-agents-python-releases
     verified_at: *id001
     archived: false
     paywall: false
@@ -798,6 +803,7 @@ resources:
     cluster: null
     tags: [google]
     added_at: 2026-05-03
+    source_id: adk-python-releases
     verified_at: *id001
     archived: false
     paywall: false
@@ -1449,6 +1455,7 @@ resources:
     cluster: null
     tags: [evals, canonical]
     added_at: 2026-05-03
+    source_id: hamel-husain
     verified_at: *id001
     archived: false
     paywall: false
@@ -1466,6 +1473,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
+    source_id: hamel-husain
     verified_at: *id001
     archived: false
     paywall: false
@@ -1483,6 +1491,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
+    source_id: hamel-husain
     verified_at: *id001
     archived: false
     paywall: false
@@ -1500,6 +1509,7 @@ resources:
     cluster: null
     tags: [evals]
     added_at: 2026-05-03
+    source_id: eugene-yan
     verified_at: *id001
     archived: false
     paywall: false
@@ -1517,6 +1527,7 @@ resources:
     cluster: null
     tags: [evals, llm-as-judge]
     added_at: 2026-05-03
+    source_id: eugene-yan
     verified_at: *id001
     archived: false
     paywall: false
@@ -1623,6 +1634,7 @@ resources:
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
+    source_id: inspect-ai-releases
     verified_at: *id001
     archived: false
     paywall: false
@@ -1742,6 +1754,7 @@ resources:
     cluster: null
     tags: [evals, observability]
     added_at: 2026-05-03
+    source_id: arize-com
     verified_at: *id001
     archived: false
     paywall: false
@@ -1812,6 +1825,7 @@ resources:
     cluster: benchmarks-9
     tags: [evals, benchmark]
     added_at: 2026-05-03
+    source_id: openai-news
     verified_at: *id001
     archived: false
     paywall: false
@@ -2200,6 +2214,7 @@ resources:
     cluster: null
     tags: [security, prompt-injection]
     added_at: 2026-05-03
+    source_id: embrace-the-red
     verified_at: *id001
     archived: false
     paywall: false
@@ -2217,6 +2232,7 @@ resources:
     cluster: null
     tags: [security, prompt-injection]
     added_at: 2026-05-03
+    source_id: simonwillison-ai-agents
     verified_at: *id001
     archived: false
     paywall: false
@@ -2635,6 +2651,7 @@ resources:
       - harness-design
       - orchestration
     added_at: '2026-05-07'
+    source_id: langchain-blog
     verified_at: *id001
     archived: false
     paywall: false
@@ -2659,6 +2676,7 @@ resources:
       - context-management
       - orchestration
     added_at: '2026-05-21'
+    source_id: langchain-blog
     verified_at: *id001
     archived: false
     paywall: false
@@ -2682,6 +2700,7 @@ resources:
       - automated-evals
       - ground-truth
     added_at: '2026-09-29'
+    source_id: hamel-husain
     verified_at: null
     archived: false
     paywall: false
@@ -2707,6 +2726,7 @@ resources:
       - agents
       - provenance
     added_at: '2026-09-29'
+    source_id: hamel-husain
     verified_at: null
     archived: false
     paywall: false
@@ -2730,6 +2750,7 @@ resources:
       - grading
       - harness-design
     added_at: '2026-09-29'
+    source_id: eugene-yan
     verified_at: null
     archived: false
     paywall: false
@@ -2758,6 +2779,7 @@ resources:
       - coding-agent
       - safety-classifier
     added_at: '2026-09-29'
+    source_id: embrace-the-red
     verified_at: null
     archived: false
     paywall: false
@@ -2786,6 +2808,7 @@ resources:
       - traffic-interception
       - agent-attack-surface
     added_at: '2026-09-29'
+    source_id: embrace-the-red
     verified_at: null
     archived: false
     paywall: false
@@ -2812,6 +2835,7 @@ resources:
       - incident-analysis
       - ransomware
     added_at: '2026-09-29'
+    source_id: embrace-the-red
     verified_at: null
     archived: false
     paywall: false
@@ -2840,6 +2864,7 @@ resources:
       - data-exfiltration
       - coding-agents
     added_at: '2026-09-29'
+    source_id: embrace-the-red
     verified_at: null
     archived: false
     paywall: false
@@ -2866,6 +2891,7 @@ resources:
       - tool-misuse
       - agent-vulnerabilities
     added_at: '2026-09-29'
+    source_id: embrace-the-red
     verified_at: null
     archived: false
     paywall: false
@@ -2892,6 +2918,7 @@ resources:
       - tool-integration
       - stateless
     added_at: '2026-09-29'
+    source_id: langchain-blog
     verified_at: null
     archived: false
     paywall: false
@@ -2918,6 +2945,7 @@ resources:
       - compression
       - langchain
     added_at: '2026-09-29'
+    source_id: langchain-blog
     verified_at: null
     archived: false
     paywall: false
@@ -2942,6 +2970,7 @@ resources:
       - harness-design
       - world-model
     added_at: '2026-09-29'
+    source_id: langchain-blog
     verified_at: null
     archived: false
     paywall: false
@@ -2968,6 +2997,7 @@ resources:
       - eval
       - langsmith
     added_at: '2026-09-29'
+    source_id: langchain-blog
     verified_at: null
     archived: false
     paywall: false
