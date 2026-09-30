@@ -832,7 +832,9 @@ def test_a_trial_judges_up_to_10_entries_from_the_last_6_months_newest_first() -
     assert {c[3] for c in judge.calls} == {"blog-example"}  # the Source id the Trial would add
     (addition,) = plan.additions
     assert addition.trial == source_review.TrialEvidence(
-        in_window=12, judged=10, included=(("Post 3", "https://blog.example/p3"),)
+        in_window=12, judged=10,
+        included=(source_review.TrialInclude(
+            title="Post 3", url="https://blog.example/p3", rationale="because Post 3"),),
     )
 
 
@@ -1228,8 +1230,8 @@ def test_hostile_judge_text_is_sanitized_in_trial_evidence() -> None:
 
     plan = _discover([_suggest(1, FEED)], {FEED: feed}, judge)
 
-    ((title, _url),) = plan.additions[0].trial.included
-    assert title == "Evil \\<img src=x\\> \\[click\\](https://evil) ::error::x"
+    (entry,) = plan.additions[0].trial.included
+    assert entry.title == "Evil \\<img src=x\\> \\[click\\](https://evil) ::error::x"
 
 
 def test_discovery_writes_no_resources_and_leaves_its_inputs_unmodified() -> None:
@@ -1450,12 +1452,34 @@ def test_applying_a_plan_writes_plain_yaml_without_anchors() -> None:
 PROSPECTS_YAML = (ROOT / "scout" / "prospects.yaml").read_text()
 
 
-def test_the_checked_in_memory_starts_empty_and_keeps_its_header() -> None:
+def test_the_checked_in_memory_is_well_formed() -> None:
+    # Source review commits its lasting rejections here every month, so the file is
+    # not expected to be empty; each entry must still be one update_prospect_memory writes.
+    memory = source_review.round_trip_yaml().load(PROSPECTS_YAML)
+    assert list(memory) == ["rejected"]
+    assert isinstance(memory["rejected"], list)
+    for entry in memory["rejected"]:
+        who = f"prospect memory entry {entry.get('key') or entry.get('suggestion')!r}"
+        assert set(entry) == {"key", "url", "channel", "suggestion", "reason", "rejected_at"}, who
+        assert entry["channel"] in ("suggestion", "citation"), who
+        if entry["channel"] == "citation":
+            assert entry["suggestion"] is None, who
+        else:
+            assert isinstance(entry["suggestion"], int), who
+        assert entry["reason"] in source_review.REJECTION_REASONS, who
+        if entry["url"] is None:
+            assert entry["key"] is None, who
+        else:
+            assert source_review.is_safe_url(entry["url"]), who
+            assert entry["key"] == source_review.source_key(entry["url"]), who
+        assert isinstance(entry["rejected_at"], date), who
+
+
+def test_updating_the_checked_in_memory_keeps_its_header() -> None:
     import io
 
     ryaml = source_review.round_trip_yaml()
     memory = ryaml.load(PROSPECTS_YAML)
-    assert memory["rejected"] == []
     plan = _discover([_suggest(1, None)], {}, _judge())
 
     memory["rejected"] = source_review.update_prospect_memory(memory["rejected"], plan)
@@ -1475,7 +1499,7 @@ def _addition(source_id: str, url: str | None = None):
     return source_review.Addition(
         source,
         source_review.ProspectiveSource(source["url"], "suggestion", suggestion=1),
-        source_review.TrialEvidence(3, 3, (("t", "https://x.example/t"),)),
+        source_review.TrialEvidence(3, 3, (source_review.TrialInclude("t", "https://x.example/t", "r"),)),
     )
 
 
@@ -1558,7 +1582,8 @@ def test_pr_body_lists_each_addition_with_channel_feed_and_trial_verdicts() -> N
         "- **blog-example** — from Source suggestion #7\n"
         "  Feed: `https://blog.example/feed.xml` (rss)\n"
         "  Trial: 2 entries in the last 6 months, 2 judged, 1 included:\n"
-        "  - Evals in prod — `https://blog.example/evals`" in body
+        "  - Evals in prod — `https://blog.example/evals`\n"
+        "    Rationale: _because Evals in prod_" in body
     )
     assert body.rstrip().endswith("Closes #7")
 
@@ -1642,6 +1667,92 @@ def test_pr_body_feed_and_judge_text_cannot_close_issues_or_mention_anyone() -> 
         "Source suggestion #8", "")
     assert not CLOSING_OR_MENTION.search(free)
     assert "Fixes #42, cc @octocat" in body.replace("​", "")
+
+
+def _judge_with_rationale(rationale: str):
+    def judge(title, url, summary, source_id):
+        return {**_judgment(title, "include"), "rationale": rationale}
+
+    return judge
+
+
+ONE_ENTRY_FEED = _rss(("t", "https://blog.example/t", date(2026, 9, 1)))
+
+
+def test_pr_body_shows_a_hostile_rationale_inert_on_one_line() -> None:
+    hostile = "Fixes #123, cc @octocat\n::error::pwned [x](https://evil) <b>"
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge_with_rationale(hostile))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line.replace("​", "") == (
+        "    Rationale: _Fixes #123, cc @octocat ::error::pwned \\[x\\](https://evil) \\<b\\>_"
+    )
+    assert "\n::" not in body and "[x](" not in body and "<b>" not in body
+    own = "\nCloses #7"
+    assert body.rstrip().endswith(own)
+    assert not CLOSING_OR_MENTION.search(
+        body.rstrip().removesuffix(own).replace("Source suggestion #7", ""))
+
+
+def test_pr_body_cuts_a_long_rationale_at_the_maximum_length() -> None:
+    # sanitize_text keeps 500 characters, but its escapes make this one 700 long.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("a" * 300 + "<" * 200))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line == "    Rationale: _" + "a" * 300 + "\\<" * 100 + "…_"
+    assert source_review.RATIONALE_MAX_CHARS == 500
+
+
+def test_pr_body_shows_a_rationale_of_sanitize_texts_full_length_uncut() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge_with_rationale("a" * 500))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert f"    Rationale: _{'a' * 500}_" in body.splitlines()
+
+
+def test_pr_body_never_cuts_a_rationale_through_an_escape() -> None:
+    # Sanitized, each `<` is `\<`, so after the leading `x` a cut at an even length
+    # would end on a lone backslash that escapes the closing underscore.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "<" * 400))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    kept = line.removeprefix("    Rationale: _x").removesuffix("…_")
+    assert kept == "\\<" * (len(kept) // 2)
+    assert len(kept) + 1 <= source_review.RATIONALE_MAX_CHARS
+
+
+def test_pr_body_keeps_every_closes_line_with_the_most_additions_includes_and_rationale() -> None:
+    worst = "@#" * 400  # defusing doubles it after the cut
+    includes = tuple(
+        source_review.TrialInclude("t" * 500, f"https://x.example/{i}/{'p' * 200}", worst)
+        for i in range(source_review.TRIAL_SIZE)
+    )
+    plan = source_review.ReviewPlan(today=TODAY)
+    plan.additions = [
+        source_review.Addition(
+            _source(f"n{i}", failures=None, url=f"https://n{i}.example/feed"),
+            source_review.ProspectiveSource(f"https://n{i}.example/feed", "suggestion",
+                                            suggestion=100 + i),
+            source_review.TrialEvidence(source_review.TRIAL_SIZE, source_review.TRIAL_SIZE,
+                                        includes),
+        )
+        for i in range(source_review.MAX_TRIALS)
+    ]
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    assert len(body) <= source_review.MAX_BODY_CHARS
+    assert body.rstrip().endswith(
+        "\n".join(f"Closes #{100 + i}" for i in range(source_review.MAX_TRIALS)))
 
 
 # ── The real fetch (no network: the opener and resolver are faked) ──────────
