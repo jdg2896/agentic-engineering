@@ -284,3 +284,13 @@ sources:
     notes: Added by Source review from Citation mining
     added_at: 2026-09-30
     added_by: source-review
+
+  - id: glbai-com
+    type: rss
+    url: https://glbai.com/en/rss.xml
+    cadence: weekly
+    last_checked_at: 2026-03-30
+    enabled: true
+    notes: 'Added by Source review from Source suggestion #131'
+    added_at: 2026-09-30
+    added_by: source-review
