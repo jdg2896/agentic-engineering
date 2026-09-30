@@ -2057,6 +2057,32 @@ def test_pr_body_never_cuts_a_rationale_through_an_escape() -> None:
     assert len(kept) + 1 <= source_review.RATIONALE_MAX_CHARS
 
 
+def test_pr_body_never_cuts_a_rationale_through_an_ampersand_escape() -> None:
+    # Sanitized, each `&` is `\&`; a cut leaving a lone backslash would let the
+    # closing underscore be escaped, and one splitting `\&` would expose the `&`.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "&" * 400))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    kept = line.removeprefix("    Rationale: _x").removesuffix("…_")
+    assert kept == "\\&" * (len(kept) // 2)
+    assert len(kept) + 1 <= source_review.RATIONALE_MAX_CHARS
+
+
+def test_pr_body_rationale_entities_cannot_decode_into_mentions_or_references() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("Fixes &#35;12, cc &#64;octocat &commat;x"))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line.replace("\u200b", "") == (
+        "    Rationale: _Fixes \\&#35;12, cc \\&#64;octocat \\&commat;x_"
+    )
+
+
 def test_pr_body_keeps_every_closes_line_with_the_most_additions_includes_and_rationale() -> None:
     worst = "@#" * 400  # defusing doubles it after the cut
     includes = tuple(
