@@ -17,7 +17,8 @@ import tempfile
 import time
 from collections.abc import Callable, Iterable
 
-MODEL = "claude-sonnet-4-6"
+# Opus for editorial quality; Scout's per-run judge budget protects the shared quota (ADR 0001).
+MODEL = "claude-opus-5-5"
 CLI_TIMEOUT_SECONDS = 300
 # Attempts per entry, including the first; the backoff before attempt n+1 is n * this.
 MAX_ATTEMPTS = 3
