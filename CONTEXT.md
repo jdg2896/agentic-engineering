@@ -130,6 +130,9 @@ earlier Resources are unattributed.
 - **Source retirement** judges **Dead** from **Source health** and **Unproductive** from
   **Yield**.
 - **Source discovery** feeds **Scout** by growing the **Source** list.
+- A **Source suggestion** is decided once its Trial's outcome (an addition or a lasting
+  rejection) lands on main; the next **Source review** closes it and never Trials it
+  again. Asking again means filing a new suggestion.
 - **Topic fit** is judged only in a **Trial**; **Source retirement** never retires a Source
   for lacking it.
 

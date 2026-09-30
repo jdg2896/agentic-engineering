@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import json
 import re
 import socket
 import sys
@@ -1663,6 +1664,85 @@ def test_a_hostile_issue_body_yields_at_most_a_url_that_discovery_then_checks() 
 def test_the_real_fetch_refuses_an_unsafe_url_before_connecting(url) -> None:
     with pytest.raises(source_review.FetchError):
         source_review.http_fetch(url)
+
+
+# ── Reconciling decided Source suggestions ───────────────────────────────────
+# A Source review PR is opened with GITHUB_TOKEN, so GitHub may not act on its `Closes`
+# lines and its merge starts no workflow (#136). Each run therefore closes the open
+# suggestions whose decision already landed on main, and never Trials them again.
+
+
+def test_a_suggestion_whose_addition_landed_is_closed_and_not_tried_again() -> None:
+    added = _source("glbai-com", notes="Added by Source review from Source suggestion #131",
+                    added_by="source-review")
+    suggestions = [_suggest(131, "https://glbai.com/en/"), _suggest(140, FEED)]
+
+    undecided, closes = source_review.reconcile_suggestions(suggestions, [added], [])
+
+    assert undecided == [_suggest(140, FEED)]
+    assert closes == [{
+        "number": 131,
+        "comment": "Source review added this Source suggestion as `glbai-com` in sources.yaml; "
+                   "closing it.",
+    }]
+
+
+def test_a_suggestion_whose_rejection_landed_is_closed_and_not_tried_again() -> None:
+    memory = [
+        {"key": "blog.example", "url": "https://blog.example/", "channel": "suggestion",
+         "suggestion": 5, "reason": "no-feed", "rejected_at": date(2026, 8, 1)},
+        {"key": "cited.example", "url": "https://cited.example/", "channel": "citation",
+         "suggestion": None, "reason": "no-include", "rejected_at": date(2026, 8, 1)},
+    ]
+    suggestions = [_suggest(5, "https://blog.example/"), _suggest(6, "https://cited.example/")]
+
+    undecided, closes = source_review.reconcile_suggestions(suggestions, _enabled_sources(3), memory)
+
+    assert undecided == [_suggest(6, "https://cited.example/")]  # a mined rejection is not its verdict
+    assert closes == [{
+        "number": 5,
+        "comment": "Source review rejected this Source suggestion (`no-feed`, recorded in "
+                   "scout/prospects.yaml); closing it. File a new suggestion to ask again.",
+    }]
+
+
+def test_the_run_summary_lists_decided_suggestions_to_close_even_with_nothing_to_change(
+    tmp_path, monkeypatch
+) -> None:
+    sources = tmp_path / "sources.yaml"
+    sources.write_text(
+        "sources:\n"
+        "  - id: glbai-com\n    type: rss\n    url: https://glbai.com/en/rss.xml\n"
+        "    enabled: true\n    notes: 'Added by Source review from Source suggestion #131'\n"
+    )
+    (tmp_path / "resources.yaml").write_text("sections: []\nresources: []\n")
+    (tmp_path / "seen.yaml").write_text("seen: []\n")
+    prospects = tmp_path / "prospects.yaml"
+    prospects.write_text(
+        "rejected:\n  - key: blog.example\n    url: https://blog.example/\n"
+        "    channel: suggestion\n    suggestion: 5\n    reason: no-feed\n"
+        f"    rejected_at: {date.today() - timedelta(days=7)}\n"
+    )
+    issues = tmp_path / "issues.json"
+    issues.write_text(json.dumps([
+        _issue(131, "https://glbai.com/en/"), _issue(5, "https://blog.example/"),
+    ]))
+    summary = tmp_path / "summary.json"
+    monkeypatch.setattr(source_review.scout, "SOURCES_PATH", sources)
+    monkeypatch.setattr(source_review.scout, "RESOURCES_PATH", tmp_path / "resources.yaml")
+    monkeypatch.setattr(source_review.scout, "SEEN_PATH", tmp_path / "seen.yaml")
+    monkeypatch.setattr(source_review, "PROSPECTS_PATH", prospects)
+    fetch = _fetcher({})
+    monkeypatch.setattr(source_review, "http_fetch", fetch)
+    monkeypatch.setattr(sys, "argv", ["source_review.py", "--suggestions", str(issues),
+                                      "--summary", str(summary)])
+
+    source_review.main()
+
+    out = json.loads(summary.read_text())
+    assert out["empty"] is True  # neither suggestion is Trialled (or rejected) again
+    assert [c["number"] for c in out["close_suggestions"]] == [131, 5]
+    assert fetch.calls == []
 
 
 # ── Applying additions ───────────────────────────────────────────────────────

@@ -33,6 +33,8 @@ jobs:
       contents: write
       pull-requests: write
       issues: read   # Source suggestions
+    outputs:
+      close-suggestions: ${{ steps.meta.outputs.close_suggestions }}
     steps:
       # Trials run the Scout judge on Claude Code headless with the subscription OAuth
       # token (docs/adr/0001-oauth-token-for-ci.md). The token is scoped to the steps
@@ -97,6 +99,7 @@ jobs:
           --summary "$RUNNER_TEMP/source_review.json"
 
       - name: Compute PR metadata
+        id: meta
         run: |
           uv run python3 - <<'EOF'
           import json
@@ -106,6 +109,15 @@ jobs:
           from pathlib import Path
 
           summary = json.loads(Path(os.environ["RUNNER_TEMP"], "source_review.json").read_text())
+          # Decided Source suggestions for the close-decided-suggestions job, as one
+          # JSON line: only int issue numbers and source_review.py's fixed comments.
+          closes = [
+              {"number": c["number"], "comment": str(c["comment"])}
+              for c in summary.get("close_suggestions", [])
+              if type(c.get("number")) is int and c["number"] > 0
+          ]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"close_suggestions={json.dumps(closes)}\n")
           env_file = os.environ["GITHUB_ENV"]
           with open(env_file, "a") as f:
               f.write(f"YEAR_MONTH={datetime.now(timezone.utc):%Y-%m}\n")
@@ -191,3 +203,31 @@ jobs:
           print(f"::error::A judge error stopped Source review's Trials. {hint}")
           sys.exit(1)
           EOF
+
+  # Closes the Source suggestions whose decision (an Addition or a Rejection) already
+  # landed on main through an earlier Source review PR. That PR's `Closes #n` lines are
+  # best effort only: it is opened and auto-merged with GITHUB_TOKEN, GitHub recorded no
+  # closing reference for PR #132 (#131 stayed open), and a merge caused by GITHUB_TOKEN
+  # creates no workflow run, so no `pull_request: closed` / `push` workflow can do it (#136).
+  # A separate job, so only it holds `issues: write`. It runs even when the review job
+  # went red on a judge error after writing its summary.
+  close-decided-suggestions:
+    needs: source-review
+    if: >-
+      always() && needs.source-review.outputs.close-suggestions != '' &&
+      needs.source-review.outputs.close-suggestions != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Close decided Source suggestions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLOSES: ${{ needs.source-review.outputs.close-suggestions }}
+        run: |
+          jq -c '.[]' <<< "$CLOSES" | while read -r close; do
+            number=$(jq -r '.number' <<< "$close")
+            comment=$(jq -r '.comment' <<< "$close")
+            gh issue close "$number" --repo "$GITHUB_REPOSITORY" --comment "$comment" \
+              || echo "::warning::Could not close Source suggestion #$number."
+          done
