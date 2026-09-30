@@ -2060,6 +2060,18 @@ def test_pr_body_ends_a_cut_escape_heavy_rationale_with_an_ellipsis_whole_escape
     assert kept == "\\&" * (len(kept) // 2)
 
 
+def test_pr_body_never_doubles_the_ellipsis_when_a_cut_lands_on_one() -> None:
+    # Sanitized, this is `x`, 249 `\\<` escapes and a literal `…` at the cap's last
+    # character, then more text, so the cut ends on that `…`.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "<" * 249 + "… and more"))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line == "    Rationale: _x" + "\\<" * 249 + "…_"
+
+
 def test_pr_body_shows_a_rationale_of_sanitize_texts_full_length_uncut() -> None:
     plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge_with_rationale("a" * 500))
 
