@@ -171,3 +171,105 @@ rejected:
     suggestion: null
     reason: off-topic
     rejected_at: 2026-09-30
+  - key: google.github.io
+    url: https://google.github.io/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: inspect.aisi.org.uk
+    url: https://inspect.aisi.org.uk/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: jykoh.com
+    url: https://jykoh.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: lancedb.com
+    url: https://lancedb.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: langchain-ai.github.io
+    url: https://langchain-ai.github.io/
+    channel: citation
+    suggestion: null
+    reason: unreachable
+    rejected_at: 2026-09-30
+  - key: linux-kvm.org
+    url: https://linux-kvm.org/
+    channel: citation
+    suggestion: null
+    reason: no-recent-entries
+    rejected_at: 2026-09-30
+  - key: microsoft.com
+    url: https://www.microsoft.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: modal.com
+    url: https://modal.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: openai.github.io
+    url: https://openai.github.io/
+    channel: citation
+    suggestion: null
+    reason: unreachable
+    rejected_at: 2026-09-30
+  - key: openid.net
+    url: https://openid.net/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: opentelemetry.io
+    url: https://opentelemetry.io/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: pinecone.io
+    url: https://www.pinecone.io/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: rfc-editor.org
+    url: https://www.rfc-editor.org/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
+  - key: trendshift.io
+    url: https://trendshift.io/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: vellum.ai
+    url: https://www.vellum.ai/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-09-30
+  - key: www-cdn.anthropic.com
+    url: https://www-cdn.anthropic.com/
+    channel: citation
+    suggestion: null
+    reason: unreachable
+    rejected_at: 2026-09-30
+  - key: ycombinator.com
+    url: https://www.ycombinator.com/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-09-30
