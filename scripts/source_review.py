@@ -384,6 +384,44 @@ def source_key(url: object) -> str | None:
     return "/".join([host, *segments[:platform.depth]])
 
 
+def backfill_attribution(resources: list[dict], sources: list[dict]) -> dict[str, str]:
+    """The `source_id` to set on each Resource that predates Source attribution, by Resource id.
+
+    A Resource without a `source_id` is attributed when its URL's Source key equals the
+    key of exactly one Source, enabled or Retired; a key shared by two Sources, or by
+    none, stays unattributed. An existing `source_id` is never changed, so once applied
+    a second run finds nothing to do.
+    """
+    by_key: dict[str, list[str]] = {}
+    for source in sources:
+        key = source_key(source.get("url"))
+        if key is not None:
+            by_key.setdefault(key, []).append(source["id"])
+    assignments = {}
+    for resource in resources:
+        if resource.get("source_id"):
+            continue
+        matches = by_key.get(source_key(resource.get("url")), [])
+        if len(matches) == 1:
+            assignments[resource["id"]] = matches[0]
+    return assignments
+
+
+def apply_attribution(resources: list[dict], assignments: dict[str, str]) -> None:
+    """Set each assigned `source_id` in place, right after `added_at` where Scout writes it.
+
+    On a ruamel round-trip mapping the key is inserted, so comments and layout are kept.
+    """
+    for resource in resources:
+        source_id = assignments.get(resource.get("id"))
+        if source_id is None:
+            continue
+        if "added_at" in resource and hasattr(resource, "insert"):
+            resource.insert(list(resource).index("added_at") + 1, "source_id", source_id)
+        else:
+            resource["source_id"] = source_id
+
+
 _FEED_TYPES = frozenset({"application/rss+xml", "application/atom+xml"})
 
 
@@ -1965,6 +2003,10 @@ def main() -> None:
         "--suggestions", type=Path, default=None, metavar="JSON",
         help="Open source-suggestion issues as the GitHub REST API lists them (from the workflow)",
     )
+    parser.add_argument(
+        "--backfill-attribution", action="store_true",
+        help="One-off: set source_id on Resources that predate Source attribution, then exit",
+    )
     args = parser.parse_args()
 
     ryaml = round_trip_yaml()
@@ -1972,6 +2014,18 @@ def main() -> None:
         sources_data = ryaml.load(f)
     with open(scout.RESOURCES_PATH) as f:
         resources_data = ryaml.load(f)
+
+    if args.backfill_attribution:
+        assignments = backfill_attribution(resources_data["resources"], sources_data["sources"])
+        for source_id, n in sorted(Counter(assignments.values()).items(), key=lambda kv: (-kv[1], kv[0])):
+            print(f"  {source_id}: {n}")
+        print(f"Attributed {len(assignments)} Resource(s).")
+        if assignments and not args.dry_run:
+            apply_attribution(resources_data["resources"], assignments)
+            with open(scout.RESOURCES_PATH, "w") as f:
+                ryaml.dump(resources_data, f)
+            print(f"Updated {scout.RESOURCES_PATH}")
+        return
     with open(scout.SEEN_PATH) as f:
         seen = ryaml.load(f)["seen"] or []
     prospects_text = PROSPECTS_PATH.read_text() if PROSPECTS_PATH.exists() else _PROSPECTS_TEMPLATE

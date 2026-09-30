@@ -3058,3 +3058,124 @@ def test_pr_body_is_truncated_below_githubs_limit_but_keeps_every_closes_line(mo
 
 def test_the_default_body_limit_is_below_githubs() -> None:
     assert source_review.MAX_BODY_CHARS < 65_536
+
+
+# ── Attribution backfill ─────────────────────────────────────────────────────
+
+
+def _hand_curated(resource_id: str, url: str, added_at: date = date(2026, 5, 3), **extra) -> dict:
+    """A Resource with no `source_id`: hand-curated, or added before Source attribution
+    shipped. Such Resources are dated on or before ATTRIBUTION_SHIPPED."""
+    return {"id": resource_id, "url": url, "added_at": added_at} | extra
+
+
+def test_backfill_attributes_a_resource_whose_site_is_exactly_one_source() -> None:
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml"),
+               _source("other", url="https://other.example/feed")]
+    resources = [_hand_curated("post", "https://embracethered.com/blog/posts/2025/x/")]
+
+    assert source_review.backfill_attribution(resources, sources) == {"post": "red"}
+
+
+def test_backfill_attributes_to_a_retired_source_too() -> None:
+    retired = _source("old", url="https://www.huyenchip.com/feed.xml", enabled=False,
+                      retired_at=date(2026, 9, 1), retired_reason="dead-silent")
+    resources = [_hand_curated("post", "https://huyenchip.com/2025/01/07/agents.html")]
+
+    assert source_review.backfill_attribution(resources, [retired]) == {"post": "old"}
+
+
+def test_backfill_leaves_a_resource_whose_site_is_shared_by_two_sources_unattributed() -> None:
+    sources = [_source("tag-a", url="https://blog.example/tag/a/rss"),
+               _source("tag-b", url="https://blog.example/tag/b/rss")]
+    resources = [_hand_curated("post", "https://blog.example/posts/x")]
+
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfill_leaves_a_resource_whose_site_is_no_source_unattributed() -> None:
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml")]
+    resources = [_hand_curated("paper", "https://arxiv.org/abs/2501.00001"),
+                 _hand_curated("broken", "not a url")]
+
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfill_never_changes_an_existing_source_id() -> None:
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml")]
+    resources = [_hand_curated("post", "https://embracethered.com/blog/posts/x/",
+                               source_id="elsewhere")]
+
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfill_matches_github_repos_by_owner_and_repo() -> None:
+    sources = [_source("langgraph", url="https://github.com/langchain-ai/langgraph/releases.atom"),
+               _source("letta", url="https://github.com/letta-ai/letta/releases.atom")]
+    resources = [
+        _hand_curated("langgraph-repo", "https://github.com/langchain-ai/langgraph"),
+        _hand_curated("letta-doc", "https://github.com/letta-ai/letta/blob/main/README.md"),
+        _hand_curated("other-repo", "https://github.com/langchain-ai/langchain"),
+        _hand_curated("owner-page", "https://github.com/langchain-ai"),
+    ]
+
+    assert source_review.backfill_attribution(resources, sources) == {
+        "langgraph-repo": "langgraph", "letta-doc": "letta",
+    }
+
+
+def test_applying_the_backfill_sets_source_id_after_added_at_and_a_rerun_changes_nothing() -> None:
+    ryaml = source_review.round_trip_yaml()
+    resources = ryaml.load(
+        "- id: post\n"
+        "  url: https://embracethered.com/blog/posts/x/\n"
+        "  added_at: '2026-05-03'\n"
+        "  verified_at: null\n"
+        "- id: paper\n"
+        "  url: https://arxiv.org/abs/2501.00001\n"
+        "  added_at: '2026-05-03'\n"
+    )
+    sources = [_source("red", url="https://embracethered.com/blog/index.xml")]
+
+    source_review.apply_attribution(resources, source_review.backfill_attribution(resources, sources))
+
+    assert list(resources[0]) == ["id", "url", "added_at", "source_id", "verified_at"]
+    assert resources[0]["source_id"] == "red"
+    assert "source_id" not in resources[1]
+    assert source_review.backfill_attribution(resources, sources) == {}
+
+
+def test_backfilled_resources_dated_before_the_window_do_not_change_unproductive_evidence() -> None:
+    source = _healthy("u", url="https://u.example/feed")
+    old = [_hand_curated(f"old-{i}", f"https://u.example/p{i}") for i in range(6)]
+    source_review.apply_attribution(old, source_review.backfill_attribution(old, [source]))
+    assert {r["source_id"] for r in old} == {"u"}
+
+    before = _review([source], [], seen=_rejects("u", 15), today=LATER).retirements
+    after = _review([source], old, seen=_rejects("u", 15), today=LATER).retirements
+
+    assert after == before
+    assert [r.evidence.yield_count for r in after] == [0]
+
+
+def test_backfilled_resources_dated_on_attribution_shipped_never_count_toward_unproductive_yield() -> None:
+    # The grace anchor is never earlier than ATTRIBUTION_SHIPPED and the window excludes
+    # its start day, so even on the first day out of grace (window start == the ship
+    # date) a backfilled Resource dated the ship date falls outside the window.
+    shipped = source_review.ATTRIBUTION_SHIPPED
+    first_day_out = date(2026, 12, 29)
+    source = _source("u", url="https://u.example/feed", last_checked_at=first_day_out,
+                     newest=first_day_out - timedelta(days=2))
+    backfilled = [_hand_curated(f"late-{i}", f"https://u.example/p{i}", added_at=shipped)
+                  for i in range(11)]
+    source_review.apply_attribution(
+        backfilled, source_review.backfill_attribution(backfilled, [source]))
+    rejects = _rejects("u", 15, on=first_day_out)
+
+    assert _review([source], seen=rejects, today=first_day_out - timedelta(days=1)).retirements == []
+    (retirement,) = _review([source], backfilled, seen=rejects, today=first_day_out).retirements
+
+    assert retirement.reason == "unproductive"
+    assert retirement.evidence == source_review.UnproductiveEvidence(
+        judged=15, yield_count=0, window_start=shipped, window_end=first_day_out
+    )
