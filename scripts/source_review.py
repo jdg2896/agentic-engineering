@@ -1603,7 +1603,9 @@ def _free_text(text: object) -> str:
 # A judge rationale shown in the PR body is cut to this many characters (before
 # defusing), so an Addition with many included entries cannot crowd out the rest.
 # 500 is `sanitize_text`'s default length: judge rationales often run 350-500
-# characters and end on their verdict, so only the escapes it adds are ever cut.
+# characters and end on their verdict, so usually only the escapes it adds are cut.
+# When those escapes push a sanitized rationale past the cap, `_rationale_line` cuts
+# it here, dropping any "…" sanitize_text added, and ends it with its own "…".
 RATIONALE_MAX_CHARS = 500
 
 
@@ -1617,7 +1619,8 @@ def _rationale_line(text: object, label: str = "Rationale") -> str:
     """
     text = _one_line(text)
     if len(text) > RATIONALE_MAX_CHARS:
-        cut = text[:RATIONALE_MAX_CHARS]
+        # A `…` at the cut (sanitize_text's own, or the judge's) is dropped, not doubled.
+        cut = text[:RATIONALE_MAX_CHARS].rstrip().removesuffix("…")
         if (len(cut) - len(cut.rstrip("\\"))) % 2:
             cut = cut[:-1]  # a lone backslash would escape whatever follows it
         text = cut.rstrip() + "…"

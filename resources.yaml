@@ -2666,7 +2666,7 @@ resources:
     notes: null
   - id: do-automated-evals-work
     section: eval-philosophy
-    url: https://hamel.dev/
+    url: https://parlance-labs.com/blog/posts/auto-evals/
     title: Do Automated Evals Work?
     author: Hamel Husain
     type: article

@@ -2035,6 +2035,43 @@ def test_pr_body_cuts_a_long_rationale_at_the_maximum_length() -> None:
     assert source_review.RATIONALE_MAX_CHARS == 500
 
 
+def test_pr_body_ends_a_rationale_longer_than_the_cap_with_an_ellipsis() -> None:
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("so the content still needs work " * 30))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line.endswith("…_")
+    assert len(line.removeprefix("    Rationale: _").removesuffix("_")) <= (
+        source_review.RATIONALE_MAX_CHARS)
+
+
+def test_pr_body_ends_a_cut_escape_heavy_rationale_with_an_ellipsis_whole_escapes() -> None:
+    # Over sanitize_text's cap before escaping; each `&` becomes `\&` after.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "&" * 600))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line.endswith("…_")
+    kept = line.removeprefix("    Rationale: _x").removesuffix("…_")
+    assert kept == "\\&" * (len(kept) // 2)
+
+
+def test_pr_body_never_doubles_the_ellipsis_when_a_cut_lands_on_one() -> None:
+    # Sanitized, this is `x`, 249 `\\<` escapes and a literal `…` at the cap's last
+    # character, then more text, so the cut ends on that `…`.
+    plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED},
+                     _judge_with_rationale("x" + "<" * 249 + "… and more"))
+
+    body = source_review.pr_body(plan, PASSING, _enabled_sources(12))
+
+    (line,) = [ln for ln in body.splitlines() if "Rationale:" in ln]
+    assert line == "    Rationale: _x" + "\\<" * 249 + "…_"
+
+
 def test_pr_body_shows_a_rationale_of_sanitize_texts_full_length_uncut() -> None:
     plan = _discover([_suggest(7, FEED)], {FEED: ONE_ENTRY_FEED}, _judge_with_rationale("a" * 500))
 
