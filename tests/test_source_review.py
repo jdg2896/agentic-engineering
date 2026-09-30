@@ -2926,9 +2926,10 @@ def test_the_default_body_limit_is_below_githubs() -> None:
 # ── Attribution backfill ─────────────────────────────────────────────────────
 
 
-def _hand_curated(resource_id: str, url: str, **extra) -> dict:
-    """A Resource added before Source attribution: no `source_id`."""
-    return {"id": resource_id, "url": url, "added_at": date(2026, 5, 3)} | extra
+def _hand_curated(resource_id: str, url: str, added_at: date = date(2026, 5, 3), **extra) -> dict:
+    """A Resource with no `source_id`: hand-curated, or added before Source attribution
+    shipped. Such Resources are dated on or before ATTRIBUTION_SHIPPED."""
+    return {"id": resource_id, "url": url, "added_at": added_at} | extra
 
 
 def test_backfill_attributes_a_resource_whose_site_is_exactly_one_source() -> None:
@@ -3018,3 +3019,26 @@ def test_backfilled_resources_dated_before_the_window_do_not_change_unproductive
 
     assert after == before
     assert [r.evidence.yield_count for r in after] == [0]
+
+
+def test_backfilled_resources_dated_on_attribution_shipped_never_count_toward_unproductive_yield() -> None:
+    # The grace anchor is never earlier than ATTRIBUTION_SHIPPED and the window excludes
+    # its start day, so even on the first day out of grace (window start == the ship
+    # date) a backfilled Resource dated the ship date falls outside the window.
+    shipped = source_review.ATTRIBUTION_SHIPPED
+    first_day_out = date(2026, 12, 29)
+    source = _source("u", url="https://u.example/feed", last_checked_at=first_day_out,
+                     newest=first_day_out - timedelta(days=2))
+    backfilled = [_hand_curated(f"late-{i}", f"https://u.example/p{i}", added_at=shipped)
+                  for i in range(11)]
+    source_review.apply_attribution(
+        backfilled, source_review.backfill_attribution(backfilled, [source]))
+    rejects = _rejects("u", 15, on=first_day_out)
+
+    assert _review([source], seen=rejects, today=first_day_out - timedelta(days=1)).retirements == []
+    (retirement,) = _review([source], backfilled, seen=rejects, today=first_day_out).retirements
+
+    assert retirement.reason == "unproductive"
+    assert retirement.evidence == source_review.UnproductiveEvidence(
+        judged=15, yield_count=0, window_start=shipped, window_end=first_day_out
+    )
