@@ -70,6 +70,8 @@ def build_system_prompt(sections: list, resources: list) -> str:
         "",
         "## Inclusion criteria",
         "",
+        "- Must be written in English — reject a non-English entry for that reason alone, however good its content",
+        "- Author reputation, the kind of site (personal blog, company blog or vendor blog) and how well known the source is are not criteria — judge only the content, against these criteria",
         "- Must be substantive technical content, not marketing or press release",
         '- No listicles, SEO-optimised roundups, or "X things you should know" posts',
         "- Papers must have practical infrastructure implications, not pure ML theory",
