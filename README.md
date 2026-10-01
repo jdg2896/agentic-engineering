@@ -87,6 +87,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [LangMem](https://langchain-ai.github.io/langmem/) — Semantic / episodic / procedural primitives over LangGraph stores.
 - [Generative Agents (Park et al.)](https://arxiv.org/abs/2304.03442) — Reflection + episodic memory; still the best single read.
 - [Wiki Memory: File-Based Memory for AI Agents](https://www.langchain.com/blog/wiki-memory) — LangChain. Agent-compressed, file-based persistent knowledge base as an alternative to RAG — LLM synthesises raw interaction data into structured "wiki pages" for selective retrieval without embedding lookup. Covers architectural trade-offs and when file-based beats vector store.
+- [How we built long-term memory for Alyx: why we chose a file over a knowledge graph](https://arize.com/blog/alyx-agent-long-term-memory-architecture/) — Arize AI. One bounded 8,000-character memory file beat retrieval and knowledge graphs for a production agent. Covers the trade-offs and how the choice was tested.
 
 ## 6. Sandboxing & code execution
 
@@ -202,6 +203,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Loop Engineering in Practice: How I Let AI Work on Its Own in a Million-Scale ARR Product](https://glbai.com/en/posts/mewdesign-loop-engineering-practice/) — glbai.com (MewDesign). Five autonomous agent loops on a production codebase: GitHub, Skills, and a harness with explicit permissions and evidence gates.
 - [What Is Loop Engineering? What a Year of Building MewDesign Taught Me](https://glbai.com/en/posts/loop-engineering-explained/) — glbai.com. Stop hand-prompting the coding agent; engineer the loop that drives it. Grounded in a year of shipping one product.
 - [A Fireside Chat with Cat and Thariq from the Claude Code team](https://simonwillison.net/2026/Jul/21/cat-and-thariq/) — Simon Willison. How the Claude Code team runs Claude Code: shipping to internal users first and keeping only features that retain them, manual review for critical paths only, and an 80% smaller system prompt because examples and "don't do X" lists now make results worse. Also covers auto mode as the thing that makes async Slack agents workable. Annotated transcript.
+- [How to Build a Model Router in the Harness](https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness) — LangChain. Routes each coding-agent step to a model tier inside the harness rather than at the gateway. Cut median cost per task by 64% with no measurable quality drop in Open SWE, and lays out how to build your own.
 
 ## 14. SRE & operations agents (K8s, observability, IaC)
 
@@ -214,10 +216,10 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## Worth following for ongoing signal
 
-- [embracethered.com](https://embracethered.com) — 6 Resources in the guide, mostly Security for agents
-- [langchain.com](https://www.langchain.com) — 6 Resources in the guide, mostly Tool integration & MCP
-- [simonwillison.net](https://simonwillison.net) — 6 Resources in the guide, mostly Security for agents
-- [arize.com](https://arize.com) — 4 Resources in the guide, mostly Evaluation — frameworks & benchmarks
-- [eugeneyan.com](https://eugeneyan.com) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
-- [glbai.com](https://glbai.com) — 4 Resources in the guide, mostly Security for agents
-- [hamel.dev](https://hamel.dev) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
+- [LangChain Blog](https://www.langchain.com) — 7 Resources in the guide, mostly Coding agent infrastructure (read for harness design even if not building one)
+- [Embrace The Red](https://embracethered.com/blog/) — 6 Resources in the guide, mostly Security for agents
+- [Simon Willison's Weblog: coding-agents](http://simonwillison.net/) — 6 Resources in the guide, mostly Security for agents
+- [Arize AI](https://arize.com/) — 5 Resources in the guide, mostly Evaluation — frameworks & benchmarks
+- [Elliot's Harness Lab | English](https://glbai.com/) — 4 Resources in the guide, mostly Security for agents
+- [Eugene Yan](https://eugeneyan.com) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
+- [Hamel's Blog](https://hamel.dev/) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)

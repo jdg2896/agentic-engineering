@@ -3275,3 +3275,54 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
+  - id: open-swe-model-router-harness
+    section: coding-agent-infra
+    url: 
+      https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness
+    title: How to Build a Model Router in the Harness
+    author: LangChain
+    type: article
+    license: null
+    blurb: Routes each coding-agent step to a model tier inside the harness 
+      rather than at the gateway. Cut median cost per task by 64% with no 
+      measurable quality drop in Open SWE, and lays out how to build your own.
+    cluster: null
+    tags:
+      - model-routing
+      - cost-optimization
+      - harness-design
+      - coding-agents
+      - open-swe
+    added_at: '2026-10-01'
+    source_id: langchain-blog
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: alyx-file-based-long-term-memory
+    section: memory-systems
+    url: https://arize.com/blog/alyx-agent-long-term-memory-architecture/
+    title: 'How we built long-term memory for Alyx: why we chose a file over a knowledge
+      graph'
+    author: Arize AI
+    type: article
+    license: null
+    blurb: One bounded 8,000-character memory file beat retrieval and knowledge 
+      graphs for a production agent. Covers the trade-offs and how the choice 
+      was tested.
+    cluster: null
+    tags:
+      - memory
+      - long-term-memory
+      - context-engineering
+      - knowledge-graph
+      - architecture-decision
+      - evaluation
+    added_at: '2026-10-01'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
