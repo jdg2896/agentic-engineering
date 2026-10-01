@@ -274,3 +274,63 @@ rejected:
     suggestion: null
     reason: off-topic
     rejected_at: 2026-09-30
+  - key: aider.chat
+    url: https://aider.chat/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-10-01
+  - key: braintrust.dev
+    url: https://www.braintrust.dev/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-10-01
+  - key: developer.mozilla.org
+    url: https://developer.mozilla.org/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-10-01
+  - key: github.com/langchain-ai/langchain
+    url: https://github.com/langchain-ai/langchain
+    channel: citation
+    suggestion: null
+    reason: no-include
+    rejected_at: 2026-10-01
+  - key: ibm.com
+    url: https://www.ibm.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-10-01
+  - key: latent.space
+    url: https://www.latent.space/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-10-01
+  - key: letta.com
+    url: https://www.letta.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-10-01
+  - key: lilianweng.github.io
+    url: https://lilianweng.github.io/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-10-01
+  - key: nurtureboss.io
+    url: https://nurtureboss.io/
+    channel: citation
+    suggestion: null
+    reason: off-topic
+    rejected_at: 2026-10-01
+  - key: typesafe.ai
+    url: https://typesafe.ai/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-10-01
