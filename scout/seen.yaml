@@ -1604,3 +1604,25 @@ seen:
     title: Quoting Thibault Sottiaux
     source_id: simonwillison-ai-agents
     rejected_at: '2026-09-30'
+  - url: 
+      https://vercel.com/changelog/microsoft-ai-models-are-now-available-on-ai-gateway
+    title: Microsoft AI models are now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-01'
+  - url: https://openai.com/index/the-eternal-complement
+    title: The eternal complement
+    source_id: openai-news
+    rejected_at: '2026-10-01'
+  - url: https://openai.com/index/albertsons-reimagining-retail
+    title: How Albertsons Companies is reimagining retail from the inside out
+    source_id: openai-news
+    rejected_at: '2026-10-01'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1560
+    title: stagehand-python@4.2.0a0.dev1560
+    source_id: stagehand-releases
+    rejected_at: '2026-10-01'
+  - url: https://arize.com/blog/alyx-arize-ax-long-term-memory/
+    title: Alyx now remembers your work across sessions with long-term memory
+    source_id: arize-com
+    rejected_at: '2026-10-01'
