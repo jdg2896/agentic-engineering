@@ -48,6 +48,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [MCP in LangChain: Stateless Protocol, Elicitation, and More!](https://www.langchain.com/blog/mcp-in-langchain-stateless-protocol-elicitation-and-more) — LangChain. \`langchain.mcp\` built on FastMCP targeting the 2026-07-28 spec; elicitation mapped to a LangGraph interrupt, stateless transport, and tool lists cached per session.
 - [How we built UI Code Mode into Arize Phoenix](https://arize.com/blog/code-mode-in-the-browser/) — Arize AI. Replacing 58 UI-driving tools with two tools plus an in-browser JavaScript sandbox. Covers the design reasoning, how it works and what it cost.
 - [MCP Python SDK v2.0.0](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.0) — Model Context Protocol. Official Python SDK for the stateless 2026-07-28 MCP revision, and it still serves 2025-era clients from the same server. FastMCP is renamed MCPServer and gets a first-class Client. Tools use multi-round-trip requests and Resolve() dependency injection now that servers can't call back to the client. OTel tracing is on by default, and stdio and OAuth are hardened.
+- [Playwright v1.64.0 — WebMCP support](https://github.com/microsoft/playwright/releases/tag/v1.64.0) — Microsoft Playwright team. page.webmcp lists and calls tools that a page registers through the experimental WebMCP browser API, so you can test them like any other app code. Playwright MCP passes these page tools to agents as webmcp_\<tool\> by default.
 
 ## 3. Multi-agent orchestration frameworks
 
@@ -66,6 +67,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [smolagents](https://huggingface.co/docs/smolagents/index) — Hugging Face. Minimalist code-acting agent library.
 - [Mastra](https://mastra.ai/docs) — TypeScript-first.
 - [Inngest AgentKit](https://agentkit.inngest.com/) — TS framework on top of Inngest's durable runtime.
+- [Google ADK Python v2.11.0](https://github.com/google/adk-python/releases/tag/v2.11.0) — Google. Graceful run cancellation via abort_signal (/run_sse cancels when the client disconnects), human-approval pauses for tool nodes in workflows, a budget-capped ModelConsultTool for asking a second model mid-task, a SQLite memory backend and opt-in support for MCP SDK 2.x.
 
 ## 4. Durable execution for agents
 
@@ -126,6 +128,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Low-Hanging Fruit for RAG Search](https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/) — Jason Liu. Retrieval-side instrumentation.
 - [Do Automated Evals Work?](https://parlance-labs.com/blog/posts/auto-evals/) — Hamel Husain. Empirical comparison of 100 human-annotated traces against automated eval systems — ground truth on where LLM judges agree with humans and where they diverge.
 - ["It's Hard to Eval" Is a Product Smell](https://hamel.dev/blog/posts/eval-smell/) — Hamel Husain. "Hard to eval" is a product flaw: unverifiable outputs are bad UX and bad eval signal. Three worked examples — data agent, PE curriculum tool, workers'-comp report — redesign monolithic outputs to surface provenance, diffs, and contradictions, turning full-document grading into scoped unit tests as a side effect.
+- [Exploring Agent-Assisted Qualitative Analysis](https://www.sh-reya.com/blog/ai-qual-analysis/) — Shreya Shankar. Using agents for open/axial coding of unstructured data like traces, and where human judgment still has to drive the taxonomy.
 
 ## 9. Evaluation — frameworks & benchmarks
 
@@ -144,6 +147,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Patterns for Building Cybersecurity Evals](https://eugeneyan.com//writing/cybersecurity-evals/) — Eugene Yan. Four-component harness for cybersecurity evals: sandboxed target, difficulty-tunable inputs, agent-facing tools, and a grader. Practical patterns transferable to any capability domain that requires isolated execution environments.
 - [How We Build Agent Environments & Tasks](https://www.langchain.com/blog/building-agent-environments-and-tasks) — LangChain. Synthetic task generation pipeline: spec generation → spec-to-task → world spec for shared environment knowledge. Concrete three-stage architecture for constructing reproducible agent eval harnesses at scale.
 - [What Jev's probabilities reveal that repeated LLM judgments miss](https://arize.com/blog/jev-llm-judge-consistency/) — Arize AI. Judge flip rate as a first-class metric: probability-based scoring vs. five LLM judges across ten Phoenix evaluators, with accuracy, cost and latency trade-offs.
+- [Decision model benchmark: Jev, Kev, Liquid d1, and more](https://arize.com/blog/decision-model-benchmark/) — Arize AI. Head-to-head benchmark of the new decision-model class (Jev, open clone Kev, Liquid d1, OpenAI, Cloudflare, AWS, PostHog) for agent routing and eval judging.
+- [How we benchmark AI agents and tools with Harbor and Arize Phoenix](https://arize.com/blog/ai-agent-benchmarking-harbor-arize-phoenix/) — Arize AI. Benchmarks agents, MCP servers, skills and CLIs in reproducible Harbor sandboxes, with Phoenix traces and annotations used to work out why runs fail.
 
 ## 10. Observability & tracing
 
@@ -164,6 +169,9 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Langfuse — Cost tracking](https://langfuse.com/docs/observability/features/token-and-cost-tracking) — Per-trace, per-user, per-prompt cost attribution.
 - [Helicone — Caching dashboards](https://docs.helicone.ai/features/advanced-usage/caching) — Per-route token spend + cache hit rates.
 - [Building a 100x Cheaper Trace Judge with Fireworks](https://www.langchain.com/blog/building-a-100x-cheaper-trace-judge-with-fireworks) — LangChain. Fine-tune a small open model as an LLM-as-judge by mining perceived error signals from production LangSmith traces; matches frontier model accuracy at 100× lower cost. Concrete data-pipeline-to-fine-tune pattern for operationalising cheap, scalable eval in production.
+- [What agent traces can tell you without an LLM judge](https://arize.com/blog/agent-traces-without-llm-judge/) — Arize AI. Many agent failures are provable straight from OpenInference spans. tracelint runs deterministic checks on them and fails CI, with no LLM judge needed.
+- [Prompt caching benchmark: high cache reuse doesn't always mean lower cost](https://arize.com/blog/prompt-caching-benchmark/) — Arize AI. DeepSeek, GLM, GPT and Claude run on the same multi-turn shopping agent. Cache hit rate, cost and latency were measured with Harbor evals and Phoenix traces. A high hit rate doesn't always mean a lower bill.
+- [Claude's hillclimb loop for AI agents: start with production traces](https://arize.com/blog/claude-hillclimb-production-traces/) — Arize AI. Seed Claude's eval-design hillclimb loop with real production traces, then improve the agent one change at a time against them.
 
 ## 12. Security for agents
 
@@ -216,10 +224,10 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## Worth following for ongoing signal
 
+- [Arize AI](https://arize.com/) — 10 Resources in the guide, mostly Evaluation — frameworks & benchmarks
 - [LangChain Blog](https://www.langchain.com) — 7 Resources in the guide, mostly Coding agent infrastructure (read for harness design even if not building one)
 - [Embrace The Red](https://embracethered.com/blog/) — 6 Resources in the guide, mostly Security for agents
 - [Simon Willison's Weblog: coding-agents](http://simonwillison.net/) — 6 Resources in the guide, mostly Security for agents
-- [Arize AI](https://arize.com/) — 5 Resources in the guide, mostly Evaluation — frameworks & benchmarks
 - [Elliot's Harness Lab | English](https://glbai.com/) — 4 Resources in the guide, mostly Security for agents
 - [Eugene Yan](https://eugeneyan.com) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
 - [Hamel's Blog](https://hamel.dev/) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)

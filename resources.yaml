@@ -3326,3 +3326,201 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
+  - id: google-adk-python-v2-11-0
+    section: multi-agent-frameworks
+    url: https://github.com/google/adk-python/releases/tag/v2.11.0
+    title: Google ADK Python v2.11.0
+    author: Google
+    type: repo
+    license: Apache-2.0
+    blurb: Graceful run cancellation via abort_signal (/run_sse cancels when the
+      client disconnects), human-approval pauses for tool nodes in workflows, a 
+      budget-capped ModelConsultTool for asking a second model mid-task, a 
+      SQLite memory backend and opt-in support for MCP SDK 2.x.
+    cluster: null
+    tags:
+      - google-adk
+      - release-notes
+      - cancellation
+      - human-in-the-loop
+      - memory
+      - mcp
+      - python
+    added_at: '2026-10-08'
+    source_id: adk-python-releases
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: playwright-v1-64-webmcp
+    section: tools-mcp
+    url: https://github.com/microsoft/playwright/releases/tag/v1.64.0
+    title: Playwright v1.64.0 — WebMCP support
+    author: Microsoft Playwright team
+    type: repo
+    license: Apache-2.0
+    blurb: page.webmcp lists and calls tools that a page registers through the 
+      experimental WebMCP browser API, so you can test them like any other app 
+      code. Playwright MCP passes these page tools to agents as webmcp_\<tool\> 
+      by default.
+    cluster: null
+    tags:
+      - webmcp
+      - mcp
+      - playwright
+      - browser-agents
+      - testing
+    added_at: '2026-10-08'
+    source_id: playwright-releases
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: arize-decision-model-benchmark
+    section: eval-frameworks
+    url: https://arize.com/blog/decision-model-benchmark/
+    title: 'Decision model benchmark: Jev, Kev, Liquid d1, and more'
+    author: Arize AI
+    type: article
+    license: null
+    blurb: Head-to-head benchmark of the new decision-model class (Jev, open 
+      clone Kev, Liquid d1, OpenAI, Cloudflare, AWS, PostHog) for agent routing 
+      and eval judging.
+    cluster: null
+    tags:
+      - benchmark
+      - decision-models
+      - evals
+      - llm-as-judge
+      - agent-routing
+      - model-comparison
+    added_at: '2026-10-08'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: agent-traces-without-llm-judge
+    section: production-testing
+    url: https://arize.com/blog/agent-traces-without-llm-judge/
+    title: What agent traces can tell you without an LLM judge
+    author: Arize AI
+    type: article
+    license: null
+    blurb: Many agent failures are provable straight from OpenInference spans. 
+      tracelint runs deterministic checks on them and fails CI, with no LLM 
+      judge needed.
+    cluster: null
+    tags:
+      - tracing
+      - ci
+      - openinference
+      - deterministic-evals
+      - phoenix
+    added_at: '2026-10-08'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: arize-harbor-phoenix-benchmarking
+    section: eval-frameworks
+    url: https://arize.com/blog/ai-agent-benchmarking-harbor-arize-phoenix/
+    title: How we benchmark AI agents and tools with Harbor and Arize Phoenix
+    author: Arize AI
+    type: article
+    license: null
+    blurb: Benchmarks agents, MCP servers, skills and CLIs in reproducible 
+      Harbor sandboxes, with Phoenix traces and annotations used to work out why
+      runs fail.
+    cluster: null
+    tags:
+      - benchmarking
+      - harbor
+      - phoenix
+      - tracing
+      - mcp
+      - sandboxes
+      - evals
+    added_at: '2026-10-08'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: arize-prompt-caching-benchmark
+    section: production-testing
+    url: https://arize.com/blog/prompt-caching-benchmark/
+    title: "Prompt caching benchmark: high cache reuse doesn't always mean lower cost"
+    author: Arize AI
+    type: article
+    license: null
+    blurb: DeepSeek, GLM, GPT and Claude run on the same multi-turn shopping 
+      agent. Cache hit rate, cost and latency were measured with Harbor evals 
+      and Phoenix traces. A high hit rate doesn't always mean a lower bill.
+    cluster: null
+    tags:
+      - prompt-caching
+      - cost
+      - latency
+      - benchmark
+      - multi-turn
+      - tracing
+    added_at: '2026-10-08'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: arize-hillclimb-production-traces
+    section: production-testing
+    url: https://arize.com/blog/claude-hillclimb-production-traces/
+    title: "Claude's hillclimb loop for AI agents: start with production traces"
+    author: Arize AI
+    type: article
+    license: null
+    blurb: Seed Claude's eval-design hillclimb loop with real production traces,
+      then improve the agent one change at a time against them.
+    cluster: null
+    tags:
+      - evals
+      - hillclimbing
+      - production-traces
+      - eval-loop
+      - arize
+    added_at: '2026-10-08'
+    source_id: arize-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
+  - id: agent-assisted-qual-analysis
+    section: eval-philosophy
+    url: https://www.sh-reya.com/blog/ai-qual-analysis/
+    title: Exploring Agent-Assisted Qualitative Analysis
+    author: Shreya Shankar
+    type: article
+    license: null
+    blurb: Using agents for open/axial coding of unstructured data like traces, 
+      and where human judgment still has to drive the taxonomy.
+    cluster: null
+    tags:
+      - error-analysis
+      - qualitative-coding
+      - human-in-the-loop
+      - evals
+      - coding-agents
+    added_at: '2026-10-08'
+    source_id: sh-reya-com
+    verified_at: null
+    archived: false
+    paywall: false
+    superseded_by: null
+    notes: null
