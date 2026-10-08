@@ -1626,3 +1626,258 @@ seen:
     title: Alyx now remembers your work across sessions with long-term memory
     source_id: arize-com
     rejected_at: '2026-10-01'
+  - url: https://simonwillison.net/2026/Oct/6/llm-openai-decisions/
+    title: llm-openai-decisions 0.1a0
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-10-08'
+  - url: https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/
+    title: We're going to need default hard budget caps on pretty much 
+      everything
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-10-08'
+  - url: https://www.langchain.com/blog/agents-that-can-pay-with-stripe-link
+    title: "Agents that can pay: building Restock with Stripe's Link and Managed Deep
+      Agents"
+    source_id: langchain-blog
+    rejected_at: '2026-10-08'
+  - url: https://www.langchain.com/blog/revamping-skills-in-deep-agents
+    title: Revamping Skills in Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://www.langchain.com/blog/managed-deep-agents-schedules-per-run-configuration-slack
+    title: "What's New in Managed Deep Agents: schedules, per-run configuration, and
+      Slack reactions"
+    source_id: langchain-blog
+    rejected_at: '2026-10-08'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.33
+    title: langgraph-cli==0.4.33
+    source_id: langgraph-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.14
+    title: langgraph==1.2.14
+    source_id: langgraph-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/sdk%3D%3D0.4.6
+    title: langgraph-sdk==0.4.6
+    source_id: langgraph-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.13
+    title: langgraph==1.2.13
+    source_id: langgraph-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/openai/openai-agents-python/releases/tag/v0.23.1
+    title: v0.23.1
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/openai/openai-agents-python/releases/tag/v0.23.0
+    title: v0.23.0
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.277
+    title: 0.3.277
+    source_id: inspect-ai-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.276
+    title: 0.3.276
+    source_id: inspect-ai-releases
+    rejected_at: '2026-10-08'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.275
+    title: 0.3.275
+    source_id: inspect-ai-releases
+    rejected_at: '2026-10-08'
+  - url: https://vercel.com/changelog/sandbox-create-waits-until-ready
+    title: Vercel Sandbox creation now returns a ready sandbox
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: https://vercel.com/changelog/step-5-preview-now-available-on-ai-gateway
+    title: Step 5 Preview now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: https://vercel.com/changelog/flux-3-image-now-available-on-ai-gateway
+    title: FLUX 3 Image now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/microfrontends-routing-is-now-free-for-firewall-mitigated-traffic
+    title: Microfrontends Routing is now free for Firewall-mitigated traffic
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/openai-decisions-api-now-available-on-ai-gateway
+    title: OpenAI Decisions API now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/claude-haiku-5-5-now-available-on-ai-gateway
+    title: Claude Haiku 5.5 now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/glyph-cluster-is-now-available-in-stealth-for-free-on-ai-gateway
+    title: Glyph Cluster is now available in stealth for free on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/timestamp-attributes-are-now-supported-in-vercel-flags
+    title: Timestamp attributes are now supported in Vercel Flags
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: https://vercel.com/changelog/confidence-based-decision-fallbacks
+    title: AI Gateway adds confidence-based decision fallbacks
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/nano-banana-2-1-now-available-on-ai-gateway
+    title: Nano Banana 2.1 now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/mistral-large-4-now-available-on-ai-gateway
+    title: Mistral Large 4 now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/changelog/openai-ultrafast-mode-now-available-on-ai-gateway
+    title: OpenAI Ultrafast mode now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: https://vercel.com/blog/jev-for-python-engineers
+    title: Jev for Python engineers
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: 
+      https://vercel.com/blog/how-rogo-ships-agent-written-code-to-production-in-5-minutes-on-vercel
+    title: How Rogo ships agent-written code to production in 5 minutes on 
+      Vercel
+    source_id: vercel-blog
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/oracle
+    title: How Oracle turns days of work into minutes with ChatGPT and Codex
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/pollo-ai
+    title: Pollo AI turns creative ideas into campaigns with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/disrupting-ai-enabled-false-front-operations
+    title: Disrupting AI-enabled “false front” operations
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/teens-learn-and-plan
+    title: Helping teens learn, plan, and shape the future of AI
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/radisson
+    title: Radisson Hotel Group brings hotel discovery into ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/gpt-6-for-everyone
+    title: GPT-6 and Intelligent UI for everyone
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/jump-trading
+    title: How Jump Trading is scaling quant research with ChatGPT
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/sharing-ai-progress-in-mathematics
+    title: Sharing AI progress in mathematics
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/advancing-computer-use-with-ironclad
+    title: Advancing computer use with Ironclad
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/atlassian-partnership
+    title: Atlassian and OpenAI expand partnership to turn enterprise knowledge 
+      into action
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/eu-text-provenance
+    title: Our approach to EU text provenance rules
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/new-chatgpt-ads-format-and-measurement
+    title: Building advertising for the way people use AI
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/practical-guide-building-gpt-6
+    title: A model guide for the GPT-6 family
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://openai.com/index/chatham-financial
+    title: Chatham scales its capital markets expertise with OpenAI
+    source_id: openai-news
+    rejected_at: '2026-10-08'
+  - url: https://github.com/browser-use/browser-use/releases/tag/0.13.11
+    title: 0.13.11
+    source_id: browser-use-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1589
+    title: 'stagehand-python@4.2.0a0.dev1589: [chore]: fix typing in docs test (#3145)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1588
+    title: stagehand-python@4.2.0a0.dev1588
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1587
+    title: 'stagehand-python@4.2.0a0.dev1587: Point eval sites at Vercel instead of
+      GitHub Pages (#3141)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1586
+    title: 'stagehand-python@4.2.0a0.dev1586: [chore]: disable proxies in CI (#3143)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1585
+    title: 'stagehand-python@4.2.0a0.dev1585: docs: host DeepWiki README badge locally
+      (#3136)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1584
+    title: stagehand-python@4.2.0a0.dev1584
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1582
+    title: 'stagehand-python@4.2.0a0.dev1582: [Claimed #3105] evals: add a static
+      observation fixture recorder (#3106)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1580
+    title: 'stagehand-python@4.2.0a0.dev1580: [chore]: ignore docs test on cua toolset
+      page (#3134)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1579
+    title: 'stagehand-python@4.2.0a0.dev1579: docs: add claude toolset integration
+      guide (#3122)'
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: 
+      https://github.com/browserbase/stagehand/releases/tag/stagehand-python%404.2.0a0.dev1578
+    title: stagehand-python@4.2.0a0.dev1578
+    source_id: stagehand-releases
+    rejected_at: '2026-10-08'
+  - url: https://arize.com/blog/arize-ax-cost-agent/
+    title: 'Cost Agent: find where your LLM and agent spend goes with your traces'
+    source_id: arize-com
+    rejected_at: '2026-10-08'
+  - url: 
+      https://arize.com/blog/extending-your-agent-with-arize-ax-mcp-cli-and-skills/
+    title: 'Introducing Arize AX MCP: When to use MCP, CLI, or skills'
+    source_id: arize-com
+    rejected_at: '2026-10-08'
+  - url: https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.3.0
+    title: v2.3.0
+    source_id: github-com-modelcontextprotocol-python-sdk
+    rejected_at: '2026-10-08'
