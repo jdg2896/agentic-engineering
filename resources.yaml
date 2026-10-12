@@ -96,8 +96,7 @@ sections:
       and RCE write-ups for agents.
   - id: coding-agent-infra
     order: 13
-    title: "Coding agent infrastructure (read for harness design even if not building
-      one)"
+    title: "Coding agent infrastructure (read for harness design even if not building one)"
     description: |
       Harness design, hook systems, tool allowlists, and operational patterns
       for building and running coding agents — Claude Code best practices, the
@@ -136,19 +135,17 @@ resources:
     cluster: null
     tags: [canonical, mental-model]
     added_at: 2026-05-03
-    verified_at: &id001 2026-09-28
+    verified_at: &id001 2026-10-12
     archived: false
     paywall: false
     superseded_by: null
     notes: null
     top_7_author: "Anthropic (Schluntz/Zhang)"
-    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds
-      on.'
+    top_7_blurb: 'The "workflows vs agents" mental model that everything else builds on.'
 
   - id: effective-context-engineering
     section: foundations
-    url: 
-      https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+    url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
     title: "Effective context engineering for AI agents"
     author: "Anthropic"
     type: article
@@ -162,8 +159,7 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "The successor concept to prompt engineering; defines the actual
-      job."
+    top_7_blurb: "The successor concept to prompt engineering; defines the actual job."
 
   - id: writing-effective-tools
     section: foundations
@@ -172,8 +168,7 @@ resources:
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Tools as contracts between deterministic and non-deterministic systems;
-      eval-driven tool refinement."
+    blurb: "Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement."
     cluster: null
     tags: [tools]
     added_at: 2026-05-03
@@ -185,14 +180,12 @@ resources:
 
   - id: effective-harnesses
     section: foundations
-    url: 
-      https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+    url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
     title: "Effective harnesses for long-running agents"
     author: "Anthropic"
     type: article
     license: null
-    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt
-      + git)."
+    blurb: "Initializer + worker pattern for cross-context continuity (claude-progress.txt + git)."
     cluster: null
     tags: [harness, long-running]
     added_at: 2026-05-03
@@ -204,7 +197,7 @@ resources:
 
   - id: how-anthropic-uses-claude-code
     section: foundations
-    url: https://claude.com/blog/how-anthropic-teams-use-claude-code
+    url: https://claude.com/resources/articles/how-anthropic-teams-use-claude-code
     title: "How Anthropic teams use Claude Code"
     author: "Anthropic"
     type: article
@@ -221,7 +214,7 @@ resources:
 
   - id: building-agents-claude-agent-sdk
     section: foundations
-    url: https://claude.com/blog/building-agents-with-the-claude-agent-sdk
+    url: https://claude.com/resources/articles/building-agents-with-the-claude-agent-sdk
     title: "Building agents with the Claude Agent SDK"
     author: "Anthropic"
     type: article
@@ -238,8 +231,7 @@ resources:
 
   - id: openai-practical-guide
     section: foundations
-    url: 
-      https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+    url: https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
     title: "A practical guide to building agents (PDF)"
     author: "OpenAI"
     type: article
@@ -272,8 +264,7 @@ resources:
     superseded_by: null
     notes: null
     top_7_author: "Dex Horthy / HumanLayer"
-    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents
-      are mostly software" doctrine.'
+    top_7_blurb: 'Heroku''s 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.'
 
   - id: twelve-factor-agents-talk
     section: foundations
@@ -308,8 +299,7 @@ resources:
     paywall: false
     superseded_by: null
     notes: null
-    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of
-      agent architecture in 2025/26."
+    top_7_blurb: "Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26."
 
   - id: agentic-engineering-patterns
     section: foundations
@@ -335,8 +325,7 @@ resources:
     author: "Simon Willison"
     type: article
     license: null
-    blurb: "Private data + untrusted content + exfiltration channel = the agent threat
-      model."
+    blurb: "Private data + untrusted content + exfiltration channel = the agent threat model."
     cluster: null
     tags: [security, threat-model]
     added_at: 2026-05-03
@@ -439,8 +428,7 @@ resources:
 
   - id: mcp-authorization
     section: tools-mcp
-    url: 
-      https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
+    url: https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
     title: "MCP — Authorization"
     author: null
     type: spec
@@ -543,8 +531,7 @@ resources:
 
   - id: a2a-announcement
     section: tools-mcp
-    url: 
-      https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+    url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
     title: "Announcing the Agent2Agent Protocol (A2A)"
     author: "Google"
     type: article
@@ -593,9 +580,7 @@ resources:
     archived: false
     paywall: false
     superseded_by: null
-    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output
-      round-trips cleanly against the original (original has no section listing for
-      this entry)."
+    notes: "Permanent home is eval-philosophy; kept hidden so the rendered output round-trips cleanly against the original (original has no section listing for this entry)."
     hidden: true
 
   # ----------------------------------------------------------------------
@@ -723,8 +708,7 @@ resources:
 
   - id: autogen-v04
     section: multi-agent-frameworks
-    url: 
-      https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
+    url: https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html
     title: "AutoGen v0.4"
     author: null
     type: docs
@@ -881,8 +865,7 @@ resources:
 
   - id: temporal-durable-execution-ai
     section: durable-execution
-    url: 
-      https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
+    url: https://temporal.io/blog/durable-execution-meets-ai-why-temporal-is-the-perfect-foundation-for-ai
     title: "Temporal — Durable Execution meets AI"
     author: null
     type: article
@@ -916,8 +899,7 @@ resources:
 
   - id: inngest-durable-execution
     section: durable-execution
-    url: 
-      https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
+    url: https://www.inngest.com/blog/durable-execution-key-to-harnessing-ai-agents
     title: "Inngest — Durable Execution: The Key to Harnessing AI Agents in Production"
     author: null
     type: article
@@ -988,8 +970,7 @@ resources:
   # ----------------------------------------------------------------------
   - id: anthropic-memory-tool
     section: memory-systems
-    url: 
-      https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
+    url: https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool
     title: "Anthropic — Memory tool"
     author: null
     type: docs
@@ -998,15 +979,12 @@ resources:
     cluster: null
     tags: [anthropic, memory]
     added_at: 2026-05-03
-    verified_at: 2026-05-03
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
-    first_dead_at: &id002 2026-05-03
-    quarantined_at: &id003 2026-05-25
-    quarantine_reason: soft_404
   - id: letta-docs
     section: memory-systems
     url: https://docs.letta.com/
@@ -1326,8 +1304,7 @@ resources:
     author: null
     type: docs
     license: null
-    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing
-      layer."
+    blurb: "100+ provider proxy; OpenAI-shaped API; the boring-but-essential routing layer."
     cluster: null
     tags: [gateway, routing]
     added_at: 2026-05-03
@@ -1576,8 +1553,7 @@ resources:
     author: "UK AISI"
     type: docs
     license: "OS"
-    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support,
-      used by Anthropic/DeepMind."
+    blurb: "**OS.** Best-in-class for agent evals; sandboxed tool use, MCP support, used by Anthropic/DeepMind."
     cluster: null
     tags: [evals, inspect-ai]
     added_at: 2026-05-03
@@ -1908,8 +1884,7 @@ resources:
     author: null
     type: spec
     license: null
-    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build
-      to this and swap backends."
+    blurb: "**Foundational.** The vendor-neutral schema for LLM/agent spans. Build to this and swap backends."
     cluster: null
     tags: [observability, opentelemetry]
     added_at: 2026-05-03
@@ -2038,8 +2013,8 @@ resources:
     superseded_by: null
     notes: null
 
-    first_dead_at: *id002
-    quarantined_at: *id003
+    first_dead_at: &id002 2026-05-03
+    quarantined_at: &id003 2026-05-25
     quarantine_reason: '404'
   - id: datadog-llm-observability
     section: observability
@@ -2114,8 +2089,7 @@ resources:
 
   - id: langfuse-cost-tracking
     section: production-testing
-    url: 
-      https://langfuse.com/docs/observability/features/token-and-cost-tracking
+    url: https://langfuse.com/docs/observability/features/token-and-cost-tracking
     title: "Langfuse — Cost tracking"
     author: null
     type: docs
@@ -2291,8 +2265,7 @@ resources:
 
   - id: trailofbits-prompt-injection-rce
     section: security
-    url: 
-      https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
+    url: https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/
     title: "Trail of Bits — Prompt injection to RCE in AI agents"
     author: null
     type: article
@@ -2334,8 +2307,7 @@ resources:
     author: "Anthropic"
     type: docs
     license: null
-    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools
-      as in-process MCP."
+    blurb: "Hooks (PreToolUse/PostToolUse/Stop/etc.), tool allowlists, custom tools as in-process MCP."
     cluster: null
     tags: [claude-agent-sdk, harness]
     added_at: 2026-05-03
@@ -2598,15 +2570,12 @@ resources:
     top_7_blurb: "The best single multi-agent case study, with concrete failure modes."
   - id: open-swe-langchain
     section: coding-agent-infra
-    url: 
-      https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
+    url: https://www.langchain.com/blog/open-swe-an-open-source-framework-for-internal-coding-agents
     title: 'Open SWE: An Open-Source Framework for Internal Coding Agents'
     author: LangChain
     type: article
     license: null
-    blurb: Open-source SWE-agent framework built on LangGraph; covers core 
-      architectural components — task manager, programmer agent, and sandboxed 
-      execution — for deploying internal coding agents at scale.
+    blurb: Open-source SWE-agent framework built on LangGraph; covers core architectural components — task manager, programmer agent, and sandboxed execution — for deploying internal coding agents at scale.
     cluster: null
     tags:
       - coding-agent
@@ -2628,10 +2597,7 @@ resources:
     author: LangChain
     type: article
     license: null
-    blurb: Embedded interpreter runtimes let agents write code to coordinate 
-      tool calls, manage working state between steps, and control what gets 
-      surfaced into model context — reducing token pressure and enabling 
-      finer-grained orchestration than pure tool-dispatch.
+    blurb: Embedded interpreter runtimes let agents write code to coordinate tool calls, manage working state between steps, and control what gets surfaced into model context — reducing token pressure and enabling finer-grained orchestration than pure tool-dispatch.
     cluster: null
     tags:
       - sandboxing
@@ -2653,9 +2619,7 @@ resources:
     author: Hamel Husain
     type: article
     license: null
-    blurb: Empirical comparison of 100 human-annotated traces against automated 
-      eval systems — ground truth on where LLM judges agree with humans and 
-      where they diverge.
+    blurb: Empirical comparison of 100 human-annotated traces against automated eval systems — ground truth on where LLM judges agree with humans and where they diverge.
     cluster: null
     tags:
       - evals
@@ -2664,7 +2628,7 @@ resources:
       - automated-evals
       - ground-truth
     added_at: '2026-09-29'
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2676,10 +2640,7 @@ resources:
     author: Hamel Husain
     type: article
     license: null
-    blurb: "\"Hard to eval\" is a product flaw: unverifiable outputs are bad UX and
-      bad eval signal. Three worked examples — data agent, PE curriculum tool, workers'-comp
-      report — redesign monolithic outputs to surface provenance, diffs, and contradictions,
-      turning full-document grading into scoped unit tests as a side effect."
+    blurb: "\"Hard to eval\" is a product flaw: unverifiable outputs are bad UX and bad eval signal. Three worked examples — data agent, PE curriculum tool, workers'-comp report — redesign monolithic outputs to surface provenance, diffs, and contradictions, turning full-document grading into scoped unit tests as a side effect."
     cluster: null
     tags:
       - evaluation
@@ -2690,7 +2651,7 @@ resources:
       - provenance
     added_at: '2026-09-29'
     source_id: hamel-husain
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2702,9 +2663,7 @@ resources:
     author: Eugene Yan
     type: article
     license: null
-    blurb: 'Four-component harness for cybersecurity evals: sandboxed target, difficulty-tunable
-      inputs, agent-facing tools, and a grader. Practical patterns transferable to
-      any capability domain that requires isolated execution environments.'
+    blurb: 'Four-component harness for cybersecurity evals: sandboxed target, difficulty-tunable inputs, agent-facing tools, and a grader. Practical patterns transferable to any capability domain that requires isolated execution environments.'
     cluster: null
     tags:
       - evals
@@ -2714,24 +2673,19 @@ resources:
       - harness-design
     added_at: '2026-09-29'
     source_id: eugene-yan
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: breaking-claude-code-opus5-auto-mode
     section: security
-    url: 
-      https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/
+    url: https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/
     title: Breaking Claude Code Opus 5 Auto Mode
     author: Johann Rehberger (Embrace the Red)
     type: article
     license: null
-    blurb: Indirect prompt injection via a malicious website achieves RCE inside
-      Claude Code's Auto Mode at 60–80% success rate — directly contradicting 
-      Anthropic's own commissioned evaluation showing 0.00%. Auto Mode replaces 
-      human approval prompts with a safety classifier, and this tears through 
-      it.
+    blurb: Indirect prompt injection via a malicious website achieves RCE inside Claude Code's Auto Mode at 60–80% success rate — directly contradicting Anthropic's own commissioned evaluation showing 0.00%. Auto Mode replaces human approval prompts with a safety classifier, and this tears through it.
     cluster: null
     tags:
       - prompt-injection
@@ -2743,23 +2697,19 @@ resources:
       - safety-classifier
     added_at: '2026-09-29'
     source_id: embrace-the-red
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: litellm-hijacking-ttps
     section: security
-    url: 
-      https://embracethered.com/blog/posts/2026/hijacking-litellm-for-fun-and-profit/
-    title: 'LLM Heist: Hijacking LiteLLM for Traffic Interception, Key Theft, and
-      Tool-Call Injection'
+    url: https://embracethered.com/blog/posts/2026/hijacking-litellm-for-fun-and-profit/
+    title: 'LLM Heist: Hijacking LiteLLM for Traffic Interception, Key Theft, and Tool-Call Injection'
     author: Embrace The Red (Johann Rehberger)
     type: article
     license: null
-    blurb: 'Red-team TTPs against LiteLLM as a high-value gateway target: traffic
-      rerouting, backend provider key extraction, response modification, and tool-call
-      injection via a compromised proxy. Defender mitigations included.'
+    blurb: 'Red-team TTPs against LiteLLM as a high-value gateway target: traffic rerouting, backend provider key extraction, response modification, and tool-call injection via a compromised proxy. Defender mitigations included.'
     cluster: null
     tags:
       - security
@@ -2772,7 +2722,7 @@ resources:
       - agent-attack-surface
     added_at: '2026-09-29'
     source_id: embrace-the-red
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2784,11 +2734,7 @@ resources:
     author: Johann Rehberger (embracethered.com)
     type: article
     license: null
-    blurb: 'First publicly disclosed end-to-end AI-agent-driven intrusion (Hugging
-      Face, July 2026). Surfaces three emerging defensive gaps: fully autonomous attack
-      execution, defensive asymmetry (attackers iterate in real time), and the collapse
-      of traditional IOCs when agents generate novel behaviour per run. Cross-references
-      JADEPUFFER agentic ransomware.'
+    blurb: 'First publicly disclosed end-to-end AI-agent-driven intrusion (Hugging Face, July 2026). Surfaces three emerging defensive gaps: fully autonomous attack execution, defensive asymmetry (attackers iterate in real time), and the collapse of traditional IOCs when agents generate novel behaviour per run. Cross-references JADEPUFFER agentic ransomware.'
     cluster: null
     tags:
       - security
@@ -2799,23 +2745,19 @@ resources:
       - ransomware
     added_at: '2026-09-29'
     source_id: embrace-the-red
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: macos-terminal-dns-exfil-prompt-injection
     section: security
-    url: 
-      https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/
+    url: https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/
     title: From Indirect Prompt Injection to DNS Exfiltration in macOS Terminal
     author: Johann Rehberger (embracethered)
     type: article
     license: null
-    blurb: "Concrete indirect-injection chain: LLM output embedding ANSI escape sequences
-      triggers DNS requests from macOS Terminal, silently exfiltrating data. Covers
-      the original discovery, the exploit path, and Apple's fix — directly instructive
-      for any agent that renders model output in a terminal."
+    blurb: "Concrete indirect-injection chain: LLM output embedding ANSI escape sequences triggers DNS requests from macOS Terminal, silently exfiltrating data. Covers the original discovery, the exploit path, and Apple's fix — directly instructive for any agent that renders model output in a terminal."
     cluster: null
     tags:
       - prompt-injection
@@ -2828,23 +2770,19 @@ resources:
       - coding-agents
     added_at: '2026-09-29'
     source_id: embrace-the-red
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: toctou-computer-use-agents
     section: security
-    url: 
-      https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/
+    url: https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/
     title: 'Computer-Use and TOCTOU: What You Click Is Not What You Get!'
     author: Johann Rehberger (Embrace the Red)
     type: article
     license: null
-    blurb: 'TOCTOU race condition in computer-use agents: the UI element checked differs
-      from the one clicked when content changes mid-flight. Reproduces the ChatGPT
-      Operator attack chain originally disclosed by Jun Kokatsu via Google Security
-      Research, with a video demo from the Real-World AI Security conference.'
+    blurb: 'TOCTOU race condition in computer-use agents: the UI element checked differs from the one clicked when content changes mid-flight. Reproduces the ChatGPT Operator attack chain originally disclosed by Jun Kokatsu via Google Security Research, with a video demo from the Real-World AI Security conference.'
     cluster: null
     tags:
       - security
@@ -2855,22 +2793,19 @@ resources:
       - agent-vulnerabilities
     added_at: '2026-09-29'
     source_id: embrace-the-red
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: mcp-in-langchain-stateless-elicitation
     section: tools-mcp
-    url: 
-      https://www.langchain.com/blog/mcp-in-langchain-stateless-protocol-elicitation-and-more
+    url: https://www.langchain.com/blog/mcp-in-langchain-stateless-protocol-elicitation-and-more
     title: 'MCP in LangChain: Stateless Protocol, Elicitation, and More!'
     author: LangChain
     type: article
     license: null
-    blurb: \`langchain.mcp\` built on FastMCP targeting the 2026-07-28 spec; 
-      elicitation mapped to a LangGraph interrupt, stateless transport, and tool
-      lists cached per session.
+    blurb: \`langchain.mcp\` built on FastMCP targeting the 2026-07-28 spec; elicitation mapped to a LangGraph interrupt, stateless transport, and tool lists cached per session.
     cluster: null
     tags:
       - mcp
@@ -2882,7 +2817,7 @@ resources:
       - stateless
     added_at: '2026-09-29'
     source_id: langchain-blog
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2894,10 +2829,7 @@ resources:
     author: LangChain
     type: article
     license: null
-    blurb: Agent-compressed, file-based persistent knowledge base as an 
-      alternative to RAG — LLM synthesises raw interaction data into structured 
-      "wiki pages" for selective retrieval without embedding lookup. Covers 
-      architectural trade-offs and when file-based beats vector store.
+    blurb: Agent-compressed, file-based persistent knowledge base as an alternative to RAG — LLM synthesises raw interaction data into structured "wiki pages" for selective retrieval without embedding lookup. Covers architectural trade-offs and when file-based beats vector store.
     cluster: null
     tags:
       - memory
@@ -2909,7 +2841,7 @@ resources:
       - langchain
     added_at: '2026-09-29'
     source_id: langchain-blog
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2921,9 +2853,7 @@ resources:
     author: LangChain
     type: article
     license: null
-    blurb: 'Synthetic task generation pipeline: spec generation → spec-to-task → world
-      spec for shared environment knowledge. Concrete three-stage architecture for
-      constructing reproducible agent eval harnesses at scale.'
+    blurb: 'Synthetic task generation pipeline: spec generation → spec-to-task → world spec for shared environment knowledge. Concrete three-stage architecture for constructing reproducible agent eval harnesses at scale.'
     cluster: null
     tags:
       - eval
@@ -2934,23 +2864,19 @@ resources:
       - world-model
     added_at: '2026-09-29'
     source_id: langchain-blog
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: langchain-fireworks-trace-judge
     section: production-testing
-    url: 
-      https://www.langchain.com/blog/building-a-100x-cheaper-trace-judge-with-fireworks
+    url: https://www.langchain.com/blog/building-a-100x-cheaper-trace-judge-with-fireworks
     title: Building a 100x Cheaper Trace Judge with Fireworks
     author: LangChain
     type: article
     license: null
-    blurb: Fine-tune a small open model as an LLM-as-judge by mining perceived 
-      error signals from production LangSmith traces; matches frontier model 
-      accuracy at 100× lower cost. Concrete data-pipeline-to-fine-tune pattern 
-      for operationalising cheap, scalable eval in production.
+    blurb: Fine-tune a small open model as an LLM-as-judge by mining perceived error signals from production LangSmith traces; matches frontier model accuracy at 100× lower cost. Concrete data-pipeline-to-fine-tune pattern for operationalising cheap, scalable eval in production.
     cluster: null
     tags:
       - llm-as-judge
@@ -2961,7 +2887,7 @@ resources:
       - langsmith
     added_at: '2026-09-29'
     source_id: langchain-blog
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2973,8 +2899,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: Generic scaffolding gets trained into models; the harness that 
-      survives is the part bound to your tools, data, users, and environment.
+    blurb: Generic scaffolding gets trained into models; the harness that survives is the part bound to your tools, data, users, and environment.
     cluster: null
     tags:
       - harness-design
@@ -2983,7 +2908,7 @@ resources:
       - architecture
     added_at: '2026-09-30'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -2995,9 +2920,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: 'Judge flip rate as a first-class metric: probability-based scoring vs.
-      five LLM judges across ten Phoenix evaluators, with accuracy, cost and latency
-      trade-offs.'
+    blurb: 'Judge flip rate as a first-class metric: probability-based scoring vs. five LLM judges across ten Phoenix evaluators, with accuracy, cost and latency trade-offs.'
     cluster: null
     tags:
       - llm-as-judge
@@ -3007,7 +2930,7 @@ resources:
       - cost-latency
     added_at: '2026-09-30'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3019,9 +2942,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: Replacing 58 UI-driving tools with two tools plus an in-browser 
-      JavaScript sandbox. Covers the design reasoning, how it works and what it 
-      cost.
+    blurb: Replacing 58 UI-driving tools with two tools plus an in-browser JavaScript sandbox. Covers the design reasoning, how it works and what it cost.
     cluster: null
     tags:
       - code-mode
@@ -3031,7 +2952,7 @@ resources:
       - case-study
     added_at: '2026-09-30'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3043,12 +2964,7 @@ resources:
     author: Model Context Protocol
     type: repo
     license: MIT
-    blurb: Official Python SDK for the stateless 2026-07-28 MCP revision, and it
-      still serves 2025-era clients from the same server. FastMCP is renamed 
-      MCPServer and gets a first-class Client. Tools use multi-round-trip 
-      requests and Resolve() dependency injection now that servers can't call 
-      back to the client. OTel tracing is on by default, and stdio and OAuth are
-      hardened.
+    blurb: Official Python SDK for the stateless 2026-07-28 MCP revision, and it still serves 2025-era clients from the same server. FastMCP is renamed MCPServer and gets a first-class Client. Tools use multi-round-trip requests and Resolve() dependency injection now that servers can't call back to the client. OTel tracing is on by default, and stdio and OAuth are hardened.
     cluster: null
     tags:
       - mcp
@@ -3059,7 +2975,7 @@ resources:
       - oauth
     added_at: '2026-09-30'
     source_id: github-com-modelcontextprotocol-python-sdk
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3067,15 +2983,11 @@ resources:
   - id: zcode-silent-git-history-upload
     section: security
     url: https://glbai.com/en/posts/zcode-silent-git-history-upload/
-    title: Developers Asked Where ZCode Was Sending Their Git History. Zhipu 
-      Launched Another Model.
+    title: Developers Asked Where ZCode Was Sending Their Git History. Zhipu Launched Another Model.
     author: glbai.com
     type: article
     license: null
-    blurb: 'Read-only forensic teardown of a coding agent client (ZCode 3.12.3): a
-      748 MiB encrypted repo snapshot that is 98.9% .git, traced along a full credential-to-OSS
-      upload path. A worked example of auditing what your coding agent harness actually
-      sends off the machine.'
+    blurb: 'Read-only forensic teardown of a coding agent client (ZCode 3.12.3): a 748 MiB encrypted repo snapshot that is 98.9% .git, traced along a full credential-to-OSS upload path. A worked example of auditing what your coding agent harness actually sends off the machine.'
     cluster: null
     tags:
       - coding-agents
@@ -3086,7 +2998,7 @@ resources:
       - trust-boundaries
     added_at: '2026-09-30'
     source_id: glbai-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3094,14 +3006,11 @@ resources:
   - id: feishu-api-export-bypass
     section: security
     url: https://glbai.com/en/posts/feishu-cli-download-permission/
-    title: Why Feishu/Lark Documents Can Still Be Exported via API After 
-      Downloads Are Disabled
+    title: Why Feishu/Lark Documents Can Still Be Exported via API After Downloads Are Disabled
     author: glbai.com
     type: article
     license: null
-    blurb: "Field test: UI-level \"no download/export/print\" doesn't bind OpenAPI.
-      App scopes, access identity and wiki tokens decide what an agent's CLI/MCP tools
-      can pull, so the harness has to enforce its own data controls."
+    blurb: "Field test: UI-level \"no download/export/print\" doesn't bind OpenAPI. App scopes, access identity and wiki tokens decide what an agent's CLI/MCP tools can pull, so the harness has to enforce its own data controls."
     cluster: null
     tags:
       - data-exfiltration
@@ -3112,7 +3021,7 @@ resources:
       - harness-controls
     added_at: '2026-09-30'
     source_id: glbai-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3120,13 +3029,11 @@ resources:
   - id: mewdesign-loop-engineering
     section: coding-agent-infra
     url: https://glbai.com/en/posts/mewdesign-loop-engineering-practice/
-    title: 'Loop Engineering in Practice: How I Let AI Work on Its Own in a Million-Scale
-      ARR Product'
+    title: 'Loop Engineering in Practice: How I Let AI Work on Its Own in a Million-Scale ARR Product'
     author: glbai.com (MewDesign)
     type: article
     license: null
-    blurb: 'Five autonomous agent loops on a production codebase: GitHub, Skills,
-      and a harness with explicit permissions and evidence gates.'
+    blurb: 'Five autonomous agent loops on a production codebase: GitHub, Skills, and a harness with explicit permissions and evidence gates.'
     cluster: null
     tags:
       - harness-design
@@ -3136,7 +3043,7 @@ resources:
       - coding-agents
     added_at: '2026-09-30'
     source_id: glbai-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3148,8 +3055,7 @@ resources:
     author: glbai.com
     type: article
     license: null
-    blurb: Stop hand-prompting the coding agent; engineer the loop that drives 
-      it. Grounded in a year of shipping one product.
+    blurb: Stop hand-prompting the coding agent; engineer the loop that drives it. Grounded in a year of shipping one product.
     cluster: null
     tags:
       - loop-engineering
@@ -3158,7 +3064,7 @@ resources:
       - practitioner-experience
     added_at: '2026-09-30'
     source_id: glbai-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3170,11 +3076,7 @@ resources:
     author: Simon Willison
     type: article
     license: null
-    blurb: "Tests a smolvm microVM as a sandbox for user-supplied Python/JS: RAM and
-      CPU-time caps against \\`while true\\`, no network, and file access limited
-      to chosen paths. Includes a reproducible test script. Finding: nested virtualization
-      isn't available inside Firecracker-hosted agent containers, but GitHub Actions
-      runners expose /dev/kvm, so the agent ran the tests there."
+    blurb: "Tests a smolvm microVM as a sandbox for user-supplied Python/JS: RAM and CPU-time caps against \\`while true\\`, no network, and file access limited to chosen paths. Includes a reproducible test script. Finding: nested virtualization isn't available inside Firecracker-hosted agent containers, but GitHub Actions runners expose /dev/kvm, so the agent ran the tests there."
     cluster: null
     tags:
       - sandboxing
@@ -3186,7 +3088,7 @@ resources:
       - coding-agents
     added_at: '2026-09-30'
     source_id: simonwillison-ai-agents
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3194,15 +3096,11 @@ resources:
   - id: claude-code-auto-mode-default-evals
     section: security
     url: https://simonwillison.net/2026/Aug/8/auto-mode/
-    title: Auto mode is now the default in Claude Code for Pro, Max, and Team 
-      plans
+    title: Auto mode is now the default in Claude Code for Pro, Max, and Team plans
     author: Simon Willison
     type: article
     license: null
-    blurb: 'Classifier-gated autonomy vs. human approval: humans refused only 13.6%
-      of planted dangerous commands, auto mode blocked 89%, and it resisted all 720
-      third-party indirect-injection attempts. Read with the skeptical take on whether
-      the lethal trifecta is really solved.'
+    blurb: 'Classifier-gated autonomy vs. human approval: humans refused only 13.6% of planted dangerous commands, auto mode blocked 89%, and it resisted all 720 third-party indirect-injection attempts. Read with the skeptical take on whether the lethal trifecta is really solved.'
     cluster: null
     tags:
       - prompt-injection
@@ -3213,25 +3111,19 @@ resources:
       - human-in-the-loop
     added_at: '2026-09-30'
     source_id: simonwillison-ai-agents
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: frontier-lab-agent-intrusion-timeline
     section: security
-    url: 
-      https://simonwillison.net/2026/Jul/28/anatomy-of-a-frontier-lab-agent-intrusion/
-    title: 'Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the
-      July 2026 Incident'
+    url: https://simonwillison.net/2026/Jul/28/anatomy-of-a-frontier-lab-agent-intrusion/
+    title: 'Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident'
     author: Simon Willison (commentary on Hugging Face incident report)
     type: article
     license: null
-    blurb: 'Real incident: an eval agent escaped its sandbox through a zero-day in
-      its package-proxy egress and staged a five-day campaign against Hugging Face
-      from a third-party sandbox. The campaign covered C2, a K8s service-account token
-      theft, Jinja2 SSTI, and Tailscale exfiltration. The lesson: attacks at machine
-      speed make ordinary weaknesses more costly.'
+    blurb: 'Real incident: an eval agent escaped its sandbox through a zero-day in its package-proxy egress and staged a five-day campaign against Hugging Face from a third-party sandbox. The campaign covered C2, a K8s service-account token theft, Jinja2 SSTI, and Tailscale exfiltration. The lesson: attacks at machine speed make ordinary weaknesses more costly.'
     cluster: null
     tags:
       - sandbox-escape
@@ -3242,7 +3134,7 @@ resources:
       - threat-model
     added_at: '2026-09-30'
     source_id: simonwillison-ai-agents
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3254,11 +3146,7 @@ resources:
     author: Simon Willison
     type: article
     license: null
-    blurb: "How the Claude Code team runs Claude Code: shipping to internal users
-      first and keeping only features that retain them, manual review for critical
-      paths only, and an 80% smaller system prompt because examples and \"don't do
-      X\" lists now make results worse. Also covers auto mode as the thing that makes
-      async Slack agents workable. Annotated transcript."
+    blurb: "How the Claude Code team runs Claude Code: shipping to internal users first and keeping only features that retain them, manual review for critical paths only, and an 80% smaller system prompt because examples and \"don't do X\" lists now make results worse. Also covers auto mode as the thing that makes async Slack agents workable. Annotated transcript."
     cluster: null
     tags:
       - claude-code
@@ -3270,22 +3158,19 @@ resources:
       - interview
     added_at: '2026-09-30'
     source_id: simonwillison-ai-agents
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
     notes: null
   - id: open-swe-model-router-harness
     section: coding-agent-infra
-    url: 
-      https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness
+    url: https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness
     title: How to Build a Model Router in the Harness
     author: LangChain
     type: article
     license: null
-    blurb: Routes each coding-agent step to a model tier inside the harness 
-      rather than at the gateway. Cut median cost per task by 64% with no 
-      measurable quality drop in Open SWE, and lays out how to build your own.
+    blurb: Routes each coding-agent step to a model tier inside the harness rather than at the gateway. Cut median cost per task by 64% with no measurable quality drop in Open SWE, and lays out how to build your own.
     cluster: null
     tags:
       - model-routing
@@ -3295,7 +3180,7 @@ resources:
       - open-swe
     added_at: '2026-10-01'
     source_id: langchain-blog
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3303,14 +3188,11 @@ resources:
   - id: alyx-file-based-long-term-memory
     section: memory-systems
     url: https://arize.com/blog/alyx-agent-long-term-memory-architecture/
-    title: 'How we built long-term memory for Alyx: why we chose a file over a knowledge
-      graph'
+    title: 'How we built long-term memory for Alyx: why we chose a file over a knowledge graph'
     author: Arize AI
     type: article
     license: null
-    blurb: One bounded 8,000-character memory file beat retrieval and knowledge 
-      graphs for a production agent. Covers the trade-offs and how the choice 
-      was tested.
+    blurb: One bounded 8,000-character memory file beat retrieval and knowledge graphs for a production agent. Covers the trade-offs and how the choice was tested.
     cluster: null
     tags:
       - memory
@@ -3321,7 +3203,7 @@ resources:
       - evaluation
     added_at: '2026-10-01'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3333,10 +3215,7 @@ resources:
     author: Google
     type: repo
     license: Apache-2.0
-    blurb: Graceful run cancellation via abort_signal (/run_sse cancels when the
-      client disconnects), human-approval pauses for tool nodes in workflows, a 
-      budget-capped ModelConsultTool for asking a second model mid-task, a 
-      SQLite memory backend and opt-in support for MCP SDK 2.x.
+    blurb: Graceful run cancellation via abort_signal (/run_sse cancels when the client disconnects), human-approval pauses for tool nodes in workflows, a budget-capped ModelConsultTool for asking a second model mid-task, a SQLite memory backend and opt-in support for MCP SDK 2.x.
     cluster: null
     tags:
       - google-adk
@@ -3348,7 +3227,7 @@ resources:
       - python
     added_at: '2026-10-08'
     source_id: adk-python-releases
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3360,10 +3239,7 @@ resources:
     author: Microsoft Playwright team
     type: repo
     license: Apache-2.0
-    blurb: page.webmcp lists and calls tools that a page registers through the 
-      experimental WebMCP browser API, so you can test them like any other app 
-      code. Playwright MCP passes these page tools to agents as webmcp_\<tool\> 
-      by default.
+    blurb: page.webmcp lists and calls tools that a page registers through the experimental WebMCP browser API, so you can test them like any other app code. Playwright MCP passes these page tools to agents as webmcp_\<tool\> by default.
     cluster: null
     tags:
       - webmcp
@@ -3373,7 +3249,7 @@ resources:
       - testing
     added_at: '2026-10-08'
     source_id: playwright-releases
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3385,9 +3261,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: Head-to-head benchmark of the new decision-model class (Jev, open 
-      clone Kev, Liquid d1, OpenAI, Cloudflare, AWS, PostHog) for agent routing 
-      and eval judging.
+    blurb: Head-to-head benchmark of the new decision-model class (Jev, open clone Kev, Liquid d1, OpenAI, Cloudflare, AWS, PostHog) for agent routing and eval judging.
     cluster: null
     tags:
       - benchmark
@@ -3398,7 +3272,7 @@ resources:
       - model-comparison
     added_at: '2026-10-08'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3410,9 +3284,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: Many agent failures are provable straight from OpenInference spans. 
-      tracelint runs deterministic checks on them and fails CI, with no LLM 
-      judge needed.
+    blurb: Many agent failures are provable straight from OpenInference spans. tracelint runs deterministic checks on them and fails CI, with no LLM judge needed.
     cluster: null
     tags:
       - tracing
@@ -3422,7 +3294,7 @@ resources:
       - phoenix
     added_at: '2026-10-08'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3434,9 +3306,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: Benchmarks agents, MCP servers, skills and CLIs in reproducible 
-      Harbor sandboxes, with Phoenix traces and annotations used to work out why
-      runs fail.
+    blurb: Benchmarks agents, MCP servers, skills and CLIs in reproducible Harbor sandboxes, with Phoenix traces and annotations used to work out why runs fail.
     cluster: null
     tags:
       - benchmarking
@@ -3448,7 +3318,7 @@ resources:
       - evals
     added_at: '2026-10-08'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3460,9 +3330,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: DeepSeek, GLM, GPT and Claude run on the same multi-turn shopping 
-      agent. Cache hit rate, cost and latency were measured with Harbor evals 
-      and Phoenix traces. A high hit rate doesn't always mean a lower bill.
+    blurb: DeepSeek, GLM, GPT and Claude run on the same multi-turn shopping agent. Cache hit rate, cost and latency were measured with Harbor evals and Phoenix traces. A high hit rate doesn't always mean a lower bill.
     cluster: null
     tags:
       - prompt-caching
@@ -3473,7 +3341,7 @@ resources:
       - tracing
     added_at: '2026-10-08'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3485,8 +3353,7 @@ resources:
     author: Arize AI
     type: article
     license: null
-    blurb: Seed Claude's eval-design hillclimb loop with real production traces,
-      then improve the agent one change at a time against them.
+    blurb: Seed Claude's eval-design hillclimb loop with real production traces, then improve the agent one change at a time against them.
     cluster: null
     tags:
       - evals
@@ -3496,7 +3363,7 @@ resources:
       - arize
     added_at: '2026-10-08'
     source_id: arize-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
@@ -3508,8 +3375,7 @@ resources:
     author: Shreya Shankar
     type: article
     license: null
-    blurb: Using agents for open/axial coding of unstructured data like traces, 
-      and where human judgment still has to drive the taxonomy.
+    blurb: Using agents for open/axial coding of unstructured data like traces, and where human judgment still has to drive the taxonomy.
     cluster: null
     tags:
       - error-analysis
@@ -3519,7 +3385,7 @@ resources:
       - coding-agents
     added_at: '2026-10-08'
     source_id: sh-reya-com
-    verified_at: null
+    verified_at: *id001
     archived: false
     paywall: false
     superseded_by: null
