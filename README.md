@@ -22,8 +22,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic. Compaction, sub-agents, structured note-taking.
 - [Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — Anthropic. Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement.
 - [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) — Anthropic. Initializer + worker pattern for cross-context continuity (claude-progress.txt + git).
-- [How Anthropic teams use Claude Code](https://claude.com/blog/how-anthropic-teams-use-claude-code) — Anthropic. Internal-team patterns across infra, security, data science.
-- [Building agents with the Claude Agent SDK](https://claude.com/blog/building-agents-with-the-claude-agent-sdk) — Anthropic.
+- [How Anthropic teams use Claude Code](https://claude.com/resources/articles/how-anthropic-teams-use-claude-code) — Anthropic. Internal-team patterns across infra, security, data science.
+- [Building agents with the Claude Agent SDK](https://claude.com/resources/articles/building-agents-with-the-claude-agent-sdk) — Anthropic.
 - [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) — OpenAI. Use cases, design foundations, multi-agent, guardrails.
 - [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy. Coined "context engineering" in April 2025.
 - [12-Factor Agents talk (YouTube)](https://www.youtube.com/watch?v=8kMaTybvDUw) — Dex Horthy. ~30 min version of the README.
@@ -81,6 +81,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## 5. Memory systems
 
+- [Anthropic — Memory tool](https://platform.claude.com/docs/en/build-with-claude/tool-use/memory-tool) — First-party file-backed memory.
 - [Letta docs](https://docs.letta.com/) — Production fork of MemGPT; tiered memory (core/archival/recall).
 - [MemGPT paper — LLMs as Operating Systems](https://arxiv.org/abs/2310.08560) — The paged-memory paper that started the wave.
 - [Mem0 docs](https://docs.mem0.ai/introduction) — Drop-in memory layer with extraction/consolidation.
