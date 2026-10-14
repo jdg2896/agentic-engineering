@@ -14,6 +14,11 @@ permissions:
 
 jobs:
   render-check:
+    # Skip for bot PRs: they auto-merge + delete their branch within seconds, so the
+    # run is orphaned before checkout and GitHub marks it a startup failure (red-X
+    # noise, not a real failure). The bots re-render themselves. A skipped job
+    # resolves cleanly. Non-bot PRs are gated as normal.
+    if: ${{ !startsWith(github.head_ref, 'bot/') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6

@@ -6,13 +6,16 @@ name: CI
 # PRs get a read-only token, no secrets and an isolated cache scope. No secrets are
 # used here; the tests stub the judge and never call the real `claude` CLI.
 #
-# LIMITATION (bot PRs): the Scout, Verify links and Source review bots open PRs
-# with the default GITHUB_TOKEN (via peter-evans/create-pull-request). Bot PRs
-# opened with GITHUB_TOKEN get CI runs, but they wait for a maintainer to approve
-# them ("Approve workflows to run"). Bot auto-merges (also GITHUB_TOKEN) trigger
-# no push runs, so a bot merge to main is not re-checked here. If this check is
-# made required, a bot PR blocks until someone approves the run, unless the bots
-# switch to an App or PAT token. Making it required is left to the maintainer.
+# BOT PRs: the Scout, Verify links and Source review bots open PRs with the default
+# GITHUB_TOKEN (via peter-evans/create-pull-request) and auto-merge + delete the
+# branch within seconds. The pull_request run is orphaned before it can check out
+# the (now-gone) head commit, so GitHub marks it a startup failure ("This run likely
+# failed because of a workflow file issue") — persistent red-X noise, not a real
+# failure. The `test` job below is therefore skipped for `bot/**` head branches; a
+# skipped job resolves cleanly instead of failing. Push-to-main runs still execute
+# (head_ref is empty on push), so a bot merge to main is re-checked here.
+#
+# If this check is made required, a non-bot PR still blocks on it as normal.
 on:
   pull_request:
     branches: [main]
@@ -28,6 +31,9 @@ concurrency:
 
 jobs:
   test:
+    # Skip for bot PRs (they auto-merge + delete their branch, orphaning the run);
+    # push-to-main runs still execute because head_ref is empty on push events.
+    if: ${{ !startsWith(github.head_ref, 'bot/') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
