@@ -6,10 +6,10 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## 0. If you only read 7 things
 
-1. [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — Anthropic (Schluntz/Zhang). The "workflows vs agents" mental model that everything else builds on.
-2. [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic. The successor concept to prompt engineering; defines the actual job.
+1. [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — Anthropic (Schluntz/Zhang). The "workflows vs agents" mental model that everything else builds on.
+2. [Effective context engineering for AI agents](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents) — Anthropic. The successor concept to prompt engineering; defines the actual job.
 3. [12-Factor Agents](https://github.com/humanlayer/12-factor-agents) — Dex Horthy / HumanLayer. Heroku's 12-factor reframed for LLM systems; the canonical "agents are mostly software" doctrine.
-4. [How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) — Anthropic. The best single multi-agent case study, with concrete failure modes.
+4. [How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system) — Anthropic. The best single multi-agent case study, with concrete failure modes.
 5. [Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents) — Cognition. Read alongside #4 — the productive disagreement at the heart of agent architecture in 2025/26.
 6. [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) — OpenAI. The complementary canonical from the other lab.
 7. [What We Learned From a Year of Building with LLMs](https://applied-llms.org/) — Yan/Bischof/Frye/Husain/Liu/Shankar. Tactical → operational → strategic; the field's distilled playbook.
@@ -18,10 +18,10 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## 1. Foundational design & "what is an agent"
 
-- [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — Anthropic. Workflows (orchestrator/router/parallel/eval-optimizer) vs true agents.
-- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — Anthropic. Compaction, sub-agents, structured note-taking.
-- [Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — Anthropic. Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement.
-- [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) — Anthropic. Initializer + worker pattern for cross-context continuity (claude-progress.txt + git).
+- [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — Anthropic. Workflows (orchestrator/router/parallel/eval-optimizer) vs true agents.
+- [Effective context engineering for AI agents](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents) — Anthropic. Compaction, sub-agents, structured note-taking.
+- [Writing effective tools for AI agents](https://www.anthropic.com/research/writing-tools-for-agents) — Anthropic. Tools as contracts between deterministic and non-deterministic systems; eval-driven tool refinement.
+- [Effective harnesses for long-running agents](https://www.anthropic.com/research/effective-harnesses-for-long-running-agents) — Anthropic. Initializer + worker pattern for cross-context continuity (claude-progress.txt + git).
 - [How Anthropic teams use Claude Code](https://claude.com/resources/articles/how-anthropic-teams-use-claude-code) — Anthropic. Internal-team patterns across infra, security, data science.
 - [Building agents with the Claude Agent SDK](https://claude.com/resources/articles/building-agents-with-the-claude-agent-sdk) — Anthropic.
 - [A practical guide to building agents (PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) — OpenAI. Use cases, design foundations, multi-agent, guardrails.
@@ -219,7 +219,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [k8sgpt](https://docs.k8sgpt.ai/) — CNCF Sandbox. Read-only K8s diagnosis agent; canonical example.
 - [Datadog — Bits AI SRE](https://www.datadoghq.com/blog/bits-ai-sre/) — Datadog's autonomous incident-response agent design.
 - [HashiCorp — Terraform MCP server](https://github.com/hashicorp/terraform-mcp-server) — Reference IaC tool surface.
-- [Anthropic — How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) — Best multi-agent case study, period.
+- [Anthropic — How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system) — Best multi-agent case study, period.
 
 ---
 
