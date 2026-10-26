@@ -126,7 +126,7 @@ resources:
   # ----------------------------------------------------------------------
   - id: building-effective-agents
     section: foundations
-    url: https://www.anthropic.com/engineering/building-effective-agents
+    url: https://www.anthropic.com/research/building-effective-agents
     title: "Building Effective Agents"
     author: "Anthropic"
     type: article
@@ -135,7 +135,7 @@ resources:
     cluster: null
     tags: [canonical, mental-model]
     added_at: 2026-05-03
-    verified_at: &id001 2026-10-19
+    verified_at: &id001 2026-10-26
     archived: false
     paywall: false
     superseded_by: null
@@ -145,7 +145,7 @@ resources:
 
   - id: effective-context-engineering
     section: foundations
-    url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+    url: https://www.anthropic.com/research/effective-context-engineering-for-ai-agents
     title: "Effective context engineering for AI agents"
     author: "Anthropic"
     type: article
@@ -163,7 +163,7 @@ resources:
 
   - id: writing-effective-tools
     section: foundations
-    url: https://www.anthropic.com/engineering/writing-tools-for-agents
+    url: https://www.anthropic.com/research/writing-tools-for-agents
     title: "Writing effective tools for AI agents"
     author: "Anthropic"
     type: article
@@ -180,7 +180,7 @@ resources:
 
   - id: effective-harnesses
     section: foundations
-    url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+    url: https://www.anthropic.com/research/effective-harnesses-for-long-running-agents
     title: "Effective harnesses for long-running agents"
     author: "Anthropic"
     type: article
@@ -2550,7 +2550,7 @@ resources:
 
   - id: multi-agent-research-system
     section: sre-ops-patterns
-    url: https://www.anthropic.com/engineering/multi-agent-research-system
+    url: https://www.anthropic.com/research/multi-agent-research-system
     title: "Anthropic — How we built our multi-agent research system"
     author: null
     type: article
