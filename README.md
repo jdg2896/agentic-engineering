@@ -33,6 +33,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Simon Willison's ai-agents tag](https://simonwillison.net/tags/ai-agents/) — Best running curation in the field.
 - [Patterns for Building LLM-based Systems & Products](https://eugeneyan.com/writing/llm-patterns/) — Eugene Yan. Evals/RAG/Cache/Guardrails/Defensive-UX.
 - [Building A Generative AI Platform](https://huyenchip.com/2024/07/25/genai-platform.html) — Chip Huyen. Reference architecture: gateway → routing → cache → guardrails → telemetry.
+- [The five components of building a "company harness"](https://www.langchain.com/blog/components-building-company-harness) — LangChain. Shared org-wide harness for internal agents across marketing, sales and eng — context, tools, memory, sandbox, permissions.
 
 ## 2. Tool integration & MCP
 
@@ -49,6 +50,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [How we built UI Code Mode into Arize Phoenix](https://arize.com/blog/code-mode-in-the-browser/) — Arize AI. Replacing 58 UI-driving tools with two tools plus an in-browser JavaScript sandbox. Covers the design reasoning, how it works and what it cost.
 - [MCP Python SDK v2.0.0](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.0) — Model Context Protocol. Official Python SDK for the stateless 2026-07-28 MCP revision, and it still serves 2025-era clients from the same server. FastMCP is renamed MCPServer and gets a first-class Client. Tools use multi-round-trip requests and Resolve() dependency injection now that servers can't call back to the client. OTel tracing is on by default, and stdio and OAuth are hardened.
 - [Playwright v1.64.0 — WebMCP support](https://github.com/microsoft/playwright/releases/tag/v1.64.0) — Microsoft Playwright team. page.webmcp lists and calls tools that a page registers through the experimental WebMCP browser API, so you can test them like any other app code. Playwright MCP passes these page tools to agents as webmcp_\<tool\> by default.
+- [MCP reference servers v2.0.0 — modern-era spec refactor](https://github.com/modelcontextprotocol/servers/releases/tag/v2.0.0) — Model Context Protocol (cliffhall et al.). Official reference servers (filesystem, memory, git, fetch, everything…) rebuilt on the 2026-07-28 spec and TS SDK v2, still answering legacy-era clients. A working example of serving both spec eras at once.
 
 ## 3. Multi-agent orchestration frameworks
 
@@ -68,6 +70,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Mastra](https://mastra.ai/docs) — TypeScript-first.
 - [Inngest AgentKit](https://agentkit.inngest.com/) — TS framework on top of Inngest's durable runtime.
 - [Google ADK Python v2.11.0](https://github.com/google/adk-python/releases/tag/v2.11.0) — Google. Graceful run cancellation via abort_signal (/run_sse cancels when the client disconnects), human-approval pauses for tool nodes in workflows, a budget-capped ModelConsultTool for asking a second model mid-task, a SQLite memory backend and opt-in support for MCP SDK 2.x.
+- [Google ADK Python v2.13.0](https://github.com/google/adk-python/releases/tag/v2.13.0) — Google. Classifier nodes route workflows with calibrated probabilities instead of an LLM call. Also adds MongoDB-backed sessions shared across replicas, keyword-recall memory that needs no embeddings, and live audio with barge-in. Breaking change: telemetry now defaults to OTel GenAI semconv v2.
 
 ## 4. Durable execution for agents
 
@@ -91,6 +94,10 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Generative Agents (Park et al.)](https://arxiv.org/abs/2304.03442) — Reflection + episodic memory; still the best single read.
 - [Wiki Memory: File-Based Memory for AI Agents](https://www.langchain.com/blog/wiki-memory) — LangChain. Agent-compressed, file-based persistent knowledge base as an alternative to RAG — LLM synthesises raw interaction data into structured "wiki pages" for selective retrieval without embedding lookup. Covers architectural trade-offs and when file-based beats vector store.
 - [How we built long-term memory for Alyx: why we chose a file over a knowledge graph](https://arize.com/blog/alyx-agent-long-term-memory-architecture/) — Arize AI. One bounded 8,000-character memory file beat retrieval and knowledge graphs for a production agent. Covers the trade-offs and how the choice was tested.
+- [Context Engineering with Deep Agents: How To Remember Without Keeping Everything In Context](https://www.langchain.com/blog/context-engineering-deep-agents-remember) — LangChain. Long-running agents rot as context accumulates. Five levers keep the window focused: offload to the filesystem, summarize, load skills on demand, isolate work in subagents, persist memory.
+- [How to build evidence-grounded agent memory with OpenWiki and Graphs](https://www.langchain.com/blog/building-agent-memory-openwiki-graphs) — LangChain. Turns raw sources into a compiled wiki backed by an evidence graph, so persistent memory stays traceable to its sources and can be reused across tasks.
+- [Context Engineering (Agent Memory) for AI Agents Starts with Retrieval](https://www.langchain.com/blog/context-engineering-starts-with-retrieval) — LangChain. Retrieval as the first lever of context engineering: precise search tools, offloading oversized results, avoiding stale data, as used in the Deep Agents harness.
+- [Context Management for Deep Agents](https://www.langchain.com/blog/context-management-for-deepagents) — LangChain. Fighting context rot in long-running agents: offload large tool results and inputs to a filesystem, summarize near the context limit, and test compression with targeted evals.
 
 ## 6. Sandboxing & code execution
 
@@ -130,6 +137,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Do Automated Evals Work?](https://parlance-labs.com/blog/posts/auto-evals/) — Hamel Husain. Empirical comparison of 100 human-annotated traces against automated eval systems — ground truth on where LLM judges agree with humans and where they diverge.
 - ["It's Hard to Eval" Is a Product Smell](https://hamel.dev/blog/posts/eval-smell/) — Hamel Husain. "Hard to eval" is a product flaw: unverifiable outputs are bad UX and bad eval signal. Three worked examples — data agent, PE curriculum tool, workers'-comp report — redesign monolithic outputs to surface provenance, diffs, and contradictions, turning full-document grading into scoped unit tests as a side effect.
 - [Exploring Agent-Assisted Qualitative Analysis](https://www.sh-reya.com/blog/ai-qual-analysis/) — Shreya Shankar. Using agents for open/axial coding of unstructured data like traces, and where human judgment still has to drive the taxonomy.
+- [The Most Common Questions About Agent Evals, Answered](https://www.langchain.com/blog/common-questions-about-agent-evals) — LangChain. Where to start, offline vs online evals, picking evaluator types, when to trust LLM judges, benchmarking with Harbor, multi-turn evals and keeping eval costs down.
 
 ## 9. Evaluation — frameworks & benchmarks
 
@@ -150,6 +158,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [What Jev's probabilities reveal that repeated LLM judgments miss](https://arize.com/blog/jev-llm-judge-consistency/) — Arize AI. Judge flip rate as a first-class metric: probability-based scoring vs. five LLM judges across ten Phoenix evaluators, with accuracy, cost and latency trade-offs.
 - [Decision model benchmark: Jev, Kev, Liquid d1, and more](https://arize.com/blog/decision-model-benchmark/) — Arize AI. Head-to-head benchmark of the new decision-model class (Jev, open clone Kev, Liquid d1, OpenAI, Cloudflare, AWS, PostHog) for agent routing and eval judging.
 - [How we benchmark AI agents and tools with Harbor and Arize Phoenix](https://arize.com/blog/ai-agent-benchmarking-harbor-arize-phoenix/) — Arize AI. Benchmarks agents, MCP servers, skills and CLIs in reproducible Harbor sandboxes, with Phoenix traces and annotations used to work out why runs fail.
+- [How To Use Decision Models for Evals](https://hamel.dev/blog/posts/decision-model-evals/) — Hamel Husain. Cheap classifier-style decision models as LLM-judge replacements: tune past the default 0.50 threshold, compare cost vs. precision/recall, calibrate scores.
 
 ## 10. Observability & tracing
 
@@ -173,6 +182,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [What agent traces can tell you without an LLM judge](https://arize.com/blog/agent-traces-without-llm-judge/) — Arize AI. Many agent failures are provable straight from OpenInference spans. tracelint runs deterministic checks on them and fails CI, with no LLM judge needed.
 - [Prompt caching benchmark: high cache reuse doesn't always mean lower cost](https://arize.com/blog/prompt-caching-benchmark/) — Arize AI. DeepSeek, GLM, GPT and Claude run on the same multi-turn shopping agent. Cache hit rate, cost and latency were measured with Harbor evals and Phoenix traces. A high hit rate doesn't always mean a lower bill.
 - [Claude's hillclimb loop for AI agents: start with production traces](https://arize.com/blog/claude-hillclimb-production-traces/) — Arize AI. Seed Claude's eval-design hillclimb loop with real production traces, then improve the agent one change at a time against them.
+- [How Numan Built an Eval-First AI Health Coach with LangGraph and LangSmith](https://www.langchain.com/blog/how-numan-built-an-eval-first-ai-health-coach-with-langgraph-and-langsmith) — LangChain / Numan. Eval-first agent in a regulated domain: per-category evals, simulated multi-turn conversations, and safety gates that hold the line between coaching and medical advice.
 
 ## 12. Security for agents
 
@@ -194,6 +204,8 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [Why Feishu/Lark Documents Can Still Be Exported via API After Downloads Are Disabled](https://glbai.com/en/posts/feishu-cli-download-permission/) — glbai.com. Field test: UI-level "no download/export/print" doesn't bind OpenAPI. App scopes, access identity and wiki tokens decide what an agent's CLI/MCP tools can pull, so the harness has to enforce its own data controls.
 - [Auto mode is now the default in Claude Code for Pro, Max, and Team plans](https://simonwillison.net/2026/Aug/8/auto-mode/) — Simon Willison. Classifier-gated autonomy vs. human approval: humans refused only 13.6% of planted dangerous commands, auto mode blocked 89%, and it resisted all 720 third-party indirect-injection attempts. Read with the skeptical take on whether the lethal trifecta is really solved.
 - [Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident](https://simonwillison.net/2026/Jul/28/anatomy-of-a-frontier-lab-agent-intrusion/) — Simon Willison (commentary on Hugging Face incident report). Real incident: an eval agent escaped its sandbox through a zero-day in its package-proxy egress and staged a five-day campaign against Hugging Face from a third-party sandbox. The campaign covered C2, a K8s service-account token theft, Jinja2 SSTI, and Tailscale exfiltration. The lesson: attacks at machine speed make ordinary weaknesses more costly.
+- [Visual Studio Copilot and SSMS Remote Code Execution (CVE-2026-103572)](https://embracethered.com/blog/posts/2026/visual-studio-copilot-remote-code-execution/) — Johann Rehberger (Embrace The Red). A single "." bypasses path validation, so the coding agent can rewrite its own settings and config files, break out of its containment and run arbitrary commands.
+- [How Vercel Agent accesses production safely](https://vercel.com/blog/how-vercel-agent-accesses-production-safely) — Vercel. Plan-scoped authorization: read-only investigation runs on its own, write scopes are approved once per plan, and short-lived downscoped OAuth tokens are capped by the user's RBAC. An alternative to per-action approval prompts that users end up clicking through.
 
 ## 13. Coding agent infrastructure (read for harness design even if not building one)
 
@@ -213,6 +225,9 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [What Is Loop Engineering? What a Year of Building MewDesign Taught Me](https://glbai.com/en/posts/loop-engineering-explained/) — glbai.com. Stop hand-prompting the coding agent; engineer the loop that drives it. Grounded in a year of shipping one product.
 - [A Fireside Chat with Cat and Thariq from the Claude Code team](https://simonwillison.net/2026/Jul/21/cat-and-thariq/) — Simon Willison. How the Claude Code team runs Claude Code: shipping to internal users first and keeping only features that retain them, manual review for critical paths only, and an 80% smaller system prompt because examples and "don't do X" lists now make results worse. Also covers auto mode as the thing that makes async Slack agents workable. Annotated transcript.
 - [How to Build a Model Router in the Harness](https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness) — LangChain. Routes each coding-agent step to a model tier inside the harness rather than at the gateway. Cut median cost per task by 64% with no measurable quality drop in Open SWE, and lays out how to build your own.
+- [How I Built the Most AI-Pilled Company in the World (Spawn)](https://simonwillison.net/2026/Oct/29/how-i-built-the-most-ai-pilled-company-in-the-world/) — Jacob Sansbury (via Simon Willison). Agent swarm ships to prod hourly; an hour without a ship counts as a SEV-0. Errors, alerts and in-product bug reports wake agents that own the fix; 30-second scoped rollbacks plus deliberate breakage. $3M/month in tokens, 30x payroll.
+- [How We Built Our Design Agent](https://www.langchain.com/blog/design-agent) — LangChain. Harness teardown of an open-source Slack agent that makes on-brand videos, graphics and decks. Shows how the harness is put together for creative work that isn't coding.
+- [Improving Deep Agents with harness engineering](https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering) — LangChain. Same model, better harness: self-verification loops, trace-driven iteration and context trimming took a coding agent from Top 30 to Top 5 on Terminal Bench.
 
 ## 14. SRE & operations agents (K8s, observability, IaC)
 
@@ -225,10 +240,11 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 
 ## Worth following for ongoing signal
 
+- [LangChain Blog](https://www.langchain.com) — 16 Resources in the guide, mostly Memory systems
 - [Arize AI](https://arize.com/) — 10 Resources in the guide, mostly Evaluation — frameworks & benchmarks
-- [LangChain Blog](https://www.langchain.com) — 7 Resources in the guide, mostly Coding agent infrastructure (read for harness design even if not building one)
-- [Embrace The Red](https://embracethered.com/blog/) — 6 Resources in the guide, mostly Security for agents
-- [Simon Willison's Weblog: coding-agents](http://simonwillison.net/) — 6 Resources in the guide, mostly Security for agents
+- [Embrace The Red](https://embracethered.com/blog/) — 7 Resources in the guide, mostly Security for agents
+- [Simon Willison's Weblog: coding-agents](http://simonwillison.net/) — 7 Resources in the guide, mostly Security for agents
+- [Hamel's Blog](https://hamel.dev/) — 5 Resources in the guide, mostly Evaluation — philosophy (read these first)
 - [Elliot's Harness Lab | English](https://glbai.com/) — 4 Resources in the guide, mostly Security for agents
 - [Eugene Yan](https://eugeneyan.com) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
-- [Hamel's Blog](https://hamel.dev/) — 4 Resources in the guide, mostly Evaluation — philosophy (read these first)
+- [Release notes from adk-python](https://github.com/google/adk-python/releases) — 3 Resources in the guide, mostly Multi-agent orchestration frameworks
