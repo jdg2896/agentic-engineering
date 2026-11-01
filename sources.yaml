@@ -73,11 +73,9 @@ sources:
     url: https://blog.cloudflare.com/tag/ai-agents/rss
     cadence: weekly
     last_checked_at: 2026-09-29
-    consecutive_failures: 5
-    failing_since: 2026-09-29
-    last_http_status: 404
-    newest_entry_at: null
-    enabled: true
+    enabled: false
+    retired_at: 2026-11-01
+    retired_reason: dead-broken
     notes: null
 
   - id: langchain-blog
@@ -99,11 +97,9 @@ sources:
     url: https://cognition.ai/rss.xml
     cadence: weekly
     last_checked_at: 2026-09-29
-    consecutive_failures: 5
-    failing_since: 2026-09-29
-    last_http_status: 301
-    newest_entry_at: null
-    enabled: true
+    enabled: false
+    retired_at: 2026-11-01
+    retired_reason: dead-broken
     notes: null
 
   # ── GitHub release feeds ──────────────────────────────────────────────────

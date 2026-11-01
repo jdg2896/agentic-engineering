@@ -334,3 +334,33 @@ rejected:
     suggestion: null
     reason: no-feed
     rejected_at: 2026-10-01
+  - key: cursor.com
+    url: https://cursor.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-11-01
+  - key: developer.apple.com
+    url: https://developer.apple.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-11-01
+  - key: github.com/modelcontextprotocol/inspector
+    url: https://github.com/modelcontextprotocol/inspector
+    channel: citation
+    suggestion: null
+    reason: no-include
+    rejected_at: 2026-11-01
+  - key: harborframework.com
+    url: https://www.harborframework.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-11-01
+  - key: strandsagents.com
+    url: https://strandsagents.com/
+    channel: citation
+    suggestion: null
+    reason: no-feed
+    rejected_at: 2026-11-01
