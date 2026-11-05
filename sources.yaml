@@ -5,11 +5,11 @@ sources:
     type: atom
     url: https://simonwillison.net/tags/coding-agents.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-06
+    newest_entry_at: 2026-10-29
     feed_title: "Simon Willison's Weblog: coding-agents"
     site_url: http://simonwillison.net/
     enabled: true
@@ -20,11 +20,11 @@ sources:
     type: rss
     url: https://hamel.dev/index.xml
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-30
+    newest_entry_at: 2026-10-20
     feed_title: Hamel's Blog
     site_url: https://hamel.dev/
     enabled: true
@@ -34,7 +34,7 @@ sources:
     type: rss
     url: https://eugeneyan.com/rss/
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -58,11 +58,11 @@ sources:
     type: rss
     url: https://embracethered.com/blog/index.xml
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-09-30
+    newest_entry_at: 2026-10-13
     feed_title: Embrace The Red
     site_url: https://embracethered.com/blog/
     enabled: true
@@ -82,11 +82,11 @@ sources:
     type: rss
     url: https://www.langchain.com/blog/rss.xml
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-08
+    newest_entry_at: 2026-11-05
     feed_title: LangChain Blog
     site_url: https://www.langchain.com
     enabled: true
@@ -108,11 +108,11 @@ sources:
     type: github-releases
     url: https://github.com/langchain-ai/langgraph/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-07
+    newest_entry_at: 2026-11-05
     feed_title: Release notes from langgraph
     site_url: https://github.com/langchain-ai/langgraph/releases
     enabled: true
@@ -122,11 +122,11 @@ sources:
     type: github-releases
     url: https://github.com/openai/openai-agents-python/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-02
+    newest_entry_at: 2026-11-03
     feed_title: Release notes from openai-agents-python
     site_url: https://github.com/openai/openai-agents-python/releases
     enabled: true
@@ -136,11 +136,11 @@ sources:
     type: github-releases
     url: https://github.com/UKGovernmentBEIS/inspect_ai/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-06
+    newest_entry_at: 2026-10-31
     feed_title: Release notes from inspect_ai
     site_url: https://github.com/UKGovernmentBEIS/inspect_ai/releases
     enabled: true
@@ -150,7 +150,7 @@ sources:
     type: github-releases
     url: https://github.com/letta-ai/letta/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -174,11 +174,11 @@ sources:
     type: github-releases
     url: https://github.com/google/adk-python/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-02
+    newest_entry_at: 2026-10-23
     feed_title: Release notes from adk-python
     site_url: https://github.com/google/adk-python/releases
     enabled: true
@@ -188,7 +188,7 @@ sources:
     type: github-releases
     url: https://github.com/huggingface/smolagents/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
@@ -202,11 +202,11 @@ sources:
     type: github-releases
     url: https://github.com/modelcontextprotocol/servers/releases.atom
     cadence: weekly
-    last_checked_at: 2026-10-08
+    last_checked_at: 2026-11-05
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-08-31
+    newest_entry_at: 2026-11-04
     feed_title: Release notes from servers
     site_url: https://github.com/modelcontextprotocol/servers/releases
     enabled: true
@@ -222,7 +222,7 @@ sources:
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-08
+    newest_entry_at: 2026-11-05
     feed_title: Vercel News
     site_url: https://vercel.com/
     enabled: true
@@ -236,7 +236,7 @@ sources:
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-08
+    newest_entry_at: 2026-11-05
     feed_title: OpenAI News
     site_url: https://openai.com/news
     enabled: true
@@ -264,7 +264,7 @@ sources:
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-07
+    newest_entry_at: 2026-10-26
     feed_title: Release notes from browser-use
     site_url: https://github.com/browser-use/browser-use/releases
     enabled: true
@@ -278,7 +278,7 @@ sources:
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-07
+    newest_entry_at: 2026-11-05
     feed_title: Release notes from playwright
     site_url: https://github.com/microsoft/playwright/releases
     enabled: true
@@ -292,7 +292,7 @@ sources:
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-08
+    newest_entry_at: 2026-11-04
     feed_title: Release notes from stagehand
     site_url: https://github.com/browserbase/stagehand/releases
     enabled: true
@@ -306,7 +306,7 @@ sources:
     consecutive_failures: 0
     failing_since: null
     last_http_status: 200
-    newest_entry_at: 2026-10-08
+    newest_entry_at: 2026-11-05
     feed_title: Arize AI
     site_url: https://arize.com/
     enabled: true
