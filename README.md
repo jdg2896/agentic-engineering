@@ -140,7 +140,7 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [DeepEval](https://github.com/confident-ai/deepeval) — **OS.** Pytest-style assertions + 14 default metrics.
 - [Ragas](https://docs.ragas.io/en/stable/) — **OS.** RAG-specific metrics standard.
 - [LangSmith Evaluations](https://docs.langchain.com/langsmith/evaluation-concepts) — **SaaS.**
-- [Braintrust](https://www.braintrust.dev/docs) — **SaaS.** Hill-climbing dev loop with strong DX.
+- [Braintrust](https://docs.braintrust.dev/) — **SaaS.** Hill-climbing dev loop with strong DX.
 - [Arize Phoenix](https://arize.com/docs/phoenix) — **OS.** OTel-native traces + evals.
 - [Langfuse Evaluations](https://langfuse.com/docs/evaluation/overview) — **OS + SaaS.**
 - [Patronus AI](https://docs.patronus.ai:443/docs) — **SaaS.** Managed judge models (Lynx for hallucination).
