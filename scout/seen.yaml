@@ -1881,3 +1881,361 @@ seen:
     title: v2.3.0
     source_id: github-com-modelcontextprotocol-python-sdk
     rejected_at: '2026-10-08'
+  - url: https://simonwillison.net/2026/Nov/9/mysterious-beeps/
+    title: Locating the source of a mysterious beep with Claude
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Nov/9/details-summary/
+    title: Hide your slop PR descriptions behind <details><summary>
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/28/github-octoverse-2026/
+    title: GitHub Octoverse 2026
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/20/battledrones/
+    title: Battle Drones - a vibe coded RTS with audio-based multiplayer
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/19/my-obituary-for-programming/
+    title: My obituary for programming
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/16/code-review/
+    title: Quoting Addy Osmani, Morgan Westlee Lunt, and Qing Wang
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/16/sqlite-sparql-rust/
+    title: 'sparqlite: SPARQL 1.1 inside SQLite, written in Rust'
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/14/ai-is-mass-decompiling-games/
+    title: AI is mass decompiling games. That's both awesome and scary.
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/13/geoffrey-huntley/
+    title: Quoting Geoffrey Huntley
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://simonwillison.net/2026/Oct/9/built-using-my-voice/
+    title: A new feature for my blog, built using my voice
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/what-is-eval-driven-development
+    title: What Is Eval-Driven Development? How to Improve AI Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/gtm-agent-high-quality-sales-artifacts
+    title: How our GTM Agent builds consistent, high-quality sales artifacts
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/how-workday-built-an-enterprise-scale-ai-agent-platform-with-langgraph-and-langsmith
+    title: How Workday Built an Enterprise-Scale AI Agent Platform with 
+      LangGraph and LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/how-stripe-built-their-knowledge-ai-platform-on-deep-agents
+    title: How Stripe Built Kai on Deep Agents in 1 Week
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/langsmith-byoc-is-now-generally-available-on-aws
+    title: LangSmith BYOC on AWS is generally available
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/iterating-towards-llm-reliability-with-evaluation-driven-development
+    title: Iterating Towards LLM Reliability with Evaluation Driven Development
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/promptim
+    title: 'Promptim: an experimental library for prompt optimization'
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/managed-deep-agents-browser-use-and-asynchronous-subagents
+    title: 'Managed Deep Agents v0.10: Browser Use and Async Subagents'
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/browser-use-in-managed-deep-agents
+    title: Browser Use in Managed Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/langsmith-byoc-aws-gc-azure
+    title: LangSmith BYOC is now available on AWS, Azure, and Google Cloud
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/human-insight-strategic-advantage-agents
+    title: Why human insight is a strategic advantage for building better agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/proactive-agents
+    title: How to Build Proactive, Always-On Agents with the Schedules SDK in 
+      Managed Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/october-2026-langchain-newsletter
+    title: 'October 2026 LangChain Newsletter: Everything we shipped at Interrupt
+      NYC & London'
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/how-orange-business-built-live-intelligence-on-langchain-and-langsmith
+    title: How Orange Business Built Live Intelligence with LangChain and 
+      LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/our-docs-test-themselves
+    title: How We Made Our Docs Test Themselves
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/deep-agents-deploy-an-open-alternative-to-claude-managed-agents
+    title: 'Deep Agents Deploy: an open alternative to Claude Managed Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/building-long-running-agents-with-scaledown-and-deep-agents
+    title: Building Long-Running Agents with ScaleDown and Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/agent-traces-ai-search-langsmith
+    title: Search agent traces by behavior with AI Search in LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://www.langchain.com/blog/slack-sdk-managed-deep-agents
+    title: How to build great out-of-the-box user experiences with Managed Deep 
+      Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://www.langchain.com/blog/how-snyk-turned-an-internal-support-agent-into-a-customer-feature
+    title: How Snyk Turned an Internal Support Agent into a Customer Feature
+    source_id: langchain-blog
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.21
+    title: langgraph==1.2.21
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.43
+    title: langgraph-cli==0.4.43
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/sdk%3D%3D0.4.14
+    title: langgraph-sdk==0.4.14
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.42
+    title: langgraph-cli==0.4.42
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.20
+    title: langgraph==1.2.20
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/sdk%3D%3D0.4.13
+    title: langgraph-sdk==0.4.13
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.41
+    title: langgraph-cli==0.4.41
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/sdk%3D%3D0.4.12
+    title: langgraph-sdk==0.4.12
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.19
+    title: langgraph==1.2.19
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/sdk%3D%3D0.4.11
+    title: langgraph-sdk==0.4.11
+    source_id: langgraph-releases
+    rejected_at: '2026-11-12'
+  - url: 
+      https://github.com/openai/openai-agents-python/releases/tag/v0.24.0-alpha.7
+    title: Agents SDK v0.24.0-alpha.7
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-12'
+  - url: 
+      https://github.com/openai/openai-agents-python/releases/tag/v0.24.0-alpha.6
+    title: Agents SDK v0.24.0-alpha.6
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/openai/openai-agents-python/releases/tag/v0.24.0
+    title: v0.24.0
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.289
+    title: v0.3.289
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.288
+    title: v0.3.288
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.287
+    title: v0.3.287
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.286
+    title: v0.3.286
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.285
+    title: v0.3.285
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.284
+    title: v0.3.284
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.283
+    title: v0.3.283
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.282
+    title: v0.3.282
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.281
+    title: v0.3.281
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.280
+    title: v0.3.280
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/google/adk-python/releases/tag/v2.12.0
+    title: v2.12.0
+    source_id: adk-python-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.4.0
+    title: v2.4.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.3.0
+    title: v2.3.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.2.0
+    title: v2.2.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.1.0
+    title: v2.1.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-12'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v1.0.0
+    title: v1.0.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/gemini-4-hydrogen-now-available-on-ai-gateway
+    title: Gemini 4 Hydrogen now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/gemini-decision-1-now-available-on-ai-gateway
+    title: Gemini Decision 1 now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/minimax-h3-image-and-highspeed-now-available-on-ai-gateway
+    title: MiniMax H3 Image and Highspeed now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/gemini-4-carbon-now-available-on-ai-gateway
+    title: Gemini 4 Carbon now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/speed-insights-and-web-analytics-now-support-custom-environments
+    title: Speed Insights and Web Analytics now support custom environments
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/vercel-sandbox-snapshot-creation-is-now-up-to-10x-faster
+    title: Vercel Sandbox snapshot creation is now up to 10x faster
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: https://vercel.com/blog/ai-gateway-production-index-november-2026
+    title: Decision models take 26% of requests; Anthropic now wins new teams 
+      2:1
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/glm-5-3-flash-is-now-available-in-token-pass
+    title: GLM 5.3 Flash is now available in Token Pass
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/workflow-writes-now-use-websockets-on-vercel
+    title: Workflow SDK now writes over WebSockets on Vercel
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/build-disk-space-on-vercel-increased-to-64-gb
+    title: Build disk space on Vercel increased to 64 GB
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/vercel-container-registry-now-supports-2-gb-compressed-image-layers
+    title: Vercel Container Registry now supports 2 GB compressed image layers
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/claude-fable-5-2-now-available-on-ai-gateway
+    title: Claude Fable 5.2 now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: https://vercel.com/changelog/muse-ember-now-available-on-ai-gateway
+    title: Muse Ember now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/deepseek-v4-1-flash-1017-ultrafast-now-available-on-ai-gateway
+    title: DeepSeek V4.1 Flash 1017 Ultrafast now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: https://vercel.com/changelog/json-render-and-chat-sdk-agents
+    title: Chat SDK agents can now stream generative UI with json-render
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/ai-gateway-adds-deepseek-search-and-fetch-tools
+    title: AI Gateway adds DeepSeek Search and Fetch tools
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/vercel-cli-can-now-set-new-projects-to-expire
+    title: Vercel CLI can now set new projects to expire
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: https://vercel.com/changelog/vercel-tracing-is-now-generally-available
+    title: Vercel Tracing is now generally available
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/token-pass-credit-now-applies-automatically-across-ai-gateway
+    title: Token Pass credit now applies automatically across AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/humans-and-ampersand-now-available-on-ai-gateway
+    title: Ampersand from Humans& now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: https://vercel.com/changelog/vercel-schedules-is-now-in-public-beta
+    title: Vercel Schedules is now in public beta
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
+  - url: 
+      https://vercel.com/changelog/gemini-omni-1-2-flash-now-available-on-ai-gateway
+    title: Gemini Omni 1.2 Flash now available on AI Gateway
+    source_id: vercel-blog
+    rejected_at: '2026-11-12'
