@@ -135,7 +135,7 @@ resources:
     cluster: null
     tags: [canonical, mental-model]
     added_at: 2026-05-03
-    verified_at: &id001 2026-10-26
+    verified_at: &id001 2026-11-16
     archived: false
     paywall: false
     superseded_by: null
@@ -347,12 +347,13 @@ resources:
     tags: [curation]
     added_at: 2026-05-03
     source_id: simonwillison-ai-agents
-    verified_at: *id001
+    verified_at: &id002 2026-10-26
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: llm-patterns
     section: foundations
     url: https://eugeneyan.com/writing/llm-patterns/
@@ -365,12 +366,13 @@ resources:
     tags: [patterns]
     added_at: 2026-05-03
     source_id: eugene-yan
-    verified_at: *id001
+    verified_at: *id002
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: genai-platform
     section: foundations
     url: https://huyenchip.com/2024/07/25/genai-platform.html
@@ -925,12 +927,13 @@ resources:
     cluster: null
     tags: [restate, durable-execution]
     added_at: 2026-05-03
-    verified_at: *id001
+    verified_at: *id002
     archived: false
     paywall: false
     superseded_by: null
     notes: null
 
+    first_dead_at: *id001
   - id: hatchet-durable-tasks
     section: durable-execution
     url: https://docs.hatchet.run/v1/durable-tasks
@@ -1668,7 +1671,7 @@ resources:
 
   - id: braintrust
     section: eval-frameworks
-    url: https://www.braintrust.dev/docs
+    url: https://docs.braintrust.dev/
     title: "Braintrust"
     author: null
     type: docs
@@ -2013,8 +2016,8 @@ resources:
     superseded_by: null
     notes: null
 
-    first_dead_at: &id002 2026-05-03
-    quarantined_at: &id003 2026-05-25
+    first_dead_at: &id003 2026-05-03
+    quarantined_at: &id004 2026-05-25
     quarantine_reason: '404'
   - id: datadog-llm-observability
     section: observability
@@ -2491,8 +2494,8 @@ resources:
     superseded_by: null
     notes: null
 
-    first_dead_at: *id002
-    quarantined_at: *id003
+    first_dead_at: *id003
+    quarantined_at: *id004
     quarantine_reason: '404'
   - id: datadog-bits-ai-sre
     section: sre-ops-patterns
@@ -2528,8 +2531,8 @@ resources:
     superseded_by: null
     notes: null
 
-    first_dead_at: *id002
-    quarantined_at: *id003
+    first_dead_at: *id003
+    quarantined_at: *id004
     quarantine_reason: '404'
   - id: terraform-mcp-server
     section: sre-ops-patterns
@@ -2658,7 +2661,7 @@ resources:
     notes: null
   - id: cybersecurity-evals-patterns
     section: eval-frameworks
-    url: https://eugeneyan.com//writing/cybersecurity-evals/
+    url: https://eugeneyan.com/writing/cybersecurity-evals
     title: Patterns for Building Cybersecurity Evals
     author: Eugene Yan
     type: article
@@ -2998,11 +3001,12 @@ resources:
       - trust-boundaries
     added_at: '2026-09-30'
     source_id: glbai-com
-    verified_at: *id001
+    verified_at: *id002
     archived: false
     paywall: false
     superseded_by: null
     notes: null
+    first_dead_at: *id001
   - id: feishu-api-export-bypass
     section: security
     url: https://glbai.com/en/posts/feishu-cli-download-permission/
@@ -3043,11 +3047,12 @@ resources:
       - coding-agents
     added_at: '2026-09-30'
     source_id: glbai-com
-    verified_at: *id001
+    verified_at: *id002
     archived: false
     paywall: false
     superseded_by: null
     notes: null
+    first_dead_at: *id001
   - id: loop-engineering-explained
     section: coding-agent-infra
     url: https://glbai.com/en/posts/loop-engineering-explained/
@@ -3088,11 +3093,12 @@ resources:
       - coding-agents
     added_at: '2026-09-30'
     source_id: simonwillison-ai-agents
-    verified_at: *id001
+    verified_at: *id002
     archived: false
     paywall: false
     superseded_by: null
     notes: null
+    first_dead_at: *id001
   - id: claude-code-auto-mode-default-evals
     section: security
     url: https://simonwillison.net/2026/Aug/8/auto-mode/
