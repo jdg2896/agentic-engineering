@@ -1881,3 +1881,329 @@ seen:
     title: v2.3.0
     source_id: github-com-modelcontextprotocol-python-sdk
     rejected_at: '2026-10-08'
+  - url: https://simonwillison.net/2026/Nov/18/daniel-stenberg/
+    title: Quoting Daniel Stenberg
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Nov/9/mysterious-beeps/
+    title: Locating the source of a mysterious beep with Claude
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Nov/9/details-summary/
+    title: Hide your slop PR descriptions behind <details><summary>
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/28/github-octoverse-2026/
+    title: GitHub Octoverse 2026
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/20/battledrones/
+    title: Battle Drones - a vibe coded RTS with audio-based multiplayer
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/19/my-obituary-for-programming/
+    title: My obituary for programming
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/16/code-review/
+    title: Quoting Addy Osmani, Morgan Westlee Lunt, and Qing Wang
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/16/sqlite-sparql-rust/
+    title: 'sparqlite: SPARQL 1.1 inside SQLite, written in Rust'
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/14/ai-is-mass-decompiling-games/
+    title: AI is mass decompiling games. That's both awesome and scary.
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/13/geoffrey-huntley/
+    title: Quoting Geoffrey Huntley
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://simonwillison.net/2026/Oct/9/built-using-my-voice/
+    title: A new feature for my blog, built using my voice
+    source_id: simonwillison-ai-agents
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/series-c
+    title: LangChain Raises $300M Series C at $3B Valuation
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/langsmith-tool-gateway
+    title: 'LangSmith Tool Gateway: Secure, governed tool use for agents'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/fix-your-coding-agent-bill
+    title: Your coding agent bill doubled. Here’s how to fix it.
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/announcing-data-annotation-queue
+    title: Announcing Data Annotation Queues
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/langsmith-alerts
+    title: Catch production failures early with LangSmith Alerts
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/langsmith-coding-agents-roi
+    title: 'LangSmith for Coding Agents: Now track spend by outcome'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/protect-sensitive-data-in-your-traces-new-controls-in-langsmith
+    title: 'Protect sensitive data in your traces: new controls in LangSmith'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/proactive-agents
+    title: How to Build Proactive, Always-On Agents with the Schedules SDK in 
+      Managed Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/from-tasks-to-goals
+    title: From tasks to goals
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/we-rebuilt-langsmith-around-the-agent
+    title: Why we rebuilt LangSmith around the agent
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/what-is-eval-driven-development
+    title: What Is Eval-Driven Development? How to Improve AI Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/gtm-agent-high-quality-sales-artifacts
+    title: How our GTM Agent builds consistent, high-quality sales artifacts
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/how-workday-built-an-enterprise-scale-ai-agent-platform-with-langgraph-and-langsmith
+    title: How Workday Built an Enterprise-Scale AI Agent Platform with 
+      LangGraph and LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/how-stripe-built-their-knowledge-ai-platform-on-deep-agents
+    title: How Stripe Built Kai on Deep Agents in 1 Week
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/langsmith-byoc-is-now-generally-available-on-aws
+    title: LangSmith BYOC on AWS is generally available
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/iterating-towards-llm-reliability-with-evaluation-driven-development
+    title: Iterating Towards LLM Reliability with Evaluation Driven Development
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/promptim
+    title: 'Promptim: an experimental library for prompt optimization'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/managed-deep-agents-browser-use-and-asynchronous-subagents
+    title: 'Managed Deep Agents v0.10: Browser Use and Async Subagents'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/browser-use-in-managed-deep-agents
+    title: Browser Use in Managed Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/langsmith-byoc-aws-gc-azure
+    title: LangSmith BYOC is now available on AWS, Azure, and Google Cloud
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/human-insight-strategic-advantage-agents
+    title: Why human insight is a strategic advantage for building better agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/october-2026-langchain-newsletter
+    title: 'October 2026 LangChain Newsletter: Everything we shipped at Interrupt
+      NYC & London'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/how-orange-business-built-live-intelligence-on-langchain-and-langsmith
+    title: How Orange Business Built Live Intelligence with LangChain and 
+      LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/our-docs-test-themselves
+    title: How We Made Our Docs Test Themselves
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/deep-agents-deploy-an-open-alternative-to-claude-managed-agents
+    title: 'Deep Agents Deploy: an open alternative to Claude Managed Agents'
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/building-long-running-agents-with-scaledown-and-deep-agents
+    title: Building Long-Running Agents with ScaleDown and Deep Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/agent-traces-ai-search-langsmith
+    title: Search agent traces by behavior with AI Search in LangSmith
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://www.langchain.com/blog/slack-sdk-managed-deep-agents
+    title: How to build great out-of-the-box user experiences with Managed Deep 
+      Agents
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: 
+      https://www.langchain.com/blog/how-snyk-turned-an-internal-support-agent-into-a-customer-feature
+    title: How Snyk Turned an Internal Support Agent into a Customer Feature
+    source_id: langchain-blog
+    rejected_at: '2026-11-19'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.23
+    title: langgraph==1.2.23
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/langchain-ai/langgraph/releases/tag/prebuilt%3D%3D1.1.3
+    title: langgraph-prebuilt==1.1.3
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.22
+    title: langgraph==1.2.22
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/langchain-ai/langgraph/releases/tag/prebuilt%3D%3D1.1.2
+    title: langgraph-prebuilt==1.1.2
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/langchain-ai/langgraph/releases/tag/checkpointpostgres%3D%3D3.2.1
+    title: langgraph-checkpoint-postgres==3.2.1
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/langchain-ai/langgraph/releases/tag/checkpoint%3D%3D4.3.2
+    title: langgraph-checkpoint==4.3.2
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/1.2.21
+    title: langgraph==1.2.21
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.43
+    title: langgraph-cli==0.4.43
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/sdk%3D%3D0.4.14
+    title: langgraph-sdk==0.4.14
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.42
+    title: langgraph-cli==0.4.42
+    source_id: langgraph-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/openai/openai-agents-python/releases/tag/v0.25.0
+    title: v0.25.0
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/openai/openai-agents-python/releases/tag/v0.24.0-alpha.8
+    title: Agents SDK v0.24.0-alpha.8
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/openai/openai-agents-python/releases/tag/v0.24.0-alpha.7
+    title: Agents SDK v0.24.0-alpha.7
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-19'
+  - url: 
+      https://github.com/openai/openai-agents-python/releases/tag/v0.24.0-alpha.6
+    title: Agents SDK v0.24.0-alpha.6
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/openai/openai-agents-python/releases/tag/v0.24.0
+    title: v0.24.0
+    source_id: openai-agents-python-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.291
+    title: v0.3.291
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.290
+    title: v0.3.290
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.289
+    title: v0.3.289
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.288
+    title: v0.3.288
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.287
+    title: v0.3.287
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.286
+    title: v0.3.286
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.285
+    title: v0.3.285
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.284
+    title: v0.3.284
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.283
+    title: v0.3.283
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/UKGovernmentBEIS/inspect_ai/releases/tag/0.3.282
+    title: v0.3.282
+    source_id: inspect-ai-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/google/adk-python/releases/tag/v2.14.1
+    title: v2.14.1
+    source_id: adk-python-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/google/adk-python/releases/tag/v2.12.0
+    title: v2.12.0
+    source_id: adk-python-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.5.0
+    title: v2.5.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.4.0
+    title: v2.4.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.3.0
+    title: v2.3.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.2.0
+    title: v2.2.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v2.1.0
+    title: v2.1.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-19'
+  - url: https://github.com/modelcontextprotocol/servers/releases/tag/v1.0.0
+    title: v1.0.0
+    source_id: mcp-servers-releases
+    rejected_at: '2026-11-19'
+  - url: https://openai.com/index/the-silent-consensus
+    title: The Silent Consensus
+    source_id: openai-news
+    rejected_at: '2026-11-19'
+  - url: https://openai.com/business/customer-stories/sumitomo-life
+    title: How Sumitomo Life’s leaders helped teams adopt ChatGPT Enterprise
+    source_id: openai-news
+    rejected_at: '2026-11-19'
+  - url: https://openai.com/index/research-acceleration-jagged-frontier
+    title: 'Research acceleration: The jagged frontier'
+    source_id: openai-news
+    rejected_at: '2026-11-19'
