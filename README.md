@@ -140,12 +140,12 @@ _Opinionated. No tutorials, no listicles, no marketing. Continuously maintained 
 - [DeepEval](https://github.com/confident-ai/deepeval) — **OS.** Pytest-style assertions + 14 default metrics.
 - [Ragas](https://docs.ragas.io/en/stable/) — **OS.** RAG-specific metrics standard.
 - [LangSmith Evaluations](https://docs.langchain.com/langsmith/evaluation-concepts) — **SaaS.**
-- [Braintrust](https://www.braintrust.dev/docs) — **SaaS.** Hill-climbing dev loop with strong DX.
+- [Braintrust](https://docs.braintrust.dev/) — **SaaS.** Hill-climbing dev loop with strong DX.
 - [Arize Phoenix](https://arize.com/docs/phoenix) — **OS.** OTel-native traces + evals.
 - [Langfuse Evaluations](https://langfuse.com/docs/evaluation/overview) — **OS + SaaS.**
 - [Patronus AI](https://docs.patronus.ai:443/docs) — **SaaS.** Managed judge models (Lynx for hallucination).
 - **Benchmarks:** [SWE-bench](https://www.swebench.com/), [SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/), [GAIA](https://arxiv.org/abs/2311.12983), [τ-bench](https://github.com/sierra-research/tau-bench), [WebArena](https://webarena.dev/), [OSWorld](http://osworld-v1.xlang.ai/), [MLE-bench](https://github.com/openai/mle-bench), [SWE-Lancer](https://arxiv.org/abs/2502.12115).
-- [Patterns for Building Cybersecurity Evals](https://eugeneyan.com//writing/cybersecurity-evals/) — Eugene Yan. Four-component harness for cybersecurity evals: sandboxed target, difficulty-tunable inputs, agent-facing tools, and a grader. Practical patterns transferable to any capability domain that requires isolated execution environments.
+- [Patterns for Building Cybersecurity Evals](https://eugeneyan.com/writing/cybersecurity-evals) — Eugene Yan. Four-component harness for cybersecurity evals: sandboxed target, difficulty-tunable inputs, agent-facing tools, and a grader. Practical patterns transferable to any capability domain that requires isolated execution environments.
 - [How We Build Agent Environments & Tasks](https://www.langchain.com/blog/building-agent-environments-and-tasks) — LangChain. Synthetic task generation pipeline: spec generation → spec-to-task → world spec for shared environment knowledge. Concrete three-stage architecture for constructing reproducible agent eval harnesses at scale.
 - [What Jev's probabilities reveal that repeated LLM judgments miss](https://arize.com/blog/jev-llm-judge-consistency/) — Arize AI. Judge flip rate as a first-class metric: probability-based scoring vs. five LLM judges across ten Phoenix evaluators, with accuracy, cost and latency trade-offs.
 - [Decision model benchmark: Jev, Kev, Liquid d1, and more](https://arize.com/blog/decision-model-benchmark/) — Arize AI. Head-to-head benchmark of the new decision-model class (Jev, open clone Kev, Liquid d1, OpenAI, Cloudflare, AWS, PostHog) for agent routing and eval judging.
